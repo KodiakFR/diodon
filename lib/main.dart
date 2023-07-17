@@ -1,5 +1,5 @@
-import 'package:diodon/views/connexionView.dart';
-import 'package:diodon/views/registerView.dart';
+import 'package:diodon/views/connexion_view.dart';
+import 'package:diodon/views/register_view.dart';
 import 'package:flutter/material.dart';
 
 void main() {

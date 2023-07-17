@@ -33,7 +33,7 @@ class ConnexionView extends StatelessWidget {
             ),
             ElevatedButton(
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, "/register");
+                  Navigator.pushNamed(context, "/register");
                 },
                 child: const Text("Ajouter un utilisateur"))
           ],
