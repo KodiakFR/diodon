@@ -14,9 +14,9 @@ class ConnexionView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Text('Connexion', style: Theme.of(context).textTheme.headline2),
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const [
+              children: [
                 CircleAvatar(
                   minRadius: 60,
                   child: Text('Aurélien'),

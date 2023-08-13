@@ -53,6 +53,20 @@ class RegisterView extends StatelessWidget {
                         hintText: 'Confirmez votre mot de passe',
                         labelText: 'Confirmation mot de passe'),
                   ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const Text('Signature'),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                          onPressed: () {}, child: const Text("Importer")),
+                      ElevatedButton(
+                          onPressed: () {}, child: const Text("Créer"))
+                    ],
+                  ),
                   ElevatedButton(
                       onPressed: (() async {
                         if (_formKey.currentState!.validate()) {

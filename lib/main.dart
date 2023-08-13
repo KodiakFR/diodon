@@ -1,5 +1,6 @@
-import 'package:diodon/views/connexion_view.dart';
-import 'package:diodon/views/register_view.dart';
+import 'package:diodon/views/Connexion/connexion_view.dart';
+import 'package:diodon/views/Register/register_view.dart';
+import 'package:diodon/views/Register/signature_dialog_view.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -19,10 +20,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.orange,
       ),
       routes: {
-        "/connexion":(context) => const ConnexionView(),
+        "/connexion": (context) => const ConnexionView(),
         "/register": (context) => const RegisterView(),
       },
-      home: const ConnexionView(),
+      home: const SignatureDialog(),
     );
   }
 }
