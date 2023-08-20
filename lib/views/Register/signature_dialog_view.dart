@@ -2,7 +2,8 @@ import 'dart:typed_data';
 
 import 'package:diodon/views/Register/signature_preview_page.dart';
 import 'package:flutter/material.dart';
-import 'package:signature/signature.dart';
+import 'package:hand_signature/signature.dart';
+import 'package:flutter/services.dart';
 
 class SignatureDialog extends StatefulWidget {
   const SignatureDialog({super.key});
@@ -12,22 +13,11 @@ class SignatureDialog extends StatefulWidget {
 }
 
 class _SignatureDialogState extends State<SignatureDialog> {
-  late SignatureController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = SignatureController(
-      penStrokeWidth: 5,
-      penColor: Colors.black,
-    );
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
+  HandSignatureControl control = HandSignatureControl(
+    threshold: 0.01,
+    smoothRatio: 0.65,
+    velocityRange: 2.0,
+  );
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -37,9 +27,24 @@ class _SignatureDialogState extends State<SignatureDialog> {
         ),
         body: Column(children: <Widget>[
           Expanded(
-            child: Signature(
-                controller: controller,
-                backgroundColor: const Color.fromARGB(255, 254, 228, 151)),
+            child: Stack(children: [
+              Container(
+                constraints: const BoxConstraints.expand(),
+                color: Colors.white,
+                child: HandSignature(
+                  control: control,
+                  type: SignatureDrawType.shape,
+                ),
+              ),
+              CustomPaint(
+                painter: DebugSignaturePainterCP(
+                  control: control,
+                  cp: false,
+                  cpStart: false,
+                  cpEnd: false,
+                ),
+              ),
+            ]),
           ),
           Container(
             color: Colors.black,
@@ -48,20 +53,18 @@ class _SignatureDialogState extends State<SignatureDialog> {
               children: [
                 IconButton(
                   onPressed: () async {
-                    if (controller.isNotEmpty) {
-                      final signature = await exportSignature();
+                    final signature = await exportSignature();
 
-                      await Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) =>
-                            SignaturePreviewPage(signature: signature),
-                      ));
-                    }
+                    await Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          SignaturePreviewPage(signature: signature),
+                    ));
                   },
                   icon: const Icon(Icons.check),
                   color: Colors.green,
                 ),
                 IconButton(
-                  onPressed: () => controller.clear(),
+                  onPressed: () => control.clear(),
                   icon: const Icon(Icons.cancel),
                   color: Colors.red,
                 ),
@@ -72,14 +75,14 @@ class _SignatureDialogState extends State<SignatureDialog> {
       );
 
   Future<Uint8List> exportSignature() async {
-    final exportController = SignatureController(
-      penStrokeWidth: 2,
-      exportBackgroundColor: Colors.white,
-      exportPenColor: Colors.black,
-      points: controller.points,
+    final exportController = await control.toImage(
+      color: Colors.black,
+      background: Colors.white,
+      fit: false,
     );
-    final signature = await exportController.toPngBytes();
-    exportController.dispose();
-    return signature!;
+
+    final signature = Uint8List.view(exportController!.buffer);
+
+    return signature;
   }
 }
