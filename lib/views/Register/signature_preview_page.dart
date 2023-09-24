@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class SignaturePreviewPage extends StatelessWidget {
@@ -21,7 +23,7 @@ class SignaturePreviewPage extends StatelessWidget {
         centerTitle: true,
         actions: [
           IconButton(
-              onPressed: () => storeSignature(context),
+              onPressed: () => _storeSignature(context),
               icon: const Icon(Icons.done))
         ],
       ),
@@ -29,19 +31,39 @@ class SignaturePreviewPage extends StatelessWidget {
     );
   }
 
-  Future storeSignature(BuildContext context) async {
-    print('ke suis la');
+  /// This method stores a signature as an image file in the file system.
+  ///
+  /// It first requests storage permission if not already granted, and then saves the signature
+  /// in the specified directory.
+  ///
+  /// [context]: The application's context.
+  ///
+  /// Example Usage:
+  ///
+  /// ```dart
+  /// await storeSignature(context);
+  /// ```
+  Future _storeSignature(BuildContext context) async {
     await Permission.storage.request();
     final status = await Permission.storage.status;
-    print('débug staut : ' + status.name);
     if (!status.isGranted) {
       await Permission.storage.request();
     }
-    const name = 'signature.png';
-    final result = await ImageGallerySaver.saveImage(signature, name: name);
-    final isSuccess = result['isSuccess'];
-    if (isSuccess) {
-      Navigator.pop(context);
+    final String directory = await _locatePath;
+    const String directory2 = "/storage/emulated/0/Android/data/com.example.diodon/files";
+    const String name = 'signature.png';
+    const String subFolderName = 'signatures';
+    String path = '$directory2/$subFolderName/$name';
+    // Créez le sous-dossier s'il n'existe pas déjà
+    await Directory('$directory2/$subFolderName').create();
+    await FileSaver.instance
+        .saveFile(name: name, bytes: signature, filePath: path);
+
+    await File('$directory2/$name').rename(path);
+
+    final bool fileExist = await File(path).exists();
+    if (fileExist) {
+     Navigator.pop(context);
 
       const SnackBar(
         content: Text('La signature est sauvegarder'),
@@ -54,4 +76,10 @@ class SignaturePreviewPage extends StatelessWidget {
       );
     }
   }
+}
+
+Future<String> get _locatePath async {
+  final directory = await getApplicationDocumentsDirectory();
+
+  return directory.path;
 }
