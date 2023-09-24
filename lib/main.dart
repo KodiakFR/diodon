@@ -19,10 +19,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.orange,
       ),
       routes: {
-        "/connexion": (context) => const ConnexionView(),
-        "/register": (context) => const RegisterView(),
+        "/connexion": (context) => ConnexionView(),
+        "/register": (context) => RegisterView(),
       },
-      home: const ConnexionView(),
+      home:  ConnexionView(),
     );
   }
 }
