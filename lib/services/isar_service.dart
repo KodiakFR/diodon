@@ -22,9 +22,19 @@ class IsarService {
     return Future.value(Isar.getInstance());
   }
 
-  Future<void> saveUser(User user) async {
+  Future<bool> saveUser(User user) async {
     final isar = await db;
-    isar.writeTxnSync(() => isar.users.putSync(user));
+    final List<User> users = await isar.users
+        .filter()
+        .firstNameEqualTo(user.firstName)
+        .nameEqualTo(user.name)
+        .findAll();
+    if (users.isEmpty) {
+      isar.writeTxnSync(() => isar.users.putSync(user));
+      return true;
+    }else{
+      return false;
+    }
   }
 
   Future<List<User>> getAllUsers() async {
@@ -32,14 +42,13 @@ class IsarService {
     return await isar.users.where().findAll();
   }
 
-  Future<String> getPasswordUser(int id) async{
+  Future<String> getPasswordUser(int id) async {
     final isar = await db;
     final List<User> users = await isar.users.filter().idEqualTo(id).findAll();
-    if(users.length == 1){
+    if (users.length == 1) {
       return users[0].password!;
-    }else{
+    } else {
       return '';
     }
-
   }
 }

@@ -86,13 +86,24 @@ class RegisterView extends StatelessWidget {
                       onPressed: (() async {
                         if (_formKey.currentState!.validate()) {
                           final cryptPassword = Crypt.sha256(_password);
-                          print(cryptPassword.toString());
                           final newUser = User()
                             ..name = _name
                             ..firstName = _firstName
                             ..password = cryptPassword.toString();
-                          _isarService.saveUser(newUser);
-                          Navigator.pushReplacementNamed(context, '/connexion');
+                          bool userSave = await _isarService.saveUser(newUser);
+                          if (userSave == true) {
+                            Navigator.pushReplacementNamed(
+                                context, '/connexion');
+                          } else {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text(
+                                'L\'utilisateur existe déjà',
+                                textAlign: TextAlign.center,
+                              ),
+                              backgroundColor: Colors.red,
+                            ));
+                          }
                         }
                       }),
                       child: const Text('Enregistrer'))

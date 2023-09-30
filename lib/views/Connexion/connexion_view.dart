@@ -31,7 +31,7 @@ class ConnexionView extends StatelessWidget {
                     if (snapshot.hasData) {
                       List<User> users = snapshot.data!;
                       if (users.isEmpty) {
-                        return Text('Aucuns utilisateurs');
+                        return const Text('Aucuns utilisateurs');
                       }
                       return _displayAvatar(users);
                     } else {
