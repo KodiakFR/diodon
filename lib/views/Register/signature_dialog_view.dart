@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:hand_signature/signature.dart';
 import 'package:flutter/services.dart';
 
+import '../../entities/user.dart';
+
 class SignatureDialog extends StatefulWidget {
   const SignatureDialog({super.key});
 
@@ -20,59 +22,63 @@ class _SignatureDialogState extends State<SignatureDialog> {
   );
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Signature'),
-          backgroundColor: Colors.orange,
-        ),
-        body: Column(children: <Widget>[
-          Expanded(
-            child: Stack(children: [
-              Container(
-                constraints: const BoxConstraints.expand(),
-                color: Colors.white,
-                child: HandSignature(
-                  control: control,
-                  type: SignatureDrawType.shape,
-                ),
+  Widget build(BuildContext context) {
+    final user = ModalRoute.of(context)!.settings.arguments as User;
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Signature'),
+        backgroundColor: Colors.orange,
+      ),
+      body: Column(children: <Widget>[
+        Expanded(
+          child: Stack(children: [
+            Container(
+              constraints: const BoxConstraints.expand(),
+              color: Colors.white,
+              child: HandSignature(
+                control: control,
+                type: SignatureDrawType.shape,
               ),
-              CustomPaint(
-                painter: DebugSignaturePainterCP(
-                  control: control,
-                  cp: false,
-                  cpStart: false,
-                  cpEnd: false,
-                ),
-              ),
-            ]),
-          ),
-          Container(
-            color: Colors.black,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                IconButton(
-                  onPressed: () async {
-                    final signature = await exportSignature();
-
-                    await Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          SignaturePreviewPage(signature: signature),
-                    ));
-                  },
-                  icon: const Icon(Icons.check),
-                  color: Colors.green,
-                ),
-                IconButton(
-                  onPressed: () => control.clear(),
-                  icon: const Icon(Icons.cancel),
-                  color: Colors.red,
-                ),
-              ],
             ),
-          )
-        ]),
-      );
+            CustomPaint(
+              painter: DebugSignaturePainterCP(
+                control: control,
+                cp: false,
+                cpStart: false,
+                cpEnd: false,
+              ),
+            ),
+          ]),
+        ),
+        Container(
+          color: Colors.black,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                onPressed: () async {
+                  final signature = await exportSignature();
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) =>
+                        SignaturePreviewPage(signature: signature, user: user),
+                  ));
+                },
+                icon: const Icon(Icons.check),
+                color: Colors.green,
+              ),
+              IconButton(
+                onPressed: () {
+                  control.clear();
+                },
+                icon: const Icon(Icons.cancel),
+                color: Colors.red,
+              ),
+            ],
+          ),
+        )
+      ]),
+    );
+  }
 
   Future<Uint8List> exportSignature() async {
     final exportController = await control.toImage(

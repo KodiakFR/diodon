@@ -58,14 +58,12 @@ class ConnexionView extends StatelessWidget {
         itemCount: users.length,
         itemBuilder: (context, index) {
           return Row(
-            mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CircleAvatar(
                 radius: 100,
                 child: TextButton(
                     onPressed: () async {
-                      print(users[index].id);
                       await _displayPopConnexion(context, users[index].id);
                     },
                     child: Text(

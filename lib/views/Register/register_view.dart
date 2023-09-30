@@ -93,7 +93,7 @@ class RegisterView extends StatelessWidget {
                           bool userSave = await _isarService.saveUser(newUser);
                           if (userSave == true) {
                             Navigator.pushReplacementNamed(
-                                context, '/connexion');
+                                context, '/signatureDialog',arguments: newUser);
                           } else {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(const SnackBar(

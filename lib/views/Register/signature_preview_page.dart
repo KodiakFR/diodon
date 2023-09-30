@@ -6,12 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../entities/user.dart';
+
 class SignaturePreviewPage extends StatelessWidget {
   final Uint8List signature;
+  final User user;
 
   const SignaturePreviewPage({
     super.key,
     required this.signature,
+    required this.user
   });
 
   @override
@@ -31,39 +35,27 @@ class SignaturePreviewPage extends StatelessWidget {
     );
   }
 
-  /// This method stores a signature as an image file in the file system.
-  ///
-  /// It first requests storage permission if not already granted, and then saves the signature
-  /// in the specified directory.
-  ///
-  /// [context]: The application's context.
-  ///
-  /// Example Usage:
-  ///
-  /// ```dart
-  /// await storeSignature(context);
-  /// ```
+
   Future _storeSignature(BuildContext context) async {
     await Permission.storage.request();
     final status = await Permission.storage.status;
     if (!status.isGranted) {
       await Permission.storage.request();
     }
-    final String directory = await _locatePath;
-    const String directory2 = "/storage/emulated/0/Android/data/com.example.diodon/files";
-    const String name = 'signature.png';
+    const String directory = "/storage/emulated/0/Android/data/com.example.diodon/files";
+    final String name = '${user.name}_${user.firstName}.png';
     const String subFolderName = 'signatures';
-    String path = '$directory2/$subFolderName/$name';
+    String path = '$directory/$subFolderName/$name';
     // Créez le sous-dossier s'il n'existe pas déjà
-    await Directory('$directory2/$subFolderName').create();
+    await Directory('$directory/$subFolderName').create();
     await FileSaver.instance
         .saveFile(name: name, bytes: signature, filePath: path);
 
-    await File('$directory2/$name').rename(path);
+    await File('$directory/$name').rename(path);
 
     final bool fileExist = await File(path).exists();
     if (fileExist) {
-     Navigator.pop(context);
+     Navigator.pushReplacementNamed(context, "/connexion");
 
       const SnackBar(
         content: Text('La signature est sauvegarder'),
