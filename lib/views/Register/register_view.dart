@@ -1,3 +1,4 @@
+import 'package:crypt/crypt.dart';
 import 'package:diodon/entities/user.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +11,9 @@ class RegisterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String? _password;
-    String? _name;
-    String? _firstName;
+    String _password = "";
+    String _name = "";
+    String _firstName = "";
 
     return Scaffold(
       appBar: AppBar(
@@ -84,11 +85,12 @@ class RegisterView extends StatelessWidget {
                   ElevatedButton(
                       onPressed: (() async {
                         if (_formKey.currentState!.validate()) {
+                          final cryptPassword = Crypt.sha256(_password);
+                          print(cryptPassword.toString());
                           final newUser = User()
                             ..name = _name
                             ..firstName = _firstName
-                            ..password = _password;
-                          print(newUser.firstName);
+                            ..password = cryptPassword.toString();
                           _isarService.saveUser(newUser);
                           Navigator.pushReplacementNamed(context, '/connexion');
                         }

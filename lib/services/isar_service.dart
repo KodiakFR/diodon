@@ -32,13 +32,14 @@ class IsarService {
     return await isar.users.where().findAll();
   }
 
-  Future<bool> connexionUser(String mdp, int id)async{
+  Future<String> getPasswordUser(int id) async{
     final isar = await db;
-    final List<User> users = await isar.users.filter().idEqualTo(id).passwordEqualTo(mdp).findAll();
+    final List<User> users = await isar.users.filter().idEqualTo(id).findAll();
     if(users.length == 1){
-      return true;
+      return users[0].password!;
     }else{
-      return false;
+      return '';
     }
+
   }
 }

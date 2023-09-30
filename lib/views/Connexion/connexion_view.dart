@@ -1,3 +1,4 @@
+import 'package:crypt/crypt.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
 
@@ -83,7 +84,7 @@ class ConnexionView extends StatelessWidget {
   }
 
   Future<void> _displayPopConnexion(BuildContext context, int id) async {
-    String mdp = 'a';
+    String mdp = '';
     return showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
@@ -111,13 +112,7 @@ class ConnexionView extends StatelessWidget {
                       TextButton(
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            final isConnected =
-                                await isarService.connexionUser(mdp, id);
-                            if (isConnected == true) {
-                              print('je suis connecté');
-                            } else {
-                              print('je suis pas connecté');
-                            }
+                            _connection(id, mdp);
                           }
                         },
                         child: const Text('OK'),
@@ -127,5 +122,15 @@ class ConnexionView extends StatelessWidget {
                 ),
               ],
             ));
+  }
+
+  Future<void> _connection(int id, String mdp) async {
+    final cryptPassword = await isarService.getPasswordUser(id);
+    final passwordIsTrue = Crypt(cryptPassword).match(mdp);
+    if (passwordIsTrue == true) {
+      print('je suis connecté');
+    } else {
+      print('je suis pas connecté');
+    }
   }
 }
