@@ -112,7 +112,7 @@ class ConnexionView extends StatelessWidget {
                       TextButton(
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            _connection(id, mdp);
+                            _connection(id, mdp, context);
                           }
                         },
                         child: const Text('OK'),
@@ -124,13 +124,17 @@ class ConnexionView extends StatelessWidget {
             ));
   }
 
-  Future<void> _connection(int id, String mdp) async {
+  Future<void> _connection(int id, String mdp, BuildContext context) async {
     final cryptPassword = await isarService.getPasswordUser(id);
     final passwordIsTrue = Crypt(cryptPassword).match(mdp);
     if (passwordIsTrue == true) {
       print('je suis connecté');
     } else {
-      print('je suis pas connecté');
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Mot de passe invalide',textAlign: TextAlign.center,),
+        backgroundColor: Colors.red,
+      ));
     }
   }
 }
