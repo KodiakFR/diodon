@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:crypt/crypt.dart';
 import 'package:diodon/entities/user.dart';
 import 'package:diodon/services/isar_service.dart';
@@ -11,9 +13,9 @@ class RegisterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String _password = "";
-    String _name = "";
-    String _firstName = "";
+    String password = "";
+    String name = "";
+    String firstName = "";
 
     return Scaffold(
       appBar: AppBar(
@@ -36,7 +38,8 @@ class RegisterView extends StatelessWidget {
                       if (value == null || value.isEmpty) {
                         return 'Le champs est obligatoire';
                       }
-                      _firstName = value;
+                      firstName = value;
+                      return null;
                     },
                     decoration: const InputDecoration(
                         hintText: 'Entrez votre Prénom', labelText: 'Prénom'),
@@ -46,20 +49,22 @@ class RegisterView extends StatelessWidget {
                       if (value == null || value.isEmpty) {
                         return 'Le champs est obligatoire';
                       }
-                      _name = value;
+                      name = value;
+                      return null;
                     },
                     decoration: const InputDecoration(
                         hintText: 'Entrez votre nom', labelText: 'Nom'),
                   ),
                   TextFormField(
                     validator: (value) {
-                      _password = value!;
+                      password = value!;
                       if (value.isEmpty) {
                         return 'Le champs est obligatoire';
                       }
                       if (value.length < 7) {
                         return 'Votre mot de passe doit contenir un minium de 7 caractères';
                       }
+                      return null;
                     },
                     decoration: const InputDecoration(
                       hintText: 'Entrez votre mot de passe',
@@ -70,9 +75,10 @@ class RegisterView extends StatelessWidget {
                       if (value == null || value.isEmpty) {
                         return 'Le champs est obligatoire';
                       }
-                      if (value != _password) {
+                      if (value != password) {
                         return 'Vos mots de passe ne sont pas identiques';
                       }
+                      return null;
                     },
                     decoration: const InputDecoration(
                       hintText: 'Confirmez votre mot de passe',
@@ -85,10 +91,10 @@ class RegisterView extends StatelessWidget {
                   ElevatedButton(
                       onPressed: (() async {
                         if (_formKey.currentState!.validate()) {
-                          final cryptPassword = Crypt.sha256(_password);
+                          final cryptPassword = Crypt.sha256(password);
                           final newUser = User()
-                            ..name = _name
-                            ..firstName = _firstName
+                            ..name = name
+                            ..firstName = firstName
                             ..password = cryptPassword.toString();
                           bool userSave = await _isarService.saveUser(newUser);
                           if (userSave == true) {
