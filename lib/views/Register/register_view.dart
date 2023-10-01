@@ -92,10 +92,7 @@ class RegisterView extends StatelessWidget {
                       onPressed: (() async {
                         if (_formKey.currentState!.validate()) {
                           final cryptPassword = Crypt.sha256(password);
-                          final newUser = User()
-                            ..name = name
-                            ..firstName = firstName
-                            ..password = cryptPassword.toString();
+                          final newUser = User.register(firstName: firstName,name: name,password: cryptPassword.toString());
                           bool userSave = await _isarService.saveUser(newUser);
                           if (userSave == true) {
                             Navigator.pushReplacementNamed(

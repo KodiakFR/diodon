@@ -1,8 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:crypt/crypt.dart';
+import 'package:diodon/bloc/user_bloc.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../entities/user.dart';
 
@@ -129,11 +130,16 @@ class ConnexionView extends StatelessWidget {
     final cryptPassword = await isarService.getPasswordUser(id);
     final passwordIsTrue = Crypt(cryptPassword).match(mdp);
     if (passwordIsTrue == true) {
-      print('je suis connecté');
+      User user = await isarService.getUser(id);
+      context.read<UserBloc>().logIn(user);
+      Navigator.pushNamedAndRemoveUntil(context, "/homePage", (route) => false);
     } else {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Mot de passe invalide',textAlign: TextAlign.center,),
+        content: Text(
+          'Mot de passe invalide',
+          textAlign: TextAlign.center,
+        ),
         backgroundColor: Colors.red,
       ));
     }

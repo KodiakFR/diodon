@@ -1,7 +1,12 @@
+import 'package:diodon/bloc/user_bloc.dart';
 import 'package:diodon/views/Connexion/connexion_view.dart';
+import 'package:diodon/views/Home/home_page.dart';
 import 'package:diodon/views/Register/register_view.dart';
 import 'package:diodon/views/Register/signature_dialog_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'entities/user.dart';
 
 
 void main() {
@@ -14,18 +19,26 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Diodon',
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => UserBloc(User.empty()),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Diodon',
+        theme: ThemeData(
+          primarySwatch: Colors.orange,
+        ),
+        routes: {
+          "/connexion": (context) => ConnexionView(),
+          "/register": (context) => RegisterView(),
+          "/signatureDialog": (context) => const SignatureDialog(),
+          "/homePage":(context) => const HomePage(),
+        },
+        home:  ConnexionView(),
       ),
-      routes: {
-        "/connexion": (context) => ConnexionView(),
-        "/register": (context) => RegisterView(),
-        "/signatureDialog": (context) => const SignatureDialog(),
-      },
-      home:  ConnexionView(),
     );
   }
 }
