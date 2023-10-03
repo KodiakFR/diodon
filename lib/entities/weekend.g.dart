@@ -46,10 +46,11 @@ const WeekendSchema = CollectionSchema(
   indexes: {},
   links: {
     r'participants': LinkSchema(
-      id: 2883104080718936951,
+      id: 4787089849078366147,
       name: r'participants',
       target: r'Participant',
       single: false,
+      linkName: r'weekends',
     )
   },
   embeddedSchemas: {},

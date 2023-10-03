@@ -1,9 +1,11 @@
 import 'package:diodon/bloc/user_bloc.dart';
 import 'package:diodon/views/Connexion/connexion_view.dart';
-import 'package:diodon/views/CreateWeekend/creat_weekend.dart';
+import 'package:diodon/views/Weekend/add_participants.dart';
+import 'package:diodon/views/Weekend/creat_weekend.dart';
 import 'package:diodon/views/Home/home_page.dart';
 import 'package:diodon/views/Register/register_view.dart';
 import 'package:diodon/views/Register/signature_dialog_view.dart';
+import 'package:diodon/views/Weekend/detail_weekend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,8 +40,10 @@ class MyApp extends StatelessWidget {
           "/signatureDialog": (context) => const SignatureDialog(),
           "/homePage":(context) => const HomePage(),
           "/createWeekend":(context) =>  CreateWeekend(),
+          "/addParticipants":(context) => AddParticipants(),
+          "/weekendDetail":(context) => WeekendDetail(),
         },
-        home:  CreateWeekend(),
+        home:  HomePage(),
       ),
     );
   }

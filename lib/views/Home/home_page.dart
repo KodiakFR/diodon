@@ -61,7 +61,9 @@ class HomePage extends StatelessWidget {
           return Column(
             children: [
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamedAndRemoveUntil(context, "/weekendDetail",arguments: weekends[index], (route) => false);
+                },
                 child: Text(weekends[index].title),
               ),
               const SizedBox(

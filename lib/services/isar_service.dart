@@ -43,7 +43,7 @@ class IsarService {
         .nameEqualTo(user.name)
         .findAll();
     if (users.isEmpty) {
-      isar.writeTxnSync(() => isar.users.putSync(user));
+      isar.writeTxnSync<int>(() => isar.users.putSync(user));
       return true;
     } else {
       return false;
@@ -87,7 +87,38 @@ class IsarService {
     final List<Weekend> weekends =
         await isar.weekends.filter().titleEqualTo(weekend.title).findAll();
     if (weekends.isEmpty) {
-      isar.writeTxn(() => isar.weekends.put(weekend));
+      isar.writeTxnSync<int>(() => isar.weekends.putSync(weekend));
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<Weekend?> getWeekendByTitle(String title) async{
+    final isar = await db;
+    final List<Weekend> weekends = await isar.weekends.filter().titleEqualTo(title).findAll();
+    if(weekends.length == 1){
+      final Weekend weekend = weekends[0];
+      return weekend;
+    }
+    return null;
+  }
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------- PARTICIPANTS-------------------------------------------------------------------------
+
+  Future<List<Participant>> getParticipantsFromWeekend(Id weekendID) async {
+    final isar = await db;
+    return await isar.participants
+        .filter()
+        .weekends((q) => q.idEqualTo(weekendID))
+        .findAll();
+  }
+
+  Future<bool> addParticipants(Weekend weekend, Participant participant) async{
+    final isar = await db;
+    final List<Participant> participants =  await isar.participants.filter().weekends((q) => q.idEqualTo(weekend.id)).firstNameEqualTo(participant.firstName).nameEqualTo(participant.name).findAll();
+    if(participants.isEmpty){
+      isar.writeTxnSync<int>(() => isar.participants.putSync(participant));
       return true;
     }else{
       return false;

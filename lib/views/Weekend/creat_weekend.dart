@@ -129,8 +129,11 @@ class _CreateWeekendState extends State<CreateWeekend> {
                           ..end = endDate
                           ..start = startDate;
                         bool isCreate = await isarService.saveWeekend(weekend);
-                        if (isCreate) {
-                          print("sauvegarde faite");
+                        if (isCreate){
+                          Weekend? weekend = await isarService.getWeekendByTitle(_title.text);
+                          if(weekend != null){
+                            Navigator.pushNamedAndRemoveUntil(context, "/addParticipants",arguments: weekend, (route) => false);
+                          }
                         } else {
                           ScaffoldMessenger.of(context)
                               .showSnackBar(const SnackBar(

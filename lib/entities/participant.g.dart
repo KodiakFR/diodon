@@ -32,8 +32,13 @@ const ParticipantSchema = CollectionSchema(
       name: r'name',
       type: IsarType.string,
     ),
-    r'type': PropertySchema(
+    r'nbDive': PropertySchema(
       id: 3,
+      name: r'nbDive',
+      type: IsarType.long,
+    ),
+    r'type': PropertySchema(
+      id: 4,
       name: r'type',
       type: IsarType.string,
     )
@@ -44,7 +49,14 @@ const ParticipantSchema = CollectionSchema(
   deserializeProp: _participantDeserializeProp,
   idName: r'id',
   indexes: {},
-  links: {},
+  links: {
+    r'weekends': LinkSchema(
+      id: 2780232742834985624,
+      name: r'weekends',
+      target: r'Weekend',
+      single: false,
+    )
+  },
   embeddedSchemas: {},
   getId: _participantGetId,
   getLinks: _participantGetLinks,
@@ -94,7 +106,8 @@ void _participantSerialize(
   writer.writeString(offsets[0], object.diveLevel);
   writer.writeString(offsets[1], object.firstName);
   writer.writeString(offsets[2], object.name);
-  writer.writeString(offsets[3], object.type);
+  writer.writeLong(offsets[3], object.nbDive);
+  writer.writeString(offsets[4], object.type);
 }
 
 Participant _participantDeserialize(
@@ -108,7 +121,8 @@ Participant _participantDeserialize(
   object.firstName = reader.readStringOrNull(offsets[1]);
   object.id = id;
   object.name = reader.readStringOrNull(offsets[2]);
-  object.type = reader.readStringOrNull(offsets[3]);
+  object.nbDive = reader.readLongOrNull(offsets[3]);
+  object.type = reader.readStringOrNull(offsets[4]);
   return object;
 }
 
@@ -126,6 +140,8 @@ P _participantDeserializeProp<P>(
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
+      return (reader.readLongOrNull(offset)) as P;
+    case 4:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -137,12 +153,13 @@ Id _participantGetId(Participant object) {
 }
 
 List<IsarLinkBase<dynamic>> _participantGetLinks(Participant object) {
-  return [];
+  return [object.weekends];
 }
 
 void _participantAttach(
     IsarCollection<dynamic> col, Id id, Participant object) {
   object.id = id;
+  object.weekends.attach(col, col.isar.collection<Weekend>(), r'weekends', id);
 }
 
 extension ParticipantQueryWhereSort
@@ -734,6 +751,77 @@ extension ParticipantQueryFilter
     });
   }
 
+  QueryBuilder<Participant, Participant, QAfterFilterCondition> nbDiveIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'nbDive',
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      nbDiveIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'nbDive',
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition> nbDiveEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'nbDive',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      nbDiveGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'nbDive',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition> nbDiveLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'nbDive',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition> nbDiveBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'nbDive',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Participant, Participant, QAfterFilterCondition> typeIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -887,7 +975,68 @@ extension ParticipantQueryObject
     on QueryBuilder<Participant, Participant, QFilterCondition> {}
 
 extension ParticipantQueryLinks
-    on QueryBuilder<Participant, Participant, QFilterCondition> {}
+    on QueryBuilder<Participant, Participant, QFilterCondition> {
+  QueryBuilder<Participant, Participant, QAfterFilterCondition> weekends(
+      FilterQuery<Weekend> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'weekends');
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      weekendsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'weekends', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      weekendsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'weekends', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      weekendsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'weekends', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      weekendsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'weekends', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      weekendsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'weekends', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      weekendsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'weekends', lower, includeLower, upper, includeUpper);
+    });
+  }
+}
 
 extension ParticipantQuerySortBy
     on QueryBuilder<Participant, Participant, QSortBy> {
@@ -924,6 +1073,18 @@ extension ParticipantQuerySortBy
   QueryBuilder<Participant, Participant, QAfterSortBy> sortByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterSortBy> sortByNbDive() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nbDive', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterSortBy> sortByNbDiveDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nbDive', Sort.desc);
     });
   }
 
@@ -990,6 +1151,18 @@ extension ParticipantQuerySortThenBy
     });
   }
 
+  QueryBuilder<Participant, Participant, QAfterSortBy> thenByNbDive() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nbDive', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterSortBy> thenByNbDiveDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nbDive', Sort.desc);
+    });
+  }
+
   QueryBuilder<Participant, Participant, QAfterSortBy> thenByType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.asc);
@@ -1026,6 +1199,12 @@ extension ParticipantQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Participant, Participant, QDistinct> distinctByNbDive() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'nbDive');
+    });
+  }
+
   QueryBuilder<Participant, Participant, QDistinct> distinctByType(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1057,6 +1236,12 @@ extension ParticipantQueryProperty
   QueryBuilder<Participant, String?, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<Participant, int?, QQueryOperations> nbDiveProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'nbDive');
     });
   }
 
