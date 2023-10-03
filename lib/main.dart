@@ -1,5 +1,6 @@
 import 'package:diodon/bloc/user_bloc.dart';
 import 'package:diodon/views/Connexion/connexion_view.dart';
+import 'package:diodon/views/CreateWeekend/creat_weekend.dart';
 import 'package:diodon/views/Home/home_page.dart';
 import 'package:diodon/views/Register/register_view.dart';
 import 'package:diodon/views/Register/signature_dialog_view.dart';
@@ -36,8 +37,9 @@ class MyApp extends StatelessWidget {
           "/register": (context) => RegisterView(),
           "/signatureDialog": (context) => const SignatureDialog(),
           "/homePage":(context) => const HomePage(),
+          "/createWeekend":(context) =>  CreateWeekend(),
         },
-        home:  ConnexionView(),
+        home:  CreateWeekend(),
       ),
     );
   }

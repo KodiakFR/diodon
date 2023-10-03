@@ -1,10 +1,7 @@
-import 'package:diodon/bloc/user_bloc.dart';
 import 'package:diodon/entities/weekend.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../entities/user.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -48,7 +45,10 @@ class HomePage extends StatelessWidget {
                 }
               },
             ),
-            ElevatedButton(onPressed: () {}, child: const Text('Ajouter un weekend'))
+            ElevatedButton(onPressed: () {
+              Navigator.pushNamedAndRemoveUntil(context, "/createWeekend", (route) => false);
+
+            }, child: const Text('Ajouter un weekend'))
           ],
         )));
   }
