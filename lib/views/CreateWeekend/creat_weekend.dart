@@ -1,3 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:diodon/entities/weekend.dart';
+import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -11,8 +15,13 @@ class CreateWeekend extends StatefulWidget {
 }
 
 class _CreateWeekendState extends State<CreateWeekend> {
-  final TextEditingController _dateStart = TextEditingController();
-  final TextEditingController _dateEnd = TextEditingController();
+  final TextEditingController _controllerStart = TextEditingController();
+  final TextEditingController _controllerEnd = TextEditingController();
+  final TextEditingController _title = TextEditingController();
+  final TextEditingController _nbDive = TextEditingController();
+  late DateTime startDate;
+  late DateTime endDate;
+  final IsarService isarService = IsarService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,6 +46,7 @@ class _CreateWeekendState extends State<CreateWeekend> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 TextFormField(
+                  controller: _title,
                   decoration: const InputDecoration(
                       hintText: 'Weekend du 10 - 11 Octobre 2023',
                       labelText: 'Titre du Week-end'),
@@ -48,6 +58,7 @@ class _CreateWeekendState extends State<CreateWeekend> {
                   },
                 ),
                 TextFormField(
+                  controller: _nbDive,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
                       hintText: '4', labelText: 'Nombre de plongées'),
@@ -59,7 +70,7 @@ class _CreateWeekendState extends State<CreateWeekend> {
                   },
                 ),
                 TextFormField(
-                  controller: _dateStart,
+                  controller: _controllerStart,
                   decoration: const InputDecoration(
                     icon: Icon(Icons.calendar_today_rounded),
                     labelText: 'Selectionnez la date de début du Week-end',
@@ -73,7 +84,7 @@ class _CreateWeekendState extends State<CreateWeekend> {
                     );
                     if (pickedDate != null) {
                       setState(() {
-                        _dateStart.text =
+                        _controllerStart.text =
                             DateFormat('dd/MM/yyyy').format(pickedDate);
                       });
                     }
@@ -83,7 +94,7 @@ class _CreateWeekendState extends State<CreateWeekend> {
                   },
                 ),
                 TextFormField(
-                  controller: _dateEnd,
+                  controller: _controllerEnd,
                   decoration: const InputDecoration(
                     icon: Icon(Icons.calendar_today_rounded),
                     labelText: 'Selectionnez la date de fin du Week-end',
@@ -97,7 +108,7 @@ class _CreateWeekendState extends State<CreateWeekend> {
                     );
                     if (pickedDate != null) {
                       setState(() {
-                        _dateEnd.text =
+                        _controllerEnd.text =
                             DateFormat('dd/MM/yyyy').format(pickedDate);
                       });
                     }
@@ -105,14 +116,31 @@ class _CreateWeekendState extends State<CreateWeekend> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Le champs est obligatoire';
-                    } 
+                    }
                     return null;
                   },
                 ),
                 ElevatedButton(
                     onPressed: (() async {
                       if (_formKey.currentState!.validate()) {
-                        
+                        Weekend weekend = Weekend()
+                          ..title = _title.text
+                          ..nbDive = int.parse(_nbDive.text)
+                          ..end = endDate
+                          ..start = startDate;
+                        bool isCreate = await isarService.saveWeekend(weekend);
+                        if (isCreate) {
+                          print("sauvegarde faite");
+                        } else {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text(
+                              'Un Weekend avec le même nom existe déjà',
+                              textAlign: TextAlign.center,
+                            ),
+                            backgroundColor: Colors.red,
+                          ));
+                        }
                       }
                     }),
                     child: const Text('Suivant'))
@@ -131,16 +159,16 @@ class _CreateWeekendState extends State<CreateWeekend> {
       int dayStart = int.parse(value.substring(0, 2));
       int monthStart = int.parse(value.substring(3, 5));
       int yearStart = int.parse(value.substring(6, 10));
-      DateTime start = DateTime(yearStart, monthStart, dayStart);
-      if (start.isBefore(DateTime.now())) {
+      startDate = DateTime(yearStart, monthStart, dayStart);
+      if (startDate.isBefore(DateTime.now())) {
         return 'La date ne peut pas être antérieure à la date du jour';
       }
-      if (_dateEnd.text.isNotEmpty) {
-        int dayEnd = int.parse(_dateEnd.text.substring(0, 2));
-        int monthEnd = int.parse(_dateEnd.text.substring(3, 5));
-        int yearEnd = int.parse(_dateEnd.text.substring(6, 10));
-        DateTime end = DateTime(yearEnd, monthEnd, dayEnd);
-        if (start.isAfter(end)) {
+      if (_controllerEnd.text.isNotEmpty) {
+        int dayEnd = int.parse(_controllerEnd.text.substring(0, 2));
+        int monthEnd = int.parse(_controllerEnd.text.substring(3, 5));
+        int yearEnd = int.parse(_controllerEnd.text.substring(6, 10));
+        endDate = DateTime(yearEnd, monthEnd, dayEnd);
+        if (startDate.isAfter(endDate)) {
           return 'La date de début du Weekend est supérieure à la date de fin';
         }
       }

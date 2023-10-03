@@ -76,8 +76,21 @@ class IsarService {
   Future<List<Weekend>> getAllWeekend() async {
     final isar = await db;
     DateTime now = DateTime.now();
-    DateTime onYearAgo = DateTime(now.year-1,now.month,now.day);
-    final List<Weekend> weekends = await isar.weekends.filter().endGreaterThan(onYearAgo).findAll();
+    DateTime onYearAgo = DateTime(now.year - 1, now.month, now.day);
+    final List<Weekend> weekends =
+        await isar.weekends.filter().endGreaterThan(onYearAgo).findAll();
     return weekends;
+  }
+
+  Future<bool> saveWeekend(Weekend weekend) async {
+    final isar = await db;
+    final List<Weekend> weekends =
+        await isar.weekends.filter().titleEqualTo(weekend.title).findAll();
+    if (weekends.isEmpty) {
+      isar.writeTxn(() => isar.weekends.put(weekend));
+      return true;
+    }else{
+      return false;
+    }
   }
 }

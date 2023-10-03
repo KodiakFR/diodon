@@ -89,6 +89,7 @@ Weekend _weekendDeserialize(
 ) {
   final object = Weekend();
   object.end = reader.readDateTime(offsets[0]);
+  object.id = id;
   object.nbDive = reader.readLong(offsets[1]);
   object.start = reader.readDateTime(offsets[2]);
   object.title = reader.readString(offsets[3]);
@@ -116,7 +117,7 @@ P _weekendDeserializeProp<P>(
 }
 
 Id _weekendGetId(Weekend object) {
-  return object.id;
+  return object.id ?? Isar.autoIncrement;
 }
 
 List<IsarLinkBase<dynamic>> _weekendGetLinks(Weekend object) {
@@ -124,6 +125,7 @@ List<IsarLinkBase<dynamic>> _weekendGetLinks(Weekend object) {
 }
 
 void _weekendAttach(IsarCollection<dynamic> col, Id id, Weekend object) {
+  object.id = id;
   object.participants
       .attach(col, col.isar.collection<Participant>(), r'participants', id);
 }
@@ -258,7 +260,23 @@ extension WeekendQueryFilter
     });
   }
 
-  QueryBuilder<Weekend, Weekend, QAfterFilterCondition> idEqualTo(Id value) {
+  QueryBuilder<Weekend, Weekend, QAfterFilterCondition> idIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<Weekend, Weekend, QAfterFilterCondition> idIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<Weekend, Weekend, QAfterFilterCondition> idEqualTo(Id? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -268,7 +286,7 @@ extension WeekendQueryFilter
   }
 
   QueryBuilder<Weekend, Weekend, QAfterFilterCondition> idGreaterThan(
-    Id value, {
+    Id? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -281,7 +299,7 @@ extension WeekendQueryFilter
   }
 
   QueryBuilder<Weekend, Weekend, QAfterFilterCondition> idLessThan(
-    Id value, {
+    Id? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -294,8 +312,8 @@ extension WeekendQueryFilter
   }
 
   QueryBuilder<Weekend, Weekend, QAfterFilterCondition> idBetween(
-    Id lower,
-    Id upper, {
+    Id? lower,
+    Id? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
