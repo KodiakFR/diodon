@@ -124,4 +124,14 @@ class IsarService {
       return false;
     }
   }
+
+  Future<void> removeParticipantsInWeekend(Participant participant,Weekend weekend)async{
+    final isar = await db;
+    List<Participant> participants = await isar.participants.filter().weekends((q) => q.idEqualTo(weekend.id)).idEqualTo(participant.id).findAll();
+    if(participants.length == 1){
+      await isar.writeTxn(() async{
+        await isar.participants.delete(participants[0].id);
+      });
+    }
+  }
 }

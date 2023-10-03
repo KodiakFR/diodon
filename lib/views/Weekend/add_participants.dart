@@ -92,6 +92,7 @@ class _AddParticipantsState extends State<AddParticipants> {
   Widget build(BuildContext context) {
     final weekend = ModalRoute.of(context)!.settings.arguments as Weekend;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(
           "Ajout des participants du ${weekend.title}",
@@ -108,23 +109,29 @@ class _AddParticipantsState extends State<AddParticipants> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            FutureBuilder(
-              future: isarService.getParticipantsFromWeekend(weekend.id!),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Text(snapshot.error.toString());
-                }
-                if (snapshot.hasData) {
-                  List<Participant> participants = snapshot.data!;
-                  if (participants.isEmpty) {
-                    return const Center(
-                        child: Text(
-                            'Aucun Parcipant n\'est enregistré pour ce week-end'));
-                  }
-                  return _displayParticipants(participants);
-                }
-                return const CircularProgressIndicator();
-              },
+            SizedBox(
+              height: 680,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: FutureBuilder(
+                  future: isarService.getParticipantsFromWeekend(weekend.id!),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Text(snapshot.error.toString());
+                    }
+                    if (snapshot.hasData) {
+                      List<Participant> participants = snapshot.data!;
+                      if (participants.isEmpty) {
+                        return const Center(
+                            child: Text(
+                                'Aucun Parcipant n\'est enregistré pour ce week-end'));
+                      }
+                      return  _displayParticipants(participants,weekend);
+                    }
+                    return const CircularProgressIndicator();
+                  },
+                ),
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -137,10 +144,13 @@ class _AddParticipantsState extends State<AddParticipants> {
                 ),
                 const SizedBox(width: 50,),
                 ElevatedButton(
-                  onPressed: ()  {
-                    Navigator.pushNamedAndRemoveUntil(context, "/weekendDetail",arguments: weekend , (route) => false);
+                  onPressed: ()  async{
+                    Weekend? weekendUpdate = await isarService.getWeekendByTitle(weekend.title);
+                    if(weekendUpdate != null){
+                       Navigator.pushNamedAndRemoveUntil(context, "/weekendDetail",arguments: weekendUpdate , (route) => false);
+                    }
                   },
-                  child: const Text("Suivant"),
+                  child: const Text("Valider"),
                 ),
               ],
             )
@@ -150,9 +160,8 @@ class _AddParticipantsState extends State<AddParticipants> {
     );
   }
 
-  Widget _displayParticipants(List<Participant> participants) {
+  Widget _displayParticipants(List<Participant> participants, Weekend weekend) {
     return DataTable(
-
       columns: const <DataColumn>[
         DataColumn(
           label: Expanded(
@@ -194,7 +203,11 @@ class _AddParticipantsState extends State<AddParticipants> {
                 DataCell(Text(participant.diveLevel ?? '')),
                 DataCell(Text(participant.nbDive.toString())),
                 DataCell(Text(participant.type ?? '')),
-                DataCell(Row(children: [IconButton(onPressed: (){},icon: const Icon(Icons.remove, color: Colors.red),)],))
+                DataCell(Row(children: [IconButton(onPressed: ()async{
+                  await isarService.removeParticipantsInWeekend(participant, weekend);
+                  final weekendUpdate = await isarService.getWeekendByTitle(weekend.title);
+                  Navigator.pushNamedAndRemoveUntil(context, "/addParticipants",arguments: weekendUpdate, (route) => false);
+                },icon: const Icon(Icons.remove, color: Colors.red),)],))
               ],
             ),
           )
@@ -211,9 +224,9 @@ class _AddParticipantsState extends State<AddParticipants> {
                 'Ajout de participants',
                 textAlign: TextAlign.center,
               ),
-              actions: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+              actions: [Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -261,6 +274,7 @@ class _AddParticipantsState extends State<AddParticipants> {
     return showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
+          scrollable: true,
               title: const Text(
                 "Ajouter un participant",
                 textAlign: TextAlign.center,
