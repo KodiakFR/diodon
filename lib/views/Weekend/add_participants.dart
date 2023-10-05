@@ -110,7 +110,7 @@ class _AddParticipantsState extends State<AddParticipants> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             SizedBox(
-              height: 680,
+              height: (MediaQuery.of(context).size.height/1.3),
               child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: FutureBuilder(

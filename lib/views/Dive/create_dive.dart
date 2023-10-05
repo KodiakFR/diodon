@@ -222,7 +222,11 @@ class _CreateDiveState extends State<CreateDive> {
 
                     bool isCreate = await isarService.saveDive(weekend, dive);
                     if(isCreate == true){
-                      print("c'est sauvegardé");
+                       Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      "/diveDetail",
+                      arguments: dive,
+                      (route) => false);
                     }else{
                        ScaffoldMessenger.of(context)
                               .showSnackBar(const SnackBar(

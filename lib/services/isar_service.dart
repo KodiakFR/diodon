@@ -136,7 +136,7 @@ class IsarService {
   }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-//--------------------------------------------------------------------- PLONGEES ----------------------------------------------------------------------------
+//--------------------------------------------------------------------- DIVES -------------------------------------------------------------------------------
 
 Future<List<Dive>> getAllDiveByWeekend(Weekend weekend) async{
   final isar = await db;
@@ -152,6 +152,17 @@ Future<bool> saveDive(Weekend weekend, Dive dive) async {
   }else{
     return false;
   }
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------- DIVES GROUP -------------------------------------------------------------------------
+
+Future<List<Participant>> getAllDiverForDive(Dive dive) async{
+  final isar = await db;
+  List<Participant> particiapants = await isar.participants.filter().weekends((w) => w.dives((d) => d.idEqualTo(dive.id))).typeEqualTo('Plongeur').or().typeEqualTo('Encadrant').findAll();
+  print(particiapants.first.name);
+  return particiapants;
+  
 }
 
 }
