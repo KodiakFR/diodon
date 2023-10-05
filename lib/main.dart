@@ -1,5 +1,7 @@
 import 'package:diodon/bloc/user_bloc.dart';
 import 'package:diodon/views/Connexion/connexion_view.dart';
+import 'package:diodon/views/Dive/create_dive.dart';
+import 'package:diodon/views/Dive/dive_detail.dart';
 import 'package:diodon/views/Weekend/add_participants.dart';
 import 'package:diodon/views/Weekend/creat_weekend.dart';
 import 'package:diodon/views/Home/home_page.dart';
@@ -39,11 +41,13 @@ class MyApp extends StatelessWidget {
           "/register": (context) => RegisterView(),
           "/signatureDialog": (context) => const SignatureDialog(),
           "/homePage":(context) => const HomePage(),
-          "/createWeekend":(context) =>  CreateWeekend(),
-          "/addParticipants":(context) => AddParticipants(),
-          "/weekendDetail":(context) => WeekendDetail(),
+          "/createWeekend":(context) =>  const CreateWeekend(),
+          "/addParticipants":(context) => const AddParticipants(),
+          "/weekendDetail":(context) => const WeekendDetail(),
+          "/createDive":(context) => const CreateDive(),
+          "/diveDetail": (context) => const DiveDetail(),
         },
-        home:  HomePage(),
+        home:  const HomePage(),
       ),
     );
   }

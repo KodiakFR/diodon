@@ -51,6 +51,13 @@ const WeekendSchema = CollectionSchema(
       target: r'Participant',
       single: false,
       linkName: r'weekends',
+    ),
+    r'dives': LinkSchema(
+      id: 7206501170117500126,
+      name: r'dives',
+      target: r'Dive',
+      single: false,
+      linkName: r'weekend',
     )
   },
   embeddedSchemas: {},
@@ -122,13 +129,14 @@ Id _weekendGetId(Weekend object) {
 }
 
 List<IsarLinkBase<dynamic>> _weekendGetLinks(Weekend object) {
-  return [object.participants];
+  return [object.participants, object.dives];
 }
 
 void _weekendAttach(IsarCollection<dynamic> col, Id id, Weekend object) {
   object.id = id;
   object.participants
       .attach(col, col.isar.collection<Participant>(), r'participants', id);
+  object.dives.attach(col, col.isar.collection<Dive>(), r'dives', id);
 }
 
 extension WeekendQueryWhereSort on QueryBuilder<Weekend, Weekend, QWhere> {
@@ -628,6 +636,62 @@ extension WeekendQueryLinks
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(
           r'participants', lower, includeLower, upper, includeUpper);
+    });
+  }
+
+  QueryBuilder<Weekend, Weekend, QAfterFilterCondition> dives(
+      FilterQuery<Dive> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'dives');
+    });
+  }
+
+  QueryBuilder<Weekend, Weekend, QAfterFilterCondition> divesLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'dives', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<Weekend, Weekend, QAfterFilterCondition> divesIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'dives', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Weekend, Weekend, QAfterFilterCondition> divesIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'dives', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<Weekend, Weekend, QAfterFilterCondition> divesLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'dives', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<Weekend, Weekend, QAfterFilterCondition> divesLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'dives', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<Weekend, Weekend, QAfterFilterCondition> divesLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'dives', lower, includeLower, upper, includeUpper);
     });
   }
 }

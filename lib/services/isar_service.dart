@@ -134,4 +134,24 @@ class IsarService {
       });
     }
   }
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------- PLONGEES ----------------------------------------------------------------------------
+
+Future<List<Dive>> getAllDiveByWeekend(Weekend weekend) async{
+  final isar = await db;
+  return await isar.dives.filter().weekend((q) => q.idEqualTo(weekend.id)).findAll();
+}
+
+Future<bool> saveDive(Weekend weekend, Dive dive) async {
+  final isar = await db;
+  final List<Dive> dives = await isar.dives.filter().weekend((q) => q.idEqualTo(weekend.id)).titleEqualTo(dive.title).findAll();
+  if(dives.isEmpty){
+    isar.writeTxnSync<int>(() => isar.dives.putSync(dive));
+    return true;
+  }else{
+    return false;
+  }
+}
+
 }

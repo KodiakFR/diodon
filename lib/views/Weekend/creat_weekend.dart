@@ -3,7 +3,10 @@
 import 'package:diodon/entities/weekend.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
 
 final _formKey = GlobalKey<FormState>();
 
@@ -17,7 +20,6 @@ class CreateWeekend extends StatefulWidget {
 class _CreateWeekendState extends State<CreateWeekend> {
   final TextEditingController _controllerStart = TextEditingController();
   final TextEditingController _controllerEnd = TextEditingController();
-  final TextEditingController _title = TextEditingController();
   final TextEditingController _nbDive = TextEditingController();
   late DateTime startDate;
   late DateTime endDate;
@@ -46,22 +48,11 @@ class _CreateWeekendState extends State<CreateWeekend> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 TextFormField(
-                  controller: _title,
-                  decoration: const InputDecoration(
-                      hintText: 'Weekend du 10 - 11 Octobre 2023',
-                      labelText: 'Titre du Week-end'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Le champs est obligatoire';
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
                   controller: _nbDive,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                      hintText: '4', labelText: 'Nombre de plongées'),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration:
+                      const InputDecoration(labelText: 'Nombre de plongées'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Le champs est obligatoire';
@@ -123,16 +114,25 @@ class _CreateWeekendState extends State<CreateWeekend> {
                 ElevatedButton(
                     onPressed: (() async {
                       if (_formKey.currentState!.validate()) {
+                        await initializeDateFormatting('fr');
+                        final String month = DateFormat.MMMM('fr').format(startDate);
+                        final String tilte =
+                            "Week-end du ${startDate.day} - ${endDate.day} $month ${startDate.year}";
                         Weekend weekend = Weekend()
-                          ..title = _title.text
+                          ..title = tilte
                           ..nbDive = int.parse(_nbDive.text)
                           ..end = endDate
                           ..start = startDate;
                         bool isCreate = await isarService.saveWeekend(weekend);
-                        if (isCreate){
-                          Weekend? weekend = await isarService.getWeekendByTitle(_title.text);
-                          if(weekend != null){
-                            Navigator.pushNamedAndRemoveUntil(context, "/addParticipants",arguments: weekend, (route) => false);
+                        if (isCreate) {
+                          Weekend? weekend =
+                              await isarService.getWeekendByTitle(tilte);
+                          if (weekend != null) {
+                            Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                "/addParticipants",
+                                arguments: weekend,
+                                (route) => false);
                           }
                         } else {
                           ScaffoldMessenger.of(context)

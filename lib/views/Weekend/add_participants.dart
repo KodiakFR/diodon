@@ -6,14 +6,13 @@ import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
 
 class AddParticipants extends StatefulWidget {
-  AddParticipants({super.key});
+  const AddParticipants({super.key});
 
   @override
   State<AddParticipants> createState() => _AddParticipantsState();
 }
 
 class _AddParticipantsState extends State<AddParticipants> {
-  @override
   final IsarService isarService = IsarService();
 
   final _formKey = GlobalKey<FormState>();
@@ -23,7 +22,7 @@ class _AddParticipantsState extends State<AddParticipants> {
   final TextEditingController _controllerNbDive = TextEditingController();
   String selectValueType = "Plongeur";
   String selectValueLevel = "";
-  List<DropdownMenuItem<String>> TypeItems = [
+  List<DropdownMenuItem<String>> typeItems = [
     const DropdownMenuItem(
       value: "Plongeur",
       child: Text("Plongeur"),
@@ -46,7 +45,7 @@ class _AddParticipantsState extends State<AddParticipants> {
     ),
   ];
 
-  List<DropdownMenuItem<String>> LevelItems = [
+  List<DropdownMenuItem<String>> levelItems = [
     const DropdownMenuItem(
       value: "",
       child: Text(""),
@@ -89,6 +88,7 @@ class _AddParticipantsState extends State<AddParticipants> {
     ),
   ];
 
+  @override
   Widget build(BuildContext context) {
     final weekend = ModalRoute.of(context)!.settings.arguments as Weekend;
     return Scaffold(
@@ -335,7 +335,7 @@ class _AddParticipantsState extends State<AddParticipants> {
                                   labelText: "Niveau de plongée"),
                               value: selectValueLevel,
                               icon: const Icon(Icons.arrow_downward),
-                              items: LevelItems,
+                              items: levelItems,
                               onChanged: (String? value) {
                                 setState(() {
                                   selectValueLevel = value!;
@@ -349,7 +349,7 @@ class _AddParticipantsState extends State<AddParticipants> {
                         decoration: const InputDecoration(labelText: 'Type'),
                         value: selectValueType,
                         icon: const Icon(Icons.arrow_downward),
-                        items: TypeItems,
+                        items: typeItems,
                         onChanged: (String? value) {
                           setState(() {
                             selectValueType = value!;
@@ -374,7 +374,6 @@ class _AddParticipantsState extends State<AddParticipants> {
                                   ..type = selectValueType
                                   ..diveLevel = selectValueLevel
                                   ..weekends.add(weekend);
-                                print(participant);
                                 bool isSaved = await isarService
                                     .addParticipants(weekend, participant);
                                 if (isSaved) {

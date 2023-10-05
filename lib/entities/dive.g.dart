@@ -27,9 +27,9 @@ const DiveSchema = CollectionSchema(
       name: r'captain',
       type: IsarType.string,
     ),
-    r'date': PropertySchema(
+    r'dateDepart': PropertySchema(
       id: 2,
-      name: r'date',
+      name: r'dateDepart',
       type: IsarType.dateTime,
     ),
     r'divingSite': PropertySchema(
@@ -42,23 +42,18 @@ const DiveSchema = CollectionSchema(
       name: r'dp',
       type: IsarType.string,
     ),
-    r'hourDepart': PropertySchema(
-      id: 5,
-      name: r'hourDepart',
-      type: IsarType.dateTime,
-    ),
     r'nbDiver': PropertySchema(
-      id: 6,
+      id: 5,
       name: r'nbDiver',
       type: IsarType.long,
     ),
     r'nbPeople': PropertySchema(
-      id: 7,
+      id: 6,
       name: r'nbPeople',
       type: IsarType.long,
     ),
     r'title': PropertySchema(
-      id: 8,
+      id: 7,
       name: r'title',
       type: IsarType.string,
     )
@@ -75,6 +70,12 @@ const DiveSchema = CollectionSchema(
       name: r'divreGroups',
       target: r'DiveGroup',
       single: false,
+    ),
+    r'weekend': LinkSchema(
+      id: 262558211512391885,
+      name: r'weekend',
+      target: r'Weekend',
+      single: true,
     )
   },
   embeddedSchemas: {},
@@ -106,13 +107,12 @@ void _diveSerialize(
 ) {
   writer.writeString(offsets[0], object.boat);
   writer.writeString(offsets[1], object.captain);
-  writer.writeDateTime(offsets[2], object.date);
+  writer.writeDateTime(offsets[2], object.dateDepart);
   writer.writeString(offsets[3], object.divingSite);
   writer.writeString(offsets[4], object.dp);
-  writer.writeDateTime(offsets[5], object.hourDepart);
-  writer.writeLong(offsets[6], object.nbDiver);
-  writer.writeLong(offsets[7], object.nbPeople);
-  writer.writeString(offsets[8], object.title);
+  writer.writeLong(offsets[5], object.nbDiver);
+  writer.writeLong(offsets[6], object.nbPeople);
+  writer.writeString(offsets[7], object.title);
 }
 
 Dive _diveDeserialize(
@@ -124,14 +124,13 @@ Dive _diveDeserialize(
   final object = Dive();
   object.boat = reader.readString(offsets[0]);
   object.captain = reader.readString(offsets[1]);
-  object.date = reader.readDateTime(offsets[2]);
+  object.dateDepart = reader.readDateTime(offsets[2]);
   object.divingSite = reader.readString(offsets[3]);
   object.dp = reader.readString(offsets[4]);
-  object.hourDepart = reader.readDateTime(offsets[5]);
   object.id = id;
-  object.nbDiver = reader.readLong(offsets[6]);
-  object.nbPeople = reader.readLong(offsets[7]);
-  object.title = reader.readString(offsets[8]);
+  object.nbDiver = reader.readLong(offsets[5]);
+  object.nbPeople = reader.readLong(offsets[6]);
+  object.title = reader.readString(offsets[7]);
   return object;
 }
 
@@ -153,12 +152,10 @@ P _diveDeserializeProp<P>(
     case 4:
       return (reader.readString(offset)) as P;
     case 5:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 6:
       return (reader.readLong(offset)) as P;
     case 7:
-      return (reader.readLong(offset)) as P;
-    case 8:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -170,13 +167,14 @@ Id _diveGetId(Dive object) {
 }
 
 List<IsarLinkBase<dynamic>> _diveGetLinks(Dive object) {
-  return [object.divreGroups];
+  return [object.divreGroups, object.weekend];
 }
 
 void _diveAttach(IsarCollection<dynamic> col, Id id, Dive object) {
   object.id = id;
   object.divreGroups
       .attach(col, col.isar.collection<DiveGroup>(), r'divreGroups', id);
+  object.weekend.attach(col, col.isar.collection<Weekend>(), r'weekend', id);
 }
 
 extension DiveQueryWhereSort on QueryBuilder<Dive, Dive, QWhere> {
@@ -511,42 +509,43 @@ extension DiveQueryFilter on QueryBuilder<Dive, Dive, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Dive, Dive, QAfterFilterCondition> dateEqualTo(DateTime value) {
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> dateDepartEqualTo(
+      DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'date',
+        property: r'dateDepart',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Dive, Dive, QAfterFilterCondition> dateGreaterThan(
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> dateDepartGreaterThan(
     DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'date',
+        property: r'dateDepart',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Dive, Dive, QAfterFilterCondition> dateLessThan(
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> dateDepartLessThan(
     DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'date',
+        property: r'dateDepart',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Dive, Dive, QAfterFilterCondition> dateBetween(
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> dateDepartBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -554,7 +553,7 @@ extension DiveQueryFilter on QueryBuilder<Dive, Dive, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'date',
+        property: r'dateDepart',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -817,59 +816,6 @@ extension DiveQueryFilter on QueryBuilder<Dive, Dive, QFilterCondition> {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'dp',
         value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Dive, Dive, QAfterFilterCondition> hourDepartEqualTo(
-      DateTime value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'hourDepart',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Dive, Dive, QAfterFilterCondition> hourDepartGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'hourDepart',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Dive, Dive, QAfterFilterCondition> hourDepartLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'hourDepart',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Dive, Dive, QAfterFilterCondition> hourDepartBetween(
-    DateTime lower,
-    DateTime upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'hourDepart',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
       ));
     });
   }
@@ -1217,6 +1163,19 @@ extension DiveQueryLinks on QueryBuilder<Dive, Dive, QFilterCondition> {
           r'divreGroups', lower, includeLower, upper, includeUpper);
     });
   }
+
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> weekend(
+      FilterQuery<Weekend> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'weekend');
+    });
+  }
+
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> weekendIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'weekend', 0, true, 0, true);
+    });
+  }
 }
 
 extension DiveQuerySortBy on QueryBuilder<Dive, Dive, QSortBy> {
@@ -1244,15 +1203,15 @@ extension DiveQuerySortBy on QueryBuilder<Dive, Dive, QSortBy> {
     });
   }
 
-  QueryBuilder<Dive, Dive, QAfterSortBy> sortByDate() {
+  QueryBuilder<Dive, Dive, QAfterSortBy> sortByDateDepart() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'date', Sort.asc);
+      return query.addSortBy(r'dateDepart', Sort.asc);
     });
   }
 
-  QueryBuilder<Dive, Dive, QAfterSortBy> sortByDateDesc() {
+  QueryBuilder<Dive, Dive, QAfterSortBy> sortByDateDepartDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'date', Sort.desc);
+      return query.addSortBy(r'dateDepart', Sort.desc);
     });
   }
 
@@ -1277,18 +1236,6 @@ extension DiveQuerySortBy on QueryBuilder<Dive, Dive, QSortBy> {
   QueryBuilder<Dive, Dive, QAfterSortBy> sortByDpDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dp', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Dive, Dive, QAfterSortBy> sortByHourDepart() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'hourDepart', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Dive, Dive, QAfterSortBy> sortByHourDepartDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'hourDepart', Sort.desc);
     });
   }
 
@@ -1354,15 +1301,15 @@ extension DiveQuerySortThenBy on QueryBuilder<Dive, Dive, QSortThenBy> {
     });
   }
 
-  QueryBuilder<Dive, Dive, QAfterSortBy> thenByDate() {
+  QueryBuilder<Dive, Dive, QAfterSortBy> thenByDateDepart() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'date', Sort.asc);
+      return query.addSortBy(r'dateDepart', Sort.asc);
     });
   }
 
-  QueryBuilder<Dive, Dive, QAfterSortBy> thenByDateDesc() {
+  QueryBuilder<Dive, Dive, QAfterSortBy> thenByDateDepartDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'date', Sort.desc);
+      return query.addSortBy(r'dateDepart', Sort.desc);
     });
   }
 
@@ -1387,18 +1334,6 @@ extension DiveQuerySortThenBy on QueryBuilder<Dive, Dive, QSortThenBy> {
   QueryBuilder<Dive, Dive, QAfterSortBy> thenByDpDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dp', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Dive, Dive, QAfterSortBy> thenByHourDepart() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'hourDepart', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Dive, Dive, QAfterSortBy> thenByHourDepartDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'hourDepart', Sort.desc);
     });
   }
 
@@ -1466,9 +1401,9 @@ extension DiveQueryWhereDistinct on QueryBuilder<Dive, Dive, QDistinct> {
     });
   }
 
-  QueryBuilder<Dive, Dive, QDistinct> distinctByDate() {
+  QueryBuilder<Dive, Dive, QDistinct> distinctByDateDepart() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'date');
+      return query.addDistinctBy(r'dateDepart');
     });
   }
 
@@ -1483,12 +1418,6 @@ extension DiveQueryWhereDistinct on QueryBuilder<Dive, Dive, QDistinct> {
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'dp', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<Dive, Dive, QDistinct> distinctByHourDepart() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'hourDepart');
     });
   }
 
@@ -1531,9 +1460,9 @@ extension DiveQueryProperty on QueryBuilder<Dive, Dive, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Dive, DateTime, QQueryOperations> dateProperty() {
+  QueryBuilder<Dive, DateTime, QQueryOperations> dateDepartProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'date');
+      return query.addPropertyName(r'dateDepart');
     });
   }
 
@@ -1546,12 +1475,6 @@ extension DiveQueryProperty on QueryBuilder<Dive, Dive, QQueryProperty> {
   QueryBuilder<Dive, String, QQueryOperations> dpProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'dp');
-    });
-  }
-
-  QueryBuilder<Dive, DateTime, QQueryOperations> hourDepartProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'hourDepart');
     });
   }
 
