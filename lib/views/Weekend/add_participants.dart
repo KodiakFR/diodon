@@ -440,26 +440,30 @@ class _AddParticipantsState extends State<AddParticipants> {
         String csvString = utf8.decode(result.files.single.bytes!);
 
         final List<List<dynamic>> csvDataList =
-            const CsvToListConverter().convert(csvString, eol: "\r\n");
+            const CsvToListConverter().convert(csvString);
         for (var i = 0; i < csvDataList.length - 1; i++) {
           List<String> participantString = [];
-          String temp='';
+          String temp = '';
           for (var j = 0; j < csvDataList[i].length; j++) {
-            temp = "$temp ${csvDataList[i][j].toString()}";
+            if (csvDataList[i][j].toString() != "") {
+              temp = "$temp${csvDataList[i][j].toString()};";
+            }else{
+              temp = "$temp ;";
+            }
           }
           participantString = temp.split(';');
           Participant participant = Participant()
-            ..name = participantString[6]
-            ..firstName = participantString[5]
-            ..diveLevel = participantString[8]
-            ..nbDive = int.parse(participantString[10])
-            ..type = participantString[7]
+            ..name = participantString[5]
+            ..firstName = participantString[4]
+            ..diveLevel = participantString[7]
+            ..nbDive = int.parse(participantString[9])
+            ..type = participantString[6]
             ..weekends.add(weekend);
 
           await isarService.addParticipants(weekend, participant);
         }
-        Navigator.pushNamedAndRemoveUntil(context, "/addParticipants",arguments: weekend, (route) => false);
-        
+        Navigator.pushNamedAndRemoveUntil(
+            context, "/addParticipants", arguments: weekend, (route) => false);
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -469,6 +473,7 @@ class _AddParticipantsState extends State<AddParticipants> {
         ),
         backgroundColor: Colors.red,
       ));
+      print('Erreur lors de la sélection et de la lecture du fichier CSV $e');
       return null;
     }
   }
