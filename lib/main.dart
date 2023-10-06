@@ -15,6 +15,7 @@ import 'entities/user.dart';
 
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -47,7 +48,7 @@ class MyApp extends StatelessWidget {
           "/createDive":(context) => const CreateDive(),
           "/diveDetail": (context) => const DiveDetail(),
         },
-        home:  const HomePage(),
+        home:  ConnexionView(),
       ),
     );
   }

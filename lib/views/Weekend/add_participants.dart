@@ -1,9 +1,14 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
+
+import 'package:csv/csv.dart';
 import 'package:diodon/entities/participant.dart';
 import 'package:diodon/entities/weekend.dart';
 import 'package:diodon/services/isar_service.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AddParticipants extends StatefulWidget {
   const AddParticipants({super.key});
@@ -110,7 +115,7 @@ class _AddParticipantsState extends State<AddParticipants> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             SizedBox(
-              height: (MediaQuery.of(context).size.height/1.3),
+              height: (MediaQuery.of(context).size.height / 1.3),
               child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: FutureBuilder(
@@ -126,7 +131,7 @@ class _AddParticipantsState extends State<AddParticipants> {
                             child: Text(
                                 'Aucun Parcipant n\'est enregistré pour ce week-end'));
                       }
-                      return  _displayParticipants(participants,weekend);
+                      return _displayParticipants(participants, weekend);
                     }
                     return const CircularProgressIndicator();
                   },
@@ -142,12 +147,19 @@ class _AddParticipantsState extends State<AddParticipants> {
                   },
                   child: const Text("Ajout de participants"),
                 ),
-                const SizedBox(width: 50,),
+                const SizedBox(
+                  width: 50,
+                ),
                 ElevatedButton(
-                  onPressed: ()  async{
-                    Weekend? weekendUpdate = await isarService.getWeekendByTitle(weekend.title);
-                    if(weekendUpdate != null){
-                       Navigator.pushNamedAndRemoveUntil(context, "/weekendDetail",arguments: weekendUpdate , (route) => false);
+                  onPressed: () async {
+                    Weekend? weekendUpdate =
+                        await isarService.getWeekendByTitle(weekend.title);
+                    if (weekendUpdate != null) {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          "/weekendDetail",
+                          arguments: weekendUpdate,
+                          (route) => false);
                     }
                   },
                   child: const Text("Valider"),
@@ -203,11 +215,24 @@ class _AddParticipantsState extends State<AddParticipants> {
                 DataCell(Text(participant.diveLevel ?? '')),
                 DataCell(Text(participant.nbDive.toString())),
                 DataCell(Text(participant.type ?? '')),
-                DataCell(Row(children: [IconButton(onPressed: ()async{
-                  await isarService.removeParticipantsInWeekend(participant, weekend);
-                  final weekendUpdate = await isarService.getWeekendByTitle(weekend.title);
-                  Navigator.pushNamedAndRemoveUntil(context, "/addParticipants",arguments: weekendUpdate, (route) => false);
-                },icon: const Icon(Icons.remove, color: Colors.red),)],))
+                DataCell(Row(
+                  children: [
+                    IconButton(
+                      onPressed: () async {
+                        await isarService.removeParticipantsInWeekend(
+                            participant, weekend);
+                        final weekendUpdate =
+                            await isarService.getWeekendByTitle(weekend.title);
+                        Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            "/addParticipants",
+                            arguments: weekendUpdate,
+                            (route) => false);
+                      },
+                      icon: const Icon(Icons.remove, color: Colors.red),
+                    )
+                  ],
+                ))
               ],
             ),
           )
@@ -224,8 +249,8 @@ class _AddParticipantsState extends State<AddParticipants> {
                 'Ajout de participants',
                 textAlign: TextAlign.center,
               ),
-
-              actions: [Column(
+              actions: [
+                Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Row(
@@ -233,7 +258,9 @@ class _AddParticipantsState extends State<AddParticipants> {
                       children: [
                         const Text("Importer depuis un CSV"),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            await _pickAndReadCSV(weekend);
+                          },
                           child: const Text('Import'),
                         ),
                       ],
@@ -274,7 +301,7 @@ class _AddParticipantsState extends State<AddParticipants> {
     return showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          scrollable: true,
+              scrollable: true,
               title: const Text(
                 "Ajouter un participant",
                 textAlign: TextAlign.center,
@@ -401,5 +428,48 @@ class _AddParticipantsState extends State<AddParticipants> {
                 )
               ],
             ));
+  }
+
+  _pickAndReadCSV(Weekend weekend) async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+          type: FileType.custom, allowedExtensions: ['csv'], withData: true);
+
+      if (result != null) {
+        //  analyser le CSV en utilisant la bibliothèque CSV
+        String csvString = utf8.decode(result.files.single.bytes!);
+
+        final List<List<dynamic>> csvDataList =
+            const CsvToListConverter().convert(csvString, eol: "\r\n");
+        for (var i = 0; i < csvDataList.length - 1; i++) {
+          List<String> participantString = [];
+          String temp='';
+          for (var j = 0; j < csvDataList[i].length; j++) {
+            temp = "$temp ${csvDataList[i][j].toString()}";
+          }
+          participantString = temp.split(';');
+          Participant participant = Participant()
+            ..name = participantString[6]
+            ..firstName = participantString[5]
+            ..diveLevel = participantString[8]
+            ..nbDive = int.parse(participantString[10])
+            ..type = participantString[7]
+            ..weekends.add(weekend);
+
+          await isarService.addParticipants(weekend, participant);
+        }
+        Navigator.pushNamedAndRemoveUntil(context, "/addParticipants",arguments: weekend, (route) => false);
+        
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+          'Erreur lors de la sélection et de la lecture du fichier CSV',
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.red,
+      ));
+      return null;
+    }
   }
 }
