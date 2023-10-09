@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-
 final _formKey = GlobalKey<FormState>();
 
 class CreateWeekend extends StatefulWidget {
@@ -28,17 +27,18 @@ class _CreateWeekendState extends State<CreateWeekend> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Création d'un week-end",
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.home, size: 40),
-          onPressed: () => Navigator.pushNamedAndRemoveUntil(
-              context, "/homePage", (route) => false),
-        ),
-      ),
+          title: const Text(
+            "Création d'un week-end",
+            style: TextStyle(color: Colors.white),
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.home, size: 40),
+              onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                  context, "/homePage", (route) => false),
+            ),
+          ]),
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -115,7 +115,8 @@ class _CreateWeekendState extends State<CreateWeekend> {
                     onPressed: (() async {
                       if (_formKey.currentState!.validate()) {
                         await initializeDateFormatting('fr');
-                        final String month = DateFormat.MMMM('fr').format(startDate);
+                        final String month =
+                            DateFormat.MMMM('fr').format(startDate);
                         final String tilte =
                             "Week-end du ${startDate.day} - ${endDate.day} $month ${startDate.year}";
                         Weekend weekend = Weekend()

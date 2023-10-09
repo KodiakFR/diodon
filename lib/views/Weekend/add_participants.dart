@@ -8,7 +8,6 @@ import 'package:diodon/entities/weekend.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class AddParticipants extends StatefulWidget {
   const AddParticipants({super.key});
@@ -24,7 +23,6 @@ class _AddParticipantsState extends State<AddParticipants> {
 
   final TextEditingController _controllerName = TextEditingController();
   final TextEditingController _controllerFirstName = TextEditingController();
-  final TextEditingController _controllerNbDive = TextEditingController();
   String selectValueType = "Plongeur";
   String selectValueLevel = "";
   List<DropdownMenuItem<String>> typeItems = [
@@ -56,6 +54,10 @@ class _AddParticipantsState extends State<AddParticipants> {
       child: Text(""),
     ),
     const DropdownMenuItem(
+      value: "Bapt",
+      child: Text("Bapt"),
+    ),
+    const DropdownMenuItem(
       value: "N1",
       child: Text("N1"),
     ),
@@ -70,6 +72,22 @@ class _AddParticipantsState extends State<AddParticipants> {
     const DropdownMenuItem(
       value: "N4",
       child: Text("N4"),
+    ),
+    const DropdownMenuItem(
+      value: "PpN1",
+      child: Text("PpN1"),
+    ),
+    const DropdownMenuItem(
+      value: "PpN2",
+      child: Text("PpN2"),
+    ),
+    const DropdownMenuItem(
+      value: "PpN3",
+      child: Text("PpN3"),
+    ),
+    const DropdownMenuItem(
+      value: "PpN4",
+      child: Text("PpN4"),
     ),
     const DropdownMenuItem(
       value: "Nitrox",
@@ -90,6 +108,10 @@ class _AddParticipantsState extends State<AddParticipants> {
     const DropdownMenuItem(
       value: "MF1",
       child: Text("MF1"),
+    ),
+    const DropdownMenuItem(
+      value: "MF2",
+      child: Text("MF2"),
     ),
   ];
 
@@ -192,7 +214,7 @@ class _AddParticipantsState extends State<AddParticipants> {
         ),
         DataColumn(
           label: Expanded(
-            child: Text("Nombre de plongée"),
+            child: Text("Aptitude"),
           ),
         ),
         DataColumn(
@@ -213,7 +235,7 @@ class _AddParticipantsState extends State<AddParticipants> {
                 DataCell(Text(participant.name ?? '')),
                 DataCell(Text(participant.firstName ?? '')),
                 DataCell(Text(participant.diveLevel ?? '')),
-                DataCell(Text(participant.nbDive.toString())),
+                DataCell(Text(participant.aptitude ?? '')),
                 DataCell(Text(participant.type ?? '')),
                 DataCell(Row(
                   children: [
@@ -294,7 +316,6 @@ class _AddParticipantsState extends State<AddParticipants> {
       BuildContext context, Weekend weekend) async {
     _controllerFirstName.clear();
     _controllerName.clear();
-    _controllerNbDive.clear();
     selectValueType = 'Plongeur';
     const double widthForm = 300;
     const double heightForm = 90;
@@ -322,6 +343,12 @@ class _AddParticipantsState extends State<AddParticipants> {
                               controller: _controllerName,
                               decoration:
                                   const InputDecoration(labelText: 'Nom'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Le champs est obligatoire';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                           const SizedBox(
@@ -334,6 +361,12 @@ class _AddParticipantsState extends State<AddParticipants> {
                               controller: _controllerFirstName,
                               decoration:
                                   const InputDecoration(labelText: 'Prénom'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Le champs est obligatoire';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                         ],
@@ -344,11 +377,17 @@ class _AddParticipantsState extends State<AddParticipants> {
                           SizedBox(
                             width: widthForm,
                             height: heightForm,
-                            child: TextFormField(
-                              keyboardType: TextInputType.number,
-                              controller: _controllerNbDive,
-                              decoration: const InputDecoration(
-                                  labelText: 'Nombre de plongées'),
+                            child: DropdownButtonFormField(
+                              decoration:
+                                  const InputDecoration(labelText: 'Type'),
+                              value: selectValueType,
+                              icon: const Icon(Icons.arrow_downward),
+                              items: typeItems,
+                              onChanged: (String? value) {
+                                setState(() {
+                                  selectValueType = value!;
+                                });
+                              },
                             ),
                           ),
                           const SizedBox(
@@ -372,17 +411,6 @@ class _AddParticipantsState extends State<AddParticipants> {
                           )
                         ],
                       ),
-                      DropdownButtonFormField(
-                        decoration: const InputDecoration(labelText: 'Type'),
-                        value: selectValueType,
-                        icon: const Icon(Icons.arrow_downward),
-                        items: typeItems,
-                        onChanged: (String? value) {
-                          setState(() {
-                            selectValueType = value!;
-                          });
-                        },
-                      ),
                       const SizedBox(
                         height: 20,
                       ),
@@ -393,13 +421,13 @@ class _AddParticipantsState extends State<AddParticipants> {
                             child: const Text('Ajouter'),
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                int nbDive = int.parse(_controllerNbDive.text);
+                                String? aptitude = _defineAptitude(selectValueLevel);
                                 Participant participant = Participant()
                                   ..firstName = _controllerFirstName.text
-                                  ..name = _controllerName.text
-                                  ..nbDive = nbDive
+                                  ..name = _controllerName.text.toUpperCase()
                                   ..type = selectValueType
                                   ..diveLevel = selectValueLevel
+                                  ..aptitude = aptitude
                                   ..weekends.add(weekend);
                                 bool isSaved = await isarService
                                     .addParticipants(weekend, participant);
@@ -447,7 +475,7 @@ class _AddParticipantsState extends State<AddParticipants> {
           for (var j = 0; j < csvDataList[i].length; j++) {
             if (csvDataList[i][j].toString() != "") {
               temp = "$temp${csvDataList[i][j].toString()};";
-            }else{
+            } else {
               temp = "$temp ;";
             }
           }
@@ -456,8 +484,8 @@ class _AddParticipantsState extends State<AddParticipants> {
             ..name = participantString[5]
             ..firstName = participantString[4]
             ..diveLevel = participantString[7]
-            ..nbDive = int.parse(participantString[9])
             ..type = participantString[6]
+            ..aptitude = _defineAptitude(participantString[7])
             ..weekends.add(weekend);
 
           await isarService.addParticipants(weekend, participant);
@@ -476,5 +504,50 @@ class _AddParticipantsState extends State<AddParticipants> {
       print('Erreur lors de la sélection et de la lecture du fichier CSV $e');
       return null;
     }
+  }
+
+  String? _defineAptitude(String diveLevel) {
+    String? aptitude;
+    switch (diveLevel) {
+      case "":
+        aptitude = "";
+        break;
+      case "Bapt":
+        aptitude = "";
+        break;
+      case "N1":
+        aptitude = "PE20";
+        break;
+      case "N2":
+        aptitude = "PE40";
+        break;
+      case "N3":
+        aptitude = "PA60";
+        break;
+      case "N4":
+        aptitude = "E2";
+        break;
+      case "PpN1":
+        aptitude = "PE20";
+        break;
+      case "PpN2":
+        aptitude = "PE20";
+        break;
+      case "PpN3":
+        aptitude = "PE40";
+        break;
+      case "PpN4":
+        aptitude = "PE40";
+        break;
+      case "MF1":
+        aptitude = "E3";
+        break;
+      case "MF2":
+        aptitude = "E4";
+        break;
+      default:
+      aptitude = "";
+    }
+    return aptitude;
   }
 }

@@ -10,6 +10,6 @@ class Participant{
   String? firstName;
   String? diveLevel;
   String? type;
-  int? nbDive;
+  String? aptitude;
   final weekends = IsarLinks<Weekend>();
 }

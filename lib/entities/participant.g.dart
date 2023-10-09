@@ -17,25 +17,25 @@ const ParticipantSchema = CollectionSchema(
   name: r'Participant',
   id: -4270384824746104850,
   properties: {
-    r'diveLevel': PropertySchema(
+    r'aptitude': PropertySchema(
       id: 0,
+      name: r'aptitude',
+      type: IsarType.string,
+    ),
+    r'diveLevel': PropertySchema(
+      id: 1,
       name: r'diveLevel',
       type: IsarType.string,
     ),
     r'firstName': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'firstName',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'name',
       type: IsarType.string,
-    ),
-    r'nbDive': PropertySchema(
-      id: 3,
-      name: r'nbDive',
-      type: IsarType.long,
     ),
     r'type': PropertySchema(
       id: 4,
@@ -71,6 +71,12 @@ int _participantEstimateSize(
 ) {
   var bytesCount = offsets.last;
   {
+    final value = object.aptitude;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.diveLevel;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -103,10 +109,10 @@ void _participantSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.diveLevel);
-  writer.writeString(offsets[1], object.firstName);
-  writer.writeString(offsets[2], object.name);
-  writer.writeLong(offsets[3], object.nbDive);
+  writer.writeString(offsets[0], object.aptitude);
+  writer.writeString(offsets[1], object.diveLevel);
+  writer.writeString(offsets[2], object.firstName);
+  writer.writeString(offsets[3], object.name);
   writer.writeString(offsets[4], object.type);
 }
 
@@ -117,11 +123,11 @@ Participant _participantDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Participant();
-  object.diveLevel = reader.readStringOrNull(offsets[0]);
-  object.firstName = reader.readStringOrNull(offsets[1]);
+  object.aptitude = reader.readStringOrNull(offsets[0]);
+  object.diveLevel = reader.readStringOrNull(offsets[1]);
+  object.firstName = reader.readStringOrNull(offsets[2]);
   object.id = id;
-  object.name = reader.readStringOrNull(offsets[2]);
-  object.nbDive = reader.readLongOrNull(offsets[3]);
+  object.name = reader.readStringOrNull(offsets[3]);
   object.type = reader.readStringOrNull(offsets[4]);
   return object;
 }
@@ -140,7 +146,7 @@ P _participantDeserializeProp<P>(
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 4:
       return (reader.readStringOrNull(offset)) as P;
     default:
@@ -242,6 +248,159 @@ extension ParticipantQueryWhere
 
 extension ParticipantQueryFilter
     on QueryBuilder<Participant, Participant, QFilterCondition> {
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      aptitudeIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'aptitude',
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      aptitudeIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'aptitude',
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition> aptitudeEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'aptitude',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      aptitudeGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'aptitude',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      aptitudeLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'aptitude',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition> aptitudeBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'aptitude',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      aptitudeStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'aptitude',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      aptitudeEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'aptitude',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      aptitudeContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'aptitude',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition> aptitudeMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'aptitude',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      aptitudeIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'aptitude',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      aptitudeIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'aptitude',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<Participant, Participant, QAfterFilterCondition>
       diveLevelIsNull() {
     return QueryBuilder.apply(this, (query) {
@@ -751,77 +910,6 @@ extension ParticipantQueryFilter
     });
   }
 
-  QueryBuilder<Participant, Participant, QAfterFilterCondition> nbDiveIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'nbDive',
-      ));
-    });
-  }
-
-  QueryBuilder<Participant, Participant, QAfterFilterCondition>
-      nbDiveIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'nbDive',
-      ));
-    });
-  }
-
-  QueryBuilder<Participant, Participant, QAfterFilterCondition> nbDiveEqualTo(
-      int? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'nbDive',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Participant, Participant, QAfterFilterCondition>
-      nbDiveGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'nbDive',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Participant, Participant, QAfterFilterCondition> nbDiveLessThan(
-    int? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'nbDive',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Participant, Participant, QAfterFilterCondition> nbDiveBetween(
-    int? lower,
-    int? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'nbDive',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
   QueryBuilder<Participant, Participant, QAfterFilterCondition> typeIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1040,6 +1128,18 @@ extension ParticipantQueryLinks
 
 extension ParticipantQuerySortBy
     on QueryBuilder<Participant, Participant, QSortBy> {
+  QueryBuilder<Participant, Participant, QAfterSortBy> sortByAptitude() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'aptitude', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterSortBy> sortByAptitudeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'aptitude', Sort.desc);
+    });
+  }
+
   QueryBuilder<Participant, Participant, QAfterSortBy> sortByDiveLevel() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'diveLevel', Sort.asc);
@@ -1076,18 +1176,6 @@ extension ParticipantQuerySortBy
     });
   }
 
-  QueryBuilder<Participant, Participant, QAfterSortBy> sortByNbDive() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'nbDive', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Participant, Participant, QAfterSortBy> sortByNbDiveDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'nbDive', Sort.desc);
-    });
-  }
-
   QueryBuilder<Participant, Participant, QAfterSortBy> sortByType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.asc);
@@ -1103,6 +1191,18 @@ extension ParticipantQuerySortBy
 
 extension ParticipantQuerySortThenBy
     on QueryBuilder<Participant, Participant, QSortThenBy> {
+  QueryBuilder<Participant, Participant, QAfterSortBy> thenByAptitude() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'aptitude', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterSortBy> thenByAptitudeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'aptitude', Sort.desc);
+    });
+  }
+
   QueryBuilder<Participant, Participant, QAfterSortBy> thenByDiveLevel() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'diveLevel', Sort.asc);
@@ -1151,18 +1251,6 @@ extension ParticipantQuerySortThenBy
     });
   }
 
-  QueryBuilder<Participant, Participant, QAfterSortBy> thenByNbDive() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'nbDive', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Participant, Participant, QAfterSortBy> thenByNbDiveDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'nbDive', Sort.desc);
-    });
-  }
-
   QueryBuilder<Participant, Participant, QAfterSortBy> thenByType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.asc);
@@ -1178,6 +1266,13 @@ extension ParticipantQuerySortThenBy
 
 extension ParticipantQueryWhereDistinct
     on QueryBuilder<Participant, Participant, QDistinct> {
+  QueryBuilder<Participant, Participant, QDistinct> distinctByAptitude(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'aptitude', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<Participant, Participant, QDistinct> distinctByDiveLevel(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1199,12 +1294,6 @@ extension ParticipantQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Participant, Participant, QDistinct> distinctByNbDive() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'nbDive');
-    });
-  }
-
   QueryBuilder<Participant, Participant, QDistinct> distinctByType(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1218,6 +1307,12 @@ extension ParticipantQueryProperty
   QueryBuilder<Participant, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<Participant, String?, QQueryOperations> aptitudeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'aptitude');
     });
   }
 
@@ -1236,12 +1331,6 @@ extension ParticipantQueryProperty
   QueryBuilder<Participant, String?, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
-    });
-  }
-
-  QueryBuilder<Participant, int?, QQueryOperations> nbDiveProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'nbDive');
     });
   }
 

@@ -46,7 +46,7 @@ class HomePage extends StatelessWidget {
               },
             ),
             ElevatedButton(onPressed: () {
-              Navigator.pushNamedAndRemoveUntil(context, "/createWeekend", (route) => false);
+              Navigator.pushNamed(context, "/createWeekend");
 
             }, child: const Text('Ajouter un weekend'))
           ],
@@ -62,7 +62,7 @@ class HomePage extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(context, "/weekendDetail",arguments: weekends[index], (route) => false);
+                  Navigator.pushNamed(context, "/weekendDetail",arguments: weekends[index]);
                 },
                 child: Text(weekends[index].title),
               ),
