@@ -469,7 +469,7 @@ class _AddParticipantsState extends State<AddParticipants> {
 
         final List<List<dynamic>> csvDataList =
             const CsvToListConverter().convert(csvString);
-        for (var i = 0; i < csvDataList.length - 1; i++) {
+        for (var i = 1; i < csvDataList.length; i++) {
           List<String> participantString = [];
           String temp = '';
           for (var j = 0; j < csvDataList[i].length; j++) {
@@ -481,13 +481,12 @@ class _AddParticipantsState extends State<AddParticipants> {
           }
           participantString = temp.split(';');
           Participant participant = Participant()
-            ..name = participantString[5]
+            ..name = participantString[3]
             ..firstName = participantString[4]
-            ..diveLevel = participantString[7]
-            ..type = participantString[6]
-            ..aptitude = _defineAptitude(participantString[7])
+            ..diveLevel = participantString[19]
+            ..type = participantString[16]
+            ..aptitude = _defineAptitude(participantString[19])
             ..weekends.add(weekend);
-
           await isarService.addParticipants(weekend, participant);
         }
         Navigator.pushNamedAndRemoveUntil(
