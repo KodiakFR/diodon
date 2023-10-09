@@ -1,11 +1,14 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:diodon/bloc/user_bloc.dart';
 import 'package:diodon/entities/dive.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../entities/user.dart';
 import '../../entities/weekend.dart';
 
 class CreateDive extends StatefulWidget {
@@ -32,6 +35,7 @@ class _CreateDiveState extends State<CreateDive> {
   @override
   Widget build(BuildContext context) {
     final weekend = ModalRoute.of(context)!.settings.arguments as Weekend;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -134,12 +138,15 @@ class _CreateDiveState extends State<CreateDive> {
                               }
                             },
                           ),
-                          TextFormField(
+                          BlocBuilder<UserBloc,User>(builder: (context, state) {
+                            controllerDP.text = '${state.firstName} ${state.name}';
+                            return TextFormField(
                             controller: controllerDP,
                             decoration: const InputDecoration(
-                              labelText: 'Nom du DP',
+                            labelText: 'Nom du DP',
                             ),
-                          ),
+                          );
+                          },)
                         ],
                       ),
                     ),
@@ -169,7 +176,7 @@ class _CreateDiveState extends State<CreateDive> {
                               keyboardType: TextInputType.number,
                               decoration: const InputDecoration(
                                   labelText:
-                                      'Nombre de personne sur le bateau'),
+                                      'Nombre de personnes sur le bateau'),
                             ),
                             TextFormField(
                               inputFormatters: [
@@ -179,7 +186,7 @@ class _CreateDiveState extends State<CreateDive> {
                               keyboardType: TextInputType.number,
                               decoration: const InputDecoration(
                                   labelText:
-                                      'Nombre de personne sur le bateau'),
+                                      'Nombre de plongeurs sur le bateau'),
                             ),
                           ],
                         ),
@@ -194,48 +201,47 @@ class _CreateDiveState extends State<CreateDive> {
                         await isarService.getAllDiveByWeekend(weekend);
                     //definition de la date de départ
 
-                      int year =
-                          int.parse(controllerStartDate.text.substring(6, 10));
-                      int month =
-                          int.parse(controllerStartDate.text.substring(3, 5));
-                      int day =
-                          int.parse(controllerStartDate.text.substring(0, 2));
-                     DateTime date = DateTime(year, month, day);
+                    int year =
+                        int.parse(controllerStartDate.text.substring(6, 10));
+                    int month =
+                        int.parse(controllerStartDate.text.substring(3, 5));
+                    int day =
+                        int.parse(controllerStartDate.text.substring(0, 2));
+                    DateTime date = DateTime(year, month, day);
 
                     if (controllerStartHour.text.isNotEmpty) {
                       int hour =
                           int.parse(controllerStartHour.text.substring(0, 2));
                       int minute =
                           int.parse(controllerStartHour.text.substring(3, 5));
-                          date = date.add(Duration(hours: hour,minutes: minute));
+                      date = date.add(Duration(hours: hour, minutes: minute));
                     }
                     Dive dive = Dive()
-                    ..title = "Plongée N° ${dives.length+1}"
-                    ..divingSite = constrollerDiveSite.text
-                    ..dateDepart = date
-                    ..dp = controllerDP.text
-                    ..boat = controllerBoat.text
-                    ..captain = controllerCaptainName.text
-                    ..nbPeople = int.parse(controllerNbPerson.text) 
-                    ..nbDiver = int.parse(controllerNbDivers.text)
-                    ..weekend.value = weekend;
+                      ..title = "Plongée N° ${dives.length + 1}"
+                      ..divingSite = constrollerDiveSite.text
+                      ..dateDepart = date
+                      ..dp = controllerDP.text
+                      ..boat = controllerBoat.text
+                      ..captain = controllerCaptainName.text
+                      ..nbPeople = int.parse(controllerNbPerson.text)
+                      ..nbDiver = int.parse(controllerNbDivers.text)
+                      ..weekend.value = weekend;
 
                     bool isCreate = await isarService.saveDive(weekend, dive);
-                    if(isCreate == true){
-                       Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      "/diveDetail",
-                      arguments: dive,
-                      (route) => false);
-                    }else{
-                       ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                            content: Text(
-                              'Une plongée avec le même nom existe déjà',
-                              textAlign: TextAlign.center,
-                            ),
-                            backgroundColor: Colors.red,
-                          ));
+                    if (isCreate == true) {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          "/diveDetail",
+                          arguments: dive,
+                          (route) => false);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                          'Une plongée avec le même nom existe déjà',
+                          textAlign: TextAlign.center,
+                        ),
+                        backgroundColor: Colors.red,
+                      ));
                     }
                   }
                 },
