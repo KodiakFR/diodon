@@ -94,10 +94,11 @@ class IsarService {
     }
   }
 
-  Future<Weekend?> getWeekendByTitle(String title) async{
+  Future<Weekend?> getWeekendByTitle(String title) async {
     final isar = await db;
-    final List<Weekend> weekends = await isar.weekends.filter().titleEqualTo(title).findAll();
-    if(weekends.length == 1){
+    final List<Weekend> weekends =
+        await isar.weekends.filter().titleEqualTo(title).findAll();
+    if (weekends.length == 1) {
       final Weekend weekend = weekends[0];
       return weekend;
     }
@@ -114,22 +115,32 @@ class IsarService {
         .findAll();
   }
 
-  Future<bool> addParticipants(Weekend weekend, Participant participant) async{
+  Future<bool> addParticipants(Weekend weekend, Participant participant) async {
     final isar = await db;
-    final List<Participant> participants =  await isar.participants.filter().weekends((q) => q.idEqualTo(weekend.id)).firstNameEqualTo(participant.firstName).nameEqualTo(participant.name).findAll();
-    if(participants.isEmpty){
+    final List<Participant> participants = await isar.participants
+        .filter()
+        .weekends((q) => q.idEqualTo(weekend.id))
+        .firstNameEqualTo(participant.firstName)
+        .nameEqualTo(participant.name)
+        .findAll();
+    if (participants.isEmpty) {
       isar.writeTxnSync<int>(() => isar.participants.putSync(participant));
       return true;
-    }else{
+    } else {
       return false;
     }
   }
 
-  Future<void> removeParticipantsInWeekend(Participant participant,Weekend weekend)async{
+  Future<void> removeParticipantsInWeekend(
+      Participant participant, Weekend weekend) async {
     final isar = await db;
-    List<Participant> participants = await isar.participants.filter().weekends((q) => q.idEqualTo(weekend.id)).idEqualTo(participant.id).findAll();
-    if(participants.length == 1){
-      await isar.writeTxn(() async{
+    List<Participant> participants = await isar.participants
+        .filter()
+        .weekends((q) => q.idEqualTo(weekend.id))
+        .idEqualTo(participant.id)
+        .findAll();
+    if (participants.length == 1) {
+      await isar.writeTxn(() async {
         await isar.participants.delete(participants[0].id);
       });
     }
@@ -138,31 +149,66 @@ class IsarService {
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------- DIVES -------------------------------------------------------------------------------
 
-Future<List<Dive>> getAllDiveByWeekend(Weekend weekend) async{
-  final isar = await db;
-  return await isar.dives.filter().weekend((q) => q.idEqualTo(weekend.id)).findAll();
-}
-
-Future<bool> saveDive(Weekend weekend, Dive dive) async {
-  final isar = await db;
-  final List<Dive> dives = await isar.dives.filter().weekend((q) => q.idEqualTo(weekend.id)).titleEqualTo(dive.title).findAll();
-  if(dives.isEmpty){
-    isar.writeTxnSync<int>(() => isar.dives.putSync(dive));
-    return true;
-  }else{
-    return false;
+  Future<List<Dive>> getAllDiveByWeekend(Weekend weekend) async {
+    final isar = await db;
+    return await isar.dives
+        .filter()
+        .weekend((q) => q.idEqualTo(weekend.id))
+        .findAll();
   }
-}
+
+  Future<bool> saveDive(Weekend weekend, Dive dive) async {
+    final isar = await db;
+    final List<Dive> dives = await isar.dives
+        .filter()
+        .weekend((q) => q.idEqualTo(weekend.id))
+        .titleEqualTo(dive.title)
+        .findAll();
+    if (dives.isEmpty) {
+      isar.writeTxnSync<int>(() => isar.dives.putSync(dive));
+      return true;
+    } else {
+      return false;
+    }
+  }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------- DIVES GROUP -------------------------------------------------------------------------
 
-Future<List<Participant>> getAllDiverForDive(Dive dive) async{
-  final isar = await db;
-  List<Participant> particiapants = await isar.participants.filter().weekends((w) => w.dives((d) => d.idEqualTo(dive.id))).typeEqualTo('Plongeur').or().typeEqualTo('Encadrant').findAll();
-  print(particiapants.first.name);
-  return particiapants;
-  
-}
+  Future<List<Participant>> getAllDiverForDive(Dive dive) async {
+    final isar = await db;
+    List<Participant> particiapants = await isar.participants
+        .filter()
+        .weekends((w) => w.dives((d) => d.idEqualTo(dive.id)))
+        .typeEqualTo('Plongeur')
+        .or()
+        .typeEqualTo('Encadrant')
+        .findAll();
+    print(particiapants.first.name);
+    return particiapants;
+  }
 
+  Future<List<DiveGroup>> getAllDiveGroupForDive(Dive dive) async {
+    final isar = await db;
+    List<DiveGroup> dive_groups = await isar.diveGroups
+        .filter()
+        .dive((d) => d.idEqualTo(dive.id))
+        .findAll();
+    return dive_groups;
+  }
+
+  Future<bool> saveDiveGroup(Dive dive, DiveGroup diveGroup) async {
+    final isar = await db;
+    List<DiveGroup> dive_groups = await isar.diveGroups
+        .filter()
+        .dive((d) => d.idEqualTo(dive.id))
+        .titleEqualTo(diveGroup.title)
+        .findAll();
+    if(dive_groups.isEmpty) {
+      isar.writeTxnSync(() => isar.diveGroups.putSync(diveGroup));
+      return true;
+    }else{
+      return false;
+    }
+  }
 }

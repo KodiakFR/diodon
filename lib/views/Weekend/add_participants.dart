@@ -481,7 +481,7 @@ class _AddParticipantsState extends State<AddParticipants> {
           }
           participantString = temp.split(';');
           Participant participant = Participant()
-            ..name = participantString[3]
+            ..name = participantString[5]
             ..firstName = participantString[4]
             ..diveLevel = participantString[19]
             ..type = participantString[16]
