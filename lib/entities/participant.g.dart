@@ -32,13 +32,23 @@ const ParticipantSchema = CollectionSchema(
       name: r'firstName',
       type: IsarType.string,
     ),
-    r'name': PropertySchema(
+    r'isInDiveGroup': PropertySchema(
       id: 3,
+      name: r'isInDiveGroup',
+      type: IsarType.bool,
+    ),
+    r'name': PropertySchema(
+      id: 4,
       name: r'name',
       type: IsarType.string,
     ),
+    r'selected': PropertySchema(
+      id: 5,
+      name: r'selected',
+      type: IsarType.bool,
+    ),
     r'type': PropertySchema(
-      id: 4,
+      id: 6,
       name: r'type',
       type: IsarType.string,
     )
@@ -54,6 +64,12 @@ const ParticipantSchema = CollectionSchema(
       id: 2780232742834985624,
       name: r'weekends',
       target: r'Weekend',
+      single: false,
+    ),
+    r'diveGroups': LinkSchema(
+      id: 4354006485818661426,
+      name: r'diveGroups',
+      target: r'DiveGroup',
       single: false,
     )
   },
@@ -112,8 +128,10 @@ void _participantSerialize(
   writer.writeString(offsets[0], object.aptitude);
   writer.writeString(offsets[1], object.diveLevel);
   writer.writeString(offsets[2], object.firstName);
-  writer.writeString(offsets[3], object.name);
-  writer.writeString(offsets[4], object.type);
+  writer.writeBool(offsets[3], object.isInDiveGroup);
+  writer.writeString(offsets[4], object.name);
+  writer.writeBool(offsets[5], object.selected);
+  writer.writeString(offsets[6], object.type);
 }
 
 Participant _participantDeserialize(
@@ -127,8 +145,10 @@ Participant _participantDeserialize(
   object.diveLevel = reader.readStringOrNull(offsets[1]);
   object.firstName = reader.readStringOrNull(offsets[2]);
   object.id = id;
-  object.name = reader.readStringOrNull(offsets[3]);
-  object.type = reader.readStringOrNull(offsets[4]);
+  object.isInDiveGroup = reader.readBoolOrNull(offsets[3]);
+  object.name = reader.readStringOrNull(offsets[4]);
+  object.selected = reader.readBoolOrNull(offsets[5]);
+  object.type = reader.readStringOrNull(offsets[6]);
   return object;
 }
 
@@ -146,8 +166,12 @@ P _participantDeserializeProp<P>(
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
     case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    case 5:
+      return (reader.readBoolOrNull(offset)) as P;
+    case 6:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -159,13 +183,15 @@ Id _participantGetId(Participant object) {
 }
 
 List<IsarLinkBase<dynamic>> _participantGetLinks(Participant object) {
-  return [object.weekends];
+  return [object.weekends, object.diveGroups];
 }
 
 void _participantAttach(
     IsarCollection<dynamic> col, Id id, Participant object) {
   object.id = id;
   object.weekends.attach(col, col.isar.collection<Weekend>(), r'weekends', id);
+  object.diveGroups
+      .attach(col, col.isar.collection<DiveGroup>(), r'diveGroups', id);
 }
 
 extension ParticipantQueryWhereSort
@@ -762,6 +788,34 @@ extension ParticipantQueryFilter
     });
   }
 
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      isInDiveGroupIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'isInDiveGroup',
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      isInDiveGroupIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'isInDiveGroup',
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      isInDiveGroupEqualTo(bool? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isInDiveGroup',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<Participant, Participant, QAfterFilterCondition> nameIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -906,6 +960,34 @@ extension ParticipantQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'name',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      selectedIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'selected',
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      selectedIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'selected',
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition> selectedEqualTo(
+      bool? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'selected',
+        value: value,
       ));
     });
   }
@@ -1124,6 +1206,67 @@ extension ParticipantQueryLinks
           r'weekends', lower, includeLower, upper, includeUpper);
     });
   }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition> diveGroups(
+      FilterQuery<DiveGroup> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'diveGroups');
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      diveGroupsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'diveGroups', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      diveGroupsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'diveGroups', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      diveGroupsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'diveGroups', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      diveGroupsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'diveGroups', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      diveGroupsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'diveGroups', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      diveGroupsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'diveGroups', lower, includeLower, upper, includeUpper);
+    });
+  }
 }
 
 extension ParticipantQuerySortBy
@@ -1164,6 +1307,19 @@ extension ParticipantQuerySortBy
     });
   }
 
+  QueryBuilder<Participant, Participant, QAfterSortBy> sortByIsInDiveGroup() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isInDiveGroup', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterSortBy>
+      sortByIsInDiveGroupDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isInDiveGroup', Sort.desc);
+    });
+  }
+
   QueryBuilder<Participant, Participant, QAfterSortBy> sortByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -1173,6 +1329,18 @@ extension ParticipantQuerySortBy
   QueryBuilder<Participant, Participant, QAfterSortBy> sortByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterSortBy> sortBySelected() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'selected', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterSortBy> sortBySelectedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'selected', Sort.desc);
     });
   }
 
@@ -1239,6 +1407,19 @@ extension ParticipantQuerySortThenBy
     });
   }
 
+  QueryBuilder<Participant, Participant, QAfterSortBy> thenByIsInDiveGroup() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isInDiveGroup', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterSortBy>
+      thenByIsInDiveGroupDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isInDiveGroup', Sort.desc);
+    });
+  }
+
   QueryBuilder<Participant, Participant, QAfterSortBy> thenByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -1248,6 +1429,18 @@ extension ParticipantQuerySortThenBy
   QueryBuilder<Participant, Participant, QAfterSortBy> thenByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterSortBy> thenBySelected() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'selected', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterSortBy> thenBySelectedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'selected', Sort.desc);
     });
   }
 
@@ -1287,10 +1480,22 @@ extension ParticipantQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Participant, Participant, QDistinct> distinctByIsInDiveGroup() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isInDiveGroup');
+    });
+  }
+
   QueryBuilder<Participant, Participant, QDistinct> distinctByName(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QDistinct> distinctBySelected() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'selected');
     });
   }
 
@@ -1328,9 +1533,21 @@ extension ParticipantQueryProperty
     });
   }
 
+  QueryBuilder<Participant, bool?, QQueryOperations> isInDiveGroupProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isInDiveGroup');
+    });
+  }
+
   QueryBuilder<Participant, String?, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<Participant, bool?, QQueryOperations> selectedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'selected');
     });
   }
 

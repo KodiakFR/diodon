@@ -146,6 +146,21 @@ class IsarService {
     }
   }
 
+  Future<void> upDateParticipant(Participant participant) async {
+    final isar = await db;
+    isar.writeTxnSync(() => isar.participants.putSync(participant));
+  }
+
+  Future<List<Participant>> getParticipantsSelected(Dive dive) async {
+    final isar = await db;
+    final List<Participant> particiapants = await isar.participants
+        .filter()
+        .weekends((w) => w.dives((d) => d.idEqualTo(dive.id)))
+        .selectedEqualTo(true)
+        .findAll();
+    return particiapants;
+  }
+
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------- DIVES -------------------------------------------------------------------------------
 
@@ -184,7 +199,6 @@ class IsarService {
         .or()
         .typeEqualTo('Encadrant')
         .findAll();
-    print(particiapants.first.name);
     return particiapants;
   }
 
@@ -204,11 +218,45 @@ class IsarService {
         .dive((d) => d.idEqualTo(dive.id))
         .titleEqualTo(diveGroup.title)
         .findAll();
-    if(dive_groups.isEmpty) {
+    if (dive_groups.isEmpty) {
       isar.writeTxnSync(() => isar.diveGroups.putSync(diveGroup));
       return true;
-    }else{
+    } else {
       return false;
+    }
+  }
+
+  Future<bool> upDateDiveGroup(Dive dive, DiveGroup diveGroup) async {
+    final isar = await db;
+    List<DiveGroup> dive_groups = await isar.diveGroups
+        .filter()
+        .dive((d) => d.idEqualTo(dive.id))
+        .titleEqualTo(diveGroup.title)
+        .findAll();
+    if (dive_groups.isNotEmpty) {
+      isar.writeTxnSync(() => isar.diveGroups.putSync(diveGroup));
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<void> updateDiveGroupe(DiveGroup diveGroup) async {
+    final isar = await db;
+    isar.writeTxnSync(() => isar.diveGroups.putSync(diveGroup));
+  }
+
+  Future<void> removeParticipantsInGroupDive(
+      Participant participant, DiveGroup diveGroup) async {
+    final isar = await db;
+    List<Participant> participants = await isar.participants
+        .filter()
+        .diveGroups((q) => q.idEqualTo(diveGroup.id))
+        .idEqualTo(participant.id)
+        .findAll();
+    if(participants.length == 1){
+      diveGroup.participants.remove(participants[0]);
+      isar.writeTxnSync(() => isar.diveGroups.putSync(diveGroup));
     }
   }
 }

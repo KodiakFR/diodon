@@ -428,6 +428,8 @@ class _AddParticipantsState extends State<AddParticipants> {
                                   ..type = selectValueType
                                   ..diveLevel = selectValueLevel
                                   ..aptitude = aptitude
+                                  ..selected = false
+                                  ..isInDiveGroup = false
                                   ..weekends.add(weekend);
                                 bool isSaved = await isarService
                                     .addParticipants(weekend, participant);
@@ -486,7 +488,10 @@ class _AddParticipantsState extends State<AddParticipants> {
             ..diveLevel = participantString[19]
             ..type = participantString[16]
             ..aptitude = _defineAptitude(participantString[19])
+            ..selected = false
+            ..isInDiveGroup = false
             ..weekends.add(weekend);
+          
           await isarService.addParticipants(weekend, participant);
         }
         Navigator.pushNamedAndRemoveUntil(
