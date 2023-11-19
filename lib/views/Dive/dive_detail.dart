@@ -464,7 +464,7 @@ class _DiveDetailState extends State<DiveDetail> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Text(
-              'Heure de départ: ${DateFormat.Hm().format(dive.dateDepart!)}',
+              'Heure de départ: ${DateFormat.Hm().format(dive.dateDepart)}',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Text(
