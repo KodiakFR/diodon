@@ -1,15 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:diodon/entities/weekend.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
 
-
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  HomePage({super.key});
+  final IsarService isarService = IsarService();
 
   @override
   Widget build(BuildContext context) {
-    final IsarService isarService = IsarService();
-
     return Scaffold(
         appBar: AppBar(
           title: const Text(
@@ -45,13 +45,16 @@ class HomePage extends StatelessWidget {
                 }
               },
             ),
-            ElevatedButton(onPressed: () {
-              Navigator.pushNamed(context, "/createWeekend");
-
-            }, child: const Text('Ajouter un weekend'))
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, "/createWeekend");
+              },
+              child: const Text('Ajouter un weekend'),
+            ),
           ],
         )));
   }
+
   Widget displayWeekend(List<Weekend> weekends) {
     return Flexible(
       child: ListView.builder(
@@ -60,11 +63,39 @@ class HomePage extends StatelessWidget {
         itemBuilder: (context, index) {
           return Column(
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, "/weekendDetail",arguments: weekends[index]);
-                },
-                child: Text(weekends[index].title),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/weekendDetail",
+                          arguments: weekends[index]);
+                    },
+                    child: Text(weekends[index].title),
+                  ),
+                  IconButton(onPressed: () {}, icon: const Icon(Icons.edit)),
+                  IconButton(
+                      onPressed: () async {
+                        bool isDelete =
+                            await isarService.deleteWeekend(weekends[index]);
+                        if (isDelete == true) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text(
+                              'Le weekend à été supprimé',
+                              textAlign: TextAlign.center,
+                            ),
+                            backgroundColor: Colors.green,
+                          ));
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, "/homePage", (route) => false);
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                      )),
+                ],
               ),
               const SizedBox(
                 width: 100,

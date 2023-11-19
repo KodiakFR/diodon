@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
           "/connexion": (context) => ConnexionView(),
           "/register": (context) => RegisterView(),
           "/signatureDialog": (context) => const SignatureDialog(),
-          "/homePage":(context) => const HomePage(),
+          "/homePage":(context) => HomePage(),
           "/createWeekend":(context) =>  const CreateWeekend(),
           "/addParticipants":(context) => const AddParticipants(),
           "/weekendDetail":(context) => const WeekendDetail(),

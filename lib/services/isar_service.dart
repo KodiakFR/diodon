@@ -104,6 +104,12 @@ class IsarService {
     }
     return null;
   }
+
+  Future<bool> deleteWeekend(Weekend weekend) async {
+    final isar = await db;
+    final success = isar.writeTxnSync(() => isar.weekends.deleteSync(weekend.id!));
+    return success;
+  }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------- PARTICIPANTS-------------------------------------------------------------------------
 
@@ -254,7 +260,7 @@ class IsarService {
         .diveGroups((q) => q.idEqualTo(diveGroup.id))
         .idEqualTo(participant.id)
         .findAll();
-    if(participants.length == 1){
+    if (participants.length == 1) {
       diveGroup.participants.remove(participants[0]);
       isar.writeTxnSync(() => isar.diveGroups.putSync(diveGroup));
     }
