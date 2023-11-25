@@ -421,7 +421,8 @@ class _AddParticipantsState extends State<AddParticipants> {
                             child: const Text('Ajouter'),
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                String? aptitude = _defineAptitude(selectValueLevel);
+                                String? aptitude =
+                                    _defineAptitude(selectValueLevel);
                                 Participant participant = Participant()
                                   ..firstName = _controllerFirstName.text
                                   ..name = _controllerName.text.toUpperCase()
@@ -439,6 +440,16 @@ class _AddParticipantsState extends State<AddParticipants> {
                                       "/addParticipants",
                                       arguments: weekend,
                                       (route) => false);
+                                } else {
+                                  Navigator.pop(context);
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(const SnackBar(
+                                    content: Text(
+                                      'L\'utilisateur est déjà dans la liste',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    backgroundColor: Colors.red,
+                                  ));
                                 }
                               }
                             },
@@ -491,7 +502,7 @@ class _AddParticipantsState extends State<AddParticipants> {
             ..selected = false
             ..isInDiveGroup = false
             ..weekends.add(weekend);
-          
+
           await isarService.addParticipants(weekend, participant);
         }
         Navigator.pushNamedAndRemoveUntil(
@@ -550,7 +561,7 @@ class _AddParticipantsState extends State<AddParticipants> {
         aptitude = "E4";
         break;
       default:
-      aptitude = "";
+        aptitude = "";
     }
     return aptitude;
   }
