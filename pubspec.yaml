@@ -40,7 +40,7 @@ dependencies:
   image_gallery_saver: ^2.0.3
   hand_signature: ^3.0.1
   file_saver: ^0.2.8
-  path_provider: ^2.1.0
+  path_provider: ^2.1.2
   isar: ^3.1.0+1
   isar_flutter_libs: ^3.1.0+1
   crypt: ^4.3.0

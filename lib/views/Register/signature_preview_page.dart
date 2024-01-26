@@ -2,9 +2,9 @@
 
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../entities/user.dart';
@@ -13,11 +13,8 @@ class SignaturePreviewPage extends StatelessWidget {
   final Uint8List signature;
   final User user;
 
-  const SignaturePreviewPage({
-    super.key,
-    required this.signature,
-    required this.user
-  });
+  const SignaturePreviewPage(
+      {super.key, required this.signature, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -36,35 +33,28 @@ class SignaturePreviewPage extends StatelessWidget {
     );
   }
 
-
   Future _storeSignature(BuildContext context) async {
     await Permission.storage.request();
     final status = await Permission.storage.status;
     if (!status.isGranted) {
       await Permission.storage.request();
     }
-    const String directory = "/storage/emulated/0/Android/data/com.example.diodon/files";
+    final Directory directory = await getApplicationDocumentsDirectory();
+    String directoryPath = directory.path;
     final String name = '${user.name}_${user.firstName}.png';
-    const String subFolderName = 'signatures';
-    String path = '$directory/$subFolderName/$name';
-    // Créez le sous-dossier s'il n'existe pas déjà
-    await Directory('$directory/$subFolderName').create();
-    await FileSaver.instance
+    String path = '$directoryPath/$name';
+    String filePath = await FileSaver.instance
         .saveFile(name: name, bytes: signature, filePath: path);
-
-    await File('$directory/$name').rename(path);
-
-    final bool fileExist = await File(path).exists();
+    final bool fileExist = await File(filePath).exists();
     if (fileExist) {
-     Navigator.pushReplacementNamed(context, "/connexion");
-
-      const SnackBar(
-        content: Text('La signature est sauvegarder'),
+      Navigator.pushNamed(context, "/connexion");
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('L\'utilisateur a été sauvegardé avec succés'),
         backgroundColor: Colors.green,
-      );
+      ));
     } else {
       const SnackBar(
-        content: Text('Suvegarde de la signature à échoué, veuillez rééssayer'),
+        content: Text('La création de l\'utilisateur à échoué, veuillez rééssayer'),
         backgroundColor: Colors.red,
       );
     }
