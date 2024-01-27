@@ -494,16 +494,17 @@ class _AddParticipantsState extends State<AddParticipants> {
           }
           participantString = temp.split(';');
           Participant participant = Participant()
-            ..name = participantString[5]
-            ..firstName = participantString[4]
-            ..diveLevel = participantString[19]
-            ..type = participantString[16]
-            ..aptitude = _defineAptitude(participantString[19])
+            ..name = participantString[8]
+            ..firstName = participantString[7]
+            ..diveLevel = participantString[10]
+            ..type = participantString[9]
+            ..aptitude = _defineAptitude(participantString[10])
             ..selected = false
             ..isInDiveGroup = false
             ..weekends.add(weekend);
-
-          await isarService.addParticipants(weekend, participant);
+          if (participant.name != "" && participant.name != "NOM") {
+            await isarService.addParticipants(weekend, participant);
+          }
         }
         Navigator.pushNamedAndRemoveUntil(
             context, "/addParticipants", arguments: weekend, (route) => false);
