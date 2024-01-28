@@ -6,17 +6,17 @@ import 'weekend.dart';
 part 'dive.g.dart';
 
 @collection
-class Dive{
+class Dive {
   Id id = Isar.autoIncrement;
   late String title;
   late String divingSite;
-  late DateTime dateDepart; 
+  late DateTime dateDepart;
   late String dp;
   late String boat;
   late String captain;
   late int nbPeople;
   late int nbDiver;
+  @Backlink(to: "dive")
   final divreGroups = IsarLinks<DiveGroup>();
   final weekend = IsarLink<Weekend>();
-
 }

@@ -107,7 +107,8 @@ class IsarService {
 
   Future<bool> deleteWeekend(Weekend weekend) async {
     final isar = await db;
-    final success = isar.writeTxnSync(() => isar.weekends.deleteSync(weekend.id!));
+    final success =
+        isar.writeTxnSync(() => isar.weekends.deleteSync(weekend.id!));
     return success;
   }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -123,9 +124,8 @@ class IsarService {
 
   Future<bool> addParticipants(Weekend weekend, Participant participant) async {
     final isar = await db;
-    final List<Participant> participants = await isar.participants
+    List<Participant> participants = await isar.participants
         .filter()
-        .weekends((q) => q.idEqualTo(weekend.id))
         .firstNameEqualTo(participant.firstName)
         .nameEqualTo(participant.name)
         .findAll();
@@ -133,7 +133,20 @@ class IsarService {
       isar.writeTxnSync<int>(() => isar.participants.putSync(participant));
       return true;
     } else {
-      return false;
+      final Participant participantExist = participants.first;
+      participants = await isar.participants
+          .filter()
+          .weekends((q) => q.idEqualTo(weekend.id))
+          .firstNameEqualTo(participant.firstName)
+          .nameEqualTo(participant.name)
+          .findAll();
+      if (participants.isNotEmpty) {
+        return false;
+      } else {
+        participantExist.weekends.add(weekend);
+        isar.writeTxnSync(() => isar.participants.putSync(participantExist));
+        return true;
+      }
     }
   }
 
@@ -263,6 +276,21 @@ class IsarService {
     if (participants.length == 1) {
       diveGroup.participants.remove(participants[0]);
       isar.writeTxnSync(() => isar.diveGroups.putSync(diveGroup));
+    }
+  }
+
+  Future<bool> isInDiveGroup(Dive dive, Participant participant) async {
+    final isar = await db;
+    List<Participant> participants = await isar.participants
+        .filter()
+        .nameEqualTo(participant.name)
+        .firstNameEqualTo(participant.firstName)
+        .diveGroups((dg) => dg.dive((d) => d.idEqualTo(dive.id)))
+        .findAll();
+    if (participants.isEmpty) {
+      return false;
+    } else {
+      return true;
     }
   }
 }

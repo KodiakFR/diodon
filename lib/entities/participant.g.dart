@@ -32,23 +32,18 @@ const ParticipantSchema = CollectionSchema(
       name: r'firstName',
       type: IsarType.string,
     ),
-    r'isInDiveGroup': PropertySchema(
-      id: 3,
-      name: r'isInDiveGroup',
-      type: IsarType.bool,
-    ),
     r'name': PropertySchema(
-      id: 4,
+      id: 3,
       name: r'name',
       type: IsarType.string,
     ),
     r'selected': PropertySchema(
-      id: 5,
+      id: 4,
       name: r'selected',
       type: IsarType.bool,
     ),
     r'type': PropertySchema(
-      id: 6,
+      id: 5,
       name: r'type',
       type: IsarType.string,
     )
@@ -128,10 +123,9 @@ void _participantSerialize(
   writer.writeString(offsets[0], object.aptitude);
   writer.writeString(offsets[1], object.diveLevel);
   writer.writeString(offsets[2], object.firstName);
-  writer.writeBool(offsets[3], object.isInDiveGroup);
-  writer.writeString(offsets[4], object.name);
-  writer.writeBool(offsets[5], object.selected);
-  writer.writeString(offsets[6], object.type);
+  writer.writeString(offsets[3], object.name);
+  writer.writeBool(offsets[4], object.selected);
+  writer.writeString(offsets[5], object.type);
 }
 
 Participant _participantDeserialize(
@@ -145,10 +139,9 @@ Participant _participantDeserialize(
   object.diveLevel = reader.readStringOrNull(offsets[1]);
   object.firstName = reader.readStringOrNull(offsets[2]);
   object.id = id;
-  object.isInDiveGroup = reader.readBoolOrNull(offsets[3]);
-  object.name = reader.readStringOrNull(offsets[4]);
-  object.selected = reader.readBoolOrNull(offsets[5]);
-  object.type = reader.readStringOrNull(offsets[6]);
+  object.name = reader.readStringOrNull(offsets[3]);
+  object.selected = reader.readBoolOrNull(offsets[4]);
+  object.type = reader.readStringOrNull(offsets[5]);
   return object;
 }
 
@@ -166,12 +159,10 @@ P _participantDeserializeProp<P>(
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readBoolOrNull(offset)) as P;
-    case 4:
       return (reader.readStringOrNull(offset)) as P;
-    case 5:
+    case 4:
       return (reader.readBoolOrNull(offset)) as P;
-    case 6:
+    case 5:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -788,34 +779,6 @@ extension ParticipantQueryFilter
     });
   }
 
-  QueryBuilder<Participant, Participant, QAfterFilterCondition>
-      isInDiveGroupIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'isInDiveGroup',
-      ));
-    });
-  }
-
-  QueryBuilder<Participant, Participant, QAfterFilterCondition>
-      isInDiveGroupIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'isInDiveGroup',
-      ));
-    });
-  }
-
-  QueryBuilder<Participant, Participant, QAfterFilterCondition>
-      isInDiveGroupEqualTo(bool? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'isInDiveGroup',
-        value: value,
-      ));
-    });
-  }
-
   QueryBuilder<Participant, Participant, QAfterFilterCondition> nameIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1307,19 +1270,6 @@ extension ParticipantQuerySortBy
     });
   }
 
-  QueryBuilder<Participant, Participant, QAfterSortBy> sortByIsInDiveGroup() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isInDiveGroup', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Participant, Participant, QAfterSortBy>
-      sortByIsInDiveGroupDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isInDiveGroup', Sort.desc);
-    });
-  }
-
   QueryBuilder<Participant, Participant, QAfterSortBy> sortByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -1407,19 +1357,6 @@ extension ParticipantQuerySortThenBy
     });
   }
 
-  QueryBuilder<Participant, Participant, QAfterSortBy> thenByIsInDiveGroup() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isInDiveGroup', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Participant, Participant, QAfterSortBy>
-      thenByIsInDiveGroupDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isInDiveGroup', Sort.desc);
-    });
-  }
-
   QueryBuilder<Participant, Participant, QAfterSortBy> thenByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -1480,12 +1417,6 @@ extension ParticipantQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Participant, Participant, QDistinct> distinctByIsInDiveGroup() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'isInDiveGroup');
-    });
-  }
-
   QueryBuilder<Participant, Participant, QDistinct> distinctByName(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1530,12 +1461,6 @@ extension ParticipantQueryProperty
   QueryBuilder<Participant, String?, QQueryOperations> firstNameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'firstName');
-    });
-  }
-
-  QueryBuilder<Participant, bool?, QQueryOperations> isInDiveGroupProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'isInDiveGroup');
     });
   }
 

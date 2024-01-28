@@ -66,10 +66,11 @@ const DiveSchema = CollectionSchema(
   indexes: {},
   links: {
     r'divreGroups': LinkSchema(
-      id: -3927974159904947061,
+      id: 3201159153957766525,
       name: r'divreGroups',
       target: r'DiveGroup',
       single: false,
+      linkName: r'dive',
     ),
     r'weekend': LinkSchema(
       id: 262558211512391885,

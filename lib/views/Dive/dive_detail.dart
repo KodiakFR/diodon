@@ -130,8 +130,11 @@ class _DiveDetailState extends State<DiveDetail> {
                                     dive_groups[index]
                                         .participants
                                         .add(participant);
+                                    dive.divreGroups
+                                        .elementAt(index)
+                                        .participants
+                                        .add(participant);
                                     participant.selected = false;
-                                    participant.isInDiveGroup = true;
                                     isarService.upDateParticipant(participant);
                                   }
                                   isarService
@@ -209,15 +212,17 @@ class _DiveDetailState extends State<DiveDetail> {
                                           MainAxisAlignment.spaceAround,
                                       children: [
                                         Column(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             const Padding(
-                                              padding: EdgeInsets.only(
-                                                  bottom: 10),
+                                              padding:
+                                                  EdgeInsets.only(bottom: 10),
                                               child: Text(
                                                 'Consigne DP',
                                                 style: TextStyle(
-                                                    fontWeight: FontWeight.bold),
+                                                    fontWeight:
+                                                        FontWeight.bold),
                                               ),
                                             ),
                                             Text(
@@ -227,7 +232,8 @@ class _DiveDetailState extends State<DiveDetail> {
                                           ],
                                         ),
                                         Column(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             const Padding(
                                               padding: EdgeInsets.only(
@@ -235,7 +241,8 @@ class _DiveDetailState extends State<DiveDetail> {
                                               child: Text(
                                                 'Réalisé',
                                                 style: TextStyle(
-                                                    fontWeight: FontWeight.bold),
+                                                    fontWeight:
+                                                        FontWeight.bold),
                                               ),
                                             ),
                                             Text(
@@ -301,10 +308,13 @@ class _DiveDetailState extends State<DiveDetail> {
                                                   .removeParticipantsInGroupDive(
                                                       participant,
                                                       dive_groups[index]);
-                                              participant.isInDiveGroup = false;
                                               await isarService
                                                   .upDateParticipant(
                                                       participant);
+                                              dive.divreGroups
+                                                  .elementAt(index)
+                                                  .participants
+                                                  .remove(participant);
                                               Navigator.pushReplacementNamed(
                                                   context, "/diveDetail",
                                                   arguments: dive);
@@ -331,9 +341,9 @@ class _DiveDetailState extends State<DiveDetail> {
         ),
         ElevatedButton(
             onPressed: () async {
-              List<DiveGroup> dive_group =
+              List<DiveGroup> diveGroups =
                   await isarService.getAllDiveGroupForDive(dive);
-              int numberDiveGroup = dive_group.length + 1;
+              int numberDiveGroup = diveGroups.length + 1;
               DiveGroup diveGroup = DiveGroup()
                 ..dive.value = dive
                 ..title = "palanquée $numberDiveGroup"
@@ -405,9 +415,11 @@ class _DiveDetailState extends State<DiveDetail> {
                             .map(
                               (Participant participant) => DataRow(
                                 selected: participant.selected!,
-                                onSelectChanged: (isSelect) {
+                                onSelectChanged: (isSelect) async {
+                                  bool isInGroupDive = await isarService
+                                      .isInDiveGroup(dive, participant);
                                   setState(() {
-                                    if (participant.isInDiveGroup == false) {
+                                    if (isInGroupDive == false) {
                                       participant.selected = isSelect;
                                       isarService
                                           .upDateParticipant(participant);
@@ -417,22 +429,34 @@ class _DiveDetailState extends State<DiveDetail> {
                                 cells: [
                                   DataCell(Text(participant.firstName ?? '',
                                       style: TextStyle(
-                                          decoration: participant.isInDiveGroup!
+                                          decoration: dive.divreGroups.any(
+                                                  (element) => element
+                                                      .participants
+                                                      .contains(participant))
                                               ? TextDecoration.lineThrough
                                               : null))),
                                   DataCell(Text(participant.name ?? '',
                                       style: TextStyle(
-                                          decoration: participant.isInDiveGroup!
+                                          decoration: dive.divreGroups.any(
+                                                  (element) => element
+                                                      .participants
+                                                      .contains(participant))
                                               ? TextDecoration.lineThrough
                                               : null))),
                                   DataCell(Text(participant.diveLevel ?? '',
                                       style: TextStyle(
-                                          decoration: participant.isInDiveGroup!
+                                          decoration: dive.divreGroups.any(
+                                                  (element) => element
+                                                      .participants
+                                                      .contains(participant))
                                               ? TextDecoration.lineThrough
                                               : null))),
                                   DataCell(Text(participant.aptitude ?? '',
                                       style: TextStyle(
-                                          decoration: participant.isInDiveGroup!
+                                          decoration: dive.divreGroups.any(
+                                                  (element) => element
+                                                      .participants
+                                                      .contains(participant))
                                               ? TextDecoration.lineThrough
                                               : null))),
                                 ],
@@ -534,251 +558,259 @@ class _DiveDetailState extends State<DiveDetail> {
                   width: MediaQuery.of(context).size.width / 1.2,
                   child: Form(
                     key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: Column(
-                                  children: [
-                                    const Text("Paramètres générales"),
-                                    const SizedBox(
-                                      height: 30,
-                                    ),
-                                    Row(
-                                      children: [
-                                        const Text("Plongée Autonomne"),
-                                        Switch(
-                                            value: diveGroup.standAlone!,
-                                            onChanged: (bool value) {
-                                              setState(() {
-                                                diveGroup.standAlone = value;
-                                                diveGroup.supervised = !value;
-                                              });
-                                            }),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        const Text("Plongée Encadré"),
-                                        Switch(
-                                            value: diveGroup.supervised!,
-                                            onChanged: (bool value) {
-                                              setState(() {
-                                                diveGroup.supervised = value;
-                                                diveGroup.standAlone = !value;
-                                              });
-                                            }),
-                                      ],
-                                    ),
-                                    TextFormField(
-                                      controller: controllerStartHour,
-                                      showCursor: true,
-                                      readOnly: true,
-                                      decoration: const InputDecoration(
-                                        icon:
-                                            Icon(Icons.calendar_today_rounded),
-                                        labelText: 'Heure d\'immersion',
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Column(
+                                    children: [
+                                      const Text("Paramètres générales"),
+                                      const SizedBox(
+                                        height: 30,
                                       ),
-                                      onTap: () async {
-                                        TimeOfDay? pickedHour =
-                                            await showTimePicker(
-                                          context: context,
-                                          initialTime: TimeOfDay.now(),
-                                          builder: (BuildContext context,
-                                              Widget? child) {
-                                            return MediaQuery(
-                                              data: MediaQuery.of(context)
-                                                  .copyWith(
-                                                      alwaysUse24HourFormat:
-                                                          true),
-                                              child: child!,
-                                            );
-                                          },
-                                        );
-                                        if (pickedHour != null) {
-                                          setState(() {
-                                            var df = DateFormat("h:mm a");
-                                            var dt = df.parse(
-                                                pickedHour.format(context));
-                                            controllerStartHour.text =
-                                                DateFormat("HH:mm").format(dt);
-                                          });
-                                        }
-                                      },
-                                    ),
-                                    TextFormField(
-                                      controller: controllerStartEnd,
-                                      showCursor: true,
-                                      readOnly: true,
-                                      decoration: const InputDecoration(
-                                        icon:
-                                            Icon(Icons.calendar_today_rounded),
-                                        labelText: 'Heure sortie',
+                                      Row(
+                                        children: [
+                                          const Text("Plongée Autonomne"),
+                                          Switch(
+                                              value: diveGroup.standAlone!,
+                                              onChanged: (bool value) {
+                                                setState(() {
+                                                  diveGroup.standAlone = value;
+                                                  diveGroup.supervised = !value;
+                                                });
+                                              }),
+                                        ],
                                       ),
-                                      onTap: () async {
-                                        TimeOfDay? pickedHour =
-                                            await showTimePicker(
-                                          context: context,
-                                          initialTime: TimeOfDay.now(),
-                                          builder: (BuildContext context,
-                                              Widget? child) {
-                                            return MediaQuery(
-                                              data: MediaQuery.of(context)
-                                                  .copyWith(
-                                                      alwaysUse24HourFormat:
-                                                          true),
-                                              child: child!,
-                                            );
-                                          },
-                                        );
-                                        if (pickedHour != null) {
-                                          setState(() {
-                                            var df = DateFormat("h:mm a");
-                                            var dt = df.parse(
-                                                pickedHour.format(context));
-                                            controllerStartEnd.text =
-                                                DateFormat("HH:mm").format(dt);
-                                          });
-                                        }
-                                      },
-                                    ),
-                                  ],
+                                      Row(
+                                        children: [
+                                          const Text("Plongée Encadré"),
+                                          Switch(
+                                              value: diveGroup.supervised!,
+                                              onChanged: (bool value) {
+                                                setState(() {
+                                                  diveGroup.supervised = value;
+                                                  diveGroup.standAlone = !value;
+                                                });
+                                              }),
+                                        ],
+                                      ),
+                                      TextFormField(
+                                        controller: controllerStartHour,
+                                        showCursor: true,
+                                        readOnly: true,
+                                        decoration: const InputDecoration(
+                                          icon: Icon(
+                                              Icons.calendar_today_rounded),
+                                          labelText: 'Heure d\'immersion',
+                                        ),
+                                        onTap: () async {
+                                          TimeOfDay? pickedHour =
+                                              await showTimePicker(
+                                            context: context,
+                                            initialTime: TimeOfDay.now(),
+                                            builder: (BuildContext context,
+                                                Widget? child) {
+                                              return MediaQuery(
+                                                data: MediaQuery.of(context)
+                                                    .copyWith(
+                                                        alwaysUse24HourFormat:
+                                                            true),
+                                                child: child!,
+                                              );
+                                            },
+                                          );
+                                          if (pickedHour != null) {
+                                            setState(() {
+                                              var df = DateFormat("h:mm a");
+                                              var dt = df.parse(
+                                                  pickedHour.format(context));
+                                              controllerStartHour.text =
+                                                  DateFormat("HH:mm")
+                                                      .format(dt);
+                                            });
+                                          }
+                                        },
+                                      ),
+                                      TextFormField(
+                                        controller: controllerStartEnd,
+                                        showCursor: true,
+                                        readOnly: true,
+                                        decoration: const InputDecoration(
+                                          icon: Icon(
+                                              Icons.calendar_today_rounded),
+                                          labelText: 'Heure sortie',
+                                        ),
+                                        onTap: () async {
+                                          TimeOfDay? pickedHour =
+                                              await showTimePicker(
+                                            context: context,
+                                            initialTime: TimeOfDay.now(),
+                                            builder: (BuildContext context,
+                                                Widget? child) {
+                                              return MediaQuery(
+                                                data: MediaQuery.of(context)
+                                                    .copyWith(
+                                                        alwaysUse24HourFormat:
+                                                            true),
+                                                child: child!,
+                                              );
+                                            },
+                                          );
+                                          if (pickedHour != null) {
+                                            setState(() {
+                                              var df = DateFormat("h:mm a");
+                                              var dt = df.parse(
+                                                  pickedHour.format(context));
+                                              controllerStartEnd.text =
+                                                  DateFormat("HH:mm")
+                                                      .format(dt);
+                                            });
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            Expanded(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: Column(
-                                  children: [
-                                    const Text("Consigne du DP"),
-                                    const SizedBox(
-                                      height: 30,
-                                    ),
-                                    TextFormField(
-                                      controller: controllerDeepMaxDP,
-                                      keyboardType: TextInputType.number,
-                                      decoration: const InputDecoration(
-                                          labelText: 'Profondeur max'),
-                                      validator: (value) {
-                                        return null;
-                                      },
-                                    ),
-                                    TextFormField(
-                                      controller: controllerTimeMaxDP,
-                                      keyboardType: TextInputType.number,
-                                      decoration: const InputDecoration(
-                                          labelText: 'Temps max (min)'),
-                                      validator: (value) {
-                                        return null;
-                                      },
-                                    ),
-                                    const SizedBox(
-                                      height: 40,
-                                    ),
-                                  ],
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Column(
+                                    children: [
+                                      const Text("Consigne du DP"),
+                                      const SizedBox(
+                                        height: 30,
+                                      ),
+                                      TextFormField(
+                                        controller: controllerDeepMaxDP,
+                                        keyboardType: TextInputType.number,
+                                        decoration: const InputDecoration(
+                                            labelText: 'Profondeur max'),
+                                        validator: (value) {
+                                          return null;
+                                        },
+                                      ),
+                                      TextFormField(
+                                        controller: controllerTimeMaxDP,
+                                        keyboardType: TextInputType.number,
+                                        decoration: const InputDecoration(
+                                            labelText: 'Temps max (min)'),
+                                        validator: (value) {
+                                          return null;
+                                        },
+                                      ),
+                                      const SizedBox(
+                                        height: 40,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            Expanded(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: Column(
-                                  children: [
-                                    const Text("Réalisé"),
-                                    const SizedBox(
-                                      height: 30,
-                                    ),
-                                    TextFormField(
-                                      controller: controllerDeepMaxReal,
-                                      keyboardType: TextInputType.number,
-                                      decoration: const InputDecoration(
-                                          labelText: 'Profondeur de plongée'),
-                                      validator: (value) {
-                                        return null;
-                                      },
-                                    ),
-                                    TextFormField(
-                                      controller: controllerTimeMaxReal,
-                                      keyboardType: TextInputType.number,
-                                      decoration: const InputDecoration(
-                                          labelText: 'Temps de plongée (min)'),
-                                      validator: (value) {
-                                        return null;
-                                      },
-                                    ),
-                                    TextFormField(
-                                      controller: controllerTimDecoStop,
-                                      decoration: const InputDecoration(
-                                          labelText: 'Palier'),
-                                      validator: (value) {
-                                        return null;
-                                      },
-                                    ),
-                                  ],
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Column(
+                                    children: [
+                                      const Text("Réalisé"),
+                                      const SizedBox(
+                                        height: 30,
+                                      ),
+                                      TextFormField(
+                                        controller: controllerDeepMaxReal,
+                                        keyboardType: TextInputType.number,
+                                        decoration: const InputDecoration(
+                                            labelText: 'Profondeur de plongée'),
+                                        validator: (value) {
+                                          return null;
+                                        },
+                                      ),
+                                      TextFormField(
+                                        controller: controllerTimeMaxReal,
+                                        keyboardType: TextInputType.number,
+                                        decoration: const InputDecoration(
+                                            labelText:
+                                                'Temps de plongée (min)'),
+                                        validator: (value) {
+                                          return null;
+                                        },
+                                      ),
+                                      TextFormField(
+                                        controller: controllerTimDecoStop,
+                                        decoration: const InputDecoration(
+                                            labelText: 'Palier'),
+                                        validator: (value) {
+                                          return null;
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 40),
-                          child: ElevatedButton(
-                              onPressed: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  DateTime dateStart = DateTime(1970);
-                                  DateTime dateEnd = DateTime(1970);
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 40),
+                            child: ElevatedButton(
+                                onPressed: () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    DateTime dateStart = DateTime(1970);
+                                    DateTime dateEnd = DateTime(1970);
 
-                                  if (controllerStartHour.text.isNotEmpty) {
-                                    int hour = int.parse(controllerStartHour
-                                        .text
-                                        .substring(0, 2));
-                                    int minute = int.parse(controllerStartHour
-                                        .text
-                                        .substring(3, 5));
-                                    dateStart = dateStart.add(
-                                        Duration(hours: hour, minutes: minute));
+                                    if (controllerStartHour.text.isNotEmpty) {
+                                      int hour = int.parse(controllerStartHour
+                                          .text
+                                          .substring(0, 2));
+                                      int minute = int.parse(controllerStartHour
+                                          .text
+                                          .substring(3, 5));
+                                      dateStart = dateStart.add(Duration(
+                                          hours: hour, minutes: minute));
+                                    }
+                                    if (controllerStartEnd.text.isNotEmpty) {
+                                      int hour = int.parse(controllerStartEnd
+                                          .text
+                                          .substring(0, 2));
+                                      int minute = int.parse(controllerStartEnd
+                                          .text
+                                          .substring(3, 5));
+                                      dateEnd = dateEnd.add(Duration(
+                                          hours: hour, minutes: minute));
+                                    }
+                                    diveGroup.hourImmersion = dateStart;
+                                    diveGroup.riseHour = dateEnd;
+                                    diveGroup.dpDeep = controllerDeepMaxDP.text;
+                                    diveGroup.dpTime = controllerTimeMaxDP.text;
+                                    diveGroup.realDeep =
+                                        controllerDeepMaxReal.text;
+                                    diveGroup.realTime =
+                                        controllerTimeMaxReal.text;
+                                    diveGroup.divingStop =
+                                        controllerTimDecoStop.text;
                                   }
-                                  if (controllerStartEnd.text.isNotEmpty) {
-                                    int hour = int.parse(controllerStartEnd.text
-                                        .substring(0, 2));
-                                    int minute = int.parse(controllerStartEnd
-                                        .text
-                                        .substring(3, 5));
-                                    dateEnd = dateEnd.add(
-                                        Duration(hours: hour, minutes: minute));
+                                  bool isUpdate = await isarService
+                                      .upDateDiveGroup(dive, diveGroup);
+                                  if (isUpdate == true) {
+                                    Navigator.pushReplacementNamed(
+                                        context,
+                                        arguments: dive,
+                                        "/diveDetail");
+                                  } else {
+                                    print('Erreur de sauvegarde');
                                   }
-                                  diveGroup.hourImmersion = dateStart;
-                                  diveGroup.riseHour = dateEnd;
-                                  diveGroup.dpDeep = controllerDeepMaxDP.text;
-                                  diveGroup.dpTime = controllerTimeMaxDP.text;
-                                  diveGroup.realDeep =
-                                      controllerDeepMaxReal.text;
-                                  diveGroup.realTime =
-                                      controllerTimeMaxReal.text;
-                                  diveGroup.divingStop =
-                                      controllerTimDecoStop.text;
-                                }
-                                bool isUpdate = await isarService
-                                    .upDateDiveGroup(dive, diveGroup);
-                                if (isUpdate == true) {
-                                  Navigator.pushReplacementNamed(
-                                      context, arguments: dive, "/diveDetail");
-                                } else {
-                                  print('Erreur de sauvegarde');
-                                }
-                              },
-                              child: const Text('Valider')),
-                        )
-                      ],
+                                },
+                                child: const Text('Valider')),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 );

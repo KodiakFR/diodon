@@ -49,14 +49,13 @@ class _CreateDiveState extends State<CreateDive> {
               context, "/homePage", (route) => false),
         ),
       ),
-      body: SafeArea(
-          child: Form(
-        key: formKey,
-        child: Column(
-          children: [
-            Expanded(
-              flex: 8,
-              child: Row(
+      body: SingleChildScrollView(
+        child: SafeArea(
+            child: Form(
+          key: formKey,
+          child: Column(
+            children: [
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
@@ -138,15 +137,18 @@ class _CreateDiveState extends State<CreateDive> {
                               }
                             },
                           ),
-                          BlocBuilder<UserBloc,User>(builder: (context, state) {
-                            controllerDP.text = '${state.firstName} ${state.name}';
-                            return TextFormField(
-                            controller: controllerDP,
-                            decoration: const InputDecoration(
-                            labelText: 'Nom du DP',
-                            ),
-                          );
-                          },)
+                          BlocBuilder<UserBloc, User>(
+                            builder: (context, state) {
+                              controllerDP.text =
+                                  '${state.firstName} ${state.name}';
+                              return TextFormField(
+                                controller: controllerDP,
+                                decoration: const InputDecoration(
+                                  labelText: 'Nom du DP',
+                                ),
+                              );
+                            },
+                          )
                         ],
                       ),
                     ),
@@ -193,62 +195,63 @@ class _CreateDiveState extends State<CreateDive> {
                       ))
                 ],
               ),
-            ),
-            ElevatedButton(
-                onPressed: () async {
-                  if (formKey.currentState!.validate()) {
-                    final List<Dive> dives =
-                        await isarService.getAllDiveByWeekend(weekend);
-                    //definition de la date de départ
+              ElevatedButton(
+                  onPressed: () async {
+                    if (formKey.currentState!.validate()) {
+                      final List<Dive> dives =
+                          await isarService.getAllDiveByWeekend(weekend);
+                      //definition de la date de départ
 
-                    int year =
-                        int.parse(controllerStartDate.text.substring(6, 10));
-                    int month =
-                        int.parse(controllerStartDate.text.substring(3, 5));
-                    int day =
-                        int.parse(controllerStartDate.text.substring(0, 2));
-                    DateTime date = DateTime(year, month, day);
+                      int year =
+                          int.parse(controllerStartDate.text.substring(6, 10));
+                      int month =
+                          int.parse(controllerStartDate.text.substring(3, 5));
+                      int day =
+                          int.parse(controllerStartDate.text.substring(0, 2));
+                      DateTime date = DateTime(year, month, day);
 
-                    if (controllerStartHour.text.isNotEmpty) {
-                      int hour =
-                          int.parse(controllerStartHour.text.substring(0, 2));
-                      int minute =
-                          int.parse(controllerStartHour.text.substring(3, 5));
-                      date = date.add(Duration(hours: hour, minutes: minute));
+                      if (controllerStartHour.text.isNotEmpty) {
+                        int hour =
+                            int.parse(controllerStartHour.text.substring(0, 2));
+                        int minute =
+                            int.parse(controllerStartHour.text.substring(3, 5));
+                        date = date.add(Duration(hours: hour, minutes: minute));
+                      }
+                      Dive dive = Dive()
+                        ..title = "Plongée N° ${dives.length + 1}"
+                        ..divingSite = constrollerDiveSite.text
+                        ..dateDepart = date
+                        ..dp = controllerDP.text
+                        ..boat = controllerBoat.text
+                        ..captain = controllerCaptainName.text
+                        ..nbPeople = int.parse(controllerNbPerson.text)
+                        ..nbDiver = int.parse(controllerNbDivers.text)
+                        ..weekend.value = weekend;
+
+                      bool isCreate = await isarService.saveDive(weekend, dive);
+                      if (isCreate == true) {
+                        Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            "/diveDetail",
+                            arguments: dive,
+                            (route) => false);
+                      } else {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text(
+                            'Une plongée avec le même nom existe déjà',
+                            textAlign: TextAlign.center,
+                          ),
+                          backgroundColor: Colors.red,
+                        ));
+                      }
                     }
-                    Dive dive = Dive()
-                      ..title = "Plongée N° ${dives.length + 1}"
-                      ..divingSite = constrollerDiveSite.text
-                      ..dateDepart = date
-                      ..dp = controllerDP.text
-                      ..boat = controllerBoat.text
-                      ..captain = controllerCaptainName.text
-                      ..nbPeople = int.parse(controllerNbPerson.text)
-                      ..nbDiver = int.parse(controllerNbDivers.text)
-                      ..weekend.value = weekend;
-
-                    bool isCreate = await isarService.saveDive(weekend, dive);
-                    if (isCreate == true) {
-                      Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          "/diveDetail",
-                          arguments: dive,
-                          (route) => false);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text(
-                          'Une plongée avec le même nom existe déjà',
-                          textAlign: TextAlign.center,
-                        ),
-                        backgroundColor: Colors.red,
-                      ));
-                    }
-                  }
-                },
-                child: const Text("Valider"))
-          ],
-        ),
-      )),
+                  },
+                  child: const Text("Valider"))
+            ],
+          ),
+        )),
+      ),
     );
   }
 }

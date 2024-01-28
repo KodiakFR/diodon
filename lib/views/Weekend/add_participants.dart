@@ -430,7 +430,6 @@ class _AddParticipantsState extends State<AddParticipants> {
                                   ..diveLevel = selectValueLevel
                                   ..aptitude = aptitude
                                   ..selected = false
-                                  ..isInDiveGroup = false
                                   ..weekends.add(weekend);
                                 bool isSaved = await isarService
                                     .addParticipants(weekend, participant);
@@ -500,7 +499,6 @@ class _AddParticipantsState extends State<AddParticipants> {
             ..type = participantString[9]
             ..aptitude = _defineAptitude(participantString[10])
             ..selected = false
-            ..isInDiveGroup = false
             ..weekends.add(weekend);
           if (participant.name != "" && participant.name != "NOM") {
             await isarService.addParticipants(weekend, participant);
@@ -517,7 +515,6 @@ class _AddParticipantsState extends State<AddParticipants> {
         ),
         backgroundColor: Colors.red,
       ));
-      print('Erreur lors de la sélection et de la lecture du fichier CSV $e');
       return null;
     }
   }

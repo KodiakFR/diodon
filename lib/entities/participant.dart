@@ -13,7 +13,6 @@ class Participant{
   String? type;
   String? aptitude;
   bool? selected;
-  bool? isInDiveGroup;
   final weekends = IsarLinks<Weekend>();
   final diveGroups = IsarLinks<DiveGroup>();
 }
