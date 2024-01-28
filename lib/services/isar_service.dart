@@ -107,8 +107,39 @@ class IsarService {
 
   Future<bool> deleteWeekend(Weekend weekend) async {
     final isar = await db;
+
+    List<DiveGroup> diveGroups = await isar.diveGroups
+        .filter()
+        .dive((q) => q.weekend((q) => q.idEqualTo(weekend.id)))
+        .findAll();
+
+    for (var diveGroup in diveGroups) {
+      isar.writeTxnSync(() => isar.diveGroups.deleteSync(diveGroup.id));
+    }
+
+    List<Dive> dives = await isar.dives
+        .filter()
+        .weekend((q) => q.idEqualTo(weekend.id))
+        .findAll();
+
+    for (var dive in dives) {
+      isar.writeTxnSync(() => isar.dives.deleteSync(dive.id));
+    }
+
+    List<Participant> participants = await isar.participants
+        .filter()
+        .weekends((q) => q.idEqualTo(weekend.id))
+        .findAll();
+
+    for (var participant in participants) {
+      if (participant.weekends.isEmpty) {
+        isar.writeTxnSync(() => isar.participants.deleteSync(participant.id));
+      }
+    }
+
     final success =
         isar.writeTxnSync(() => isar.weekends.deleteSync(weekend.id!));
+
     return success;
   }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
