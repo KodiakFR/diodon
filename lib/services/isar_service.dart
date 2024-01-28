@@ -217,6 +217,7 @@ class IsarService {
         .typeEqualTo('Plongeur')
         .or()
         .typeEqualTo('Encadrant')
+        .sortBySort()
         .findAll();
     return particiapants;
   }

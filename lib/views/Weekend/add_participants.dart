@@ -493,12 +493,13 @@ class _AddParticipantsState extends State<AddParticipants> {
           }
           participantString = temp.split(';');
           Participant participant = Participant()
-            ..name = participantString[8]
-            ..firstName = participantString[7]
-            ..diveLevel = participantString[10]
-            ..type = participantString[9]
-            ..aptitude = _defineAptitude(participantString[10])
+            ..name = participantString[5]
+            ..firstName = participantString[4]
+            ..diveLevel = participantString[19]
+            ..type = participantString[16]
+            ..aptitude = _defineAptitude(participantString[19])
             ..selected = false
+            ..sort = _difineSort(participantString[19])
             ..weekends.add(weekend);
           if (participant.name != "" && participant.name != "NOM") {
             await isarService.addParticipants(weekend, participant);
@@ -562,5 +563,78 @@ class _AddParticipantsState extends State<AddParticipants> {
         aptitude = "";
     }
     return aptitude;
+  }
+
+  String getNameCSV(String nameConcatParticipant) {
+    List<String> nameSplitParticipant = nameConcatParticipant.split(" ");
+    String name = "";
+    if (nameSplitParticipant.length > 1) {
+      for (var i = 0; i < nameSplitParticipant.length - 1; i++) {
+        name = "$name ${nameSplitParticipant[i]}";
+      }
+      return name;
+    } else {
+      return nameSplitParticipant[1];
+    }
+  }
+
+  String getFirstNameCSV(String nameConcatParticipant) {
+    List<String> nameSplitParticipant = nameConcatParticipant.split(" ");
+    return nameSplitParticipant.last;
+  }
+
+  int _difineSort(String diveLevel) {
+    int sort;
+    switch (diveLevel) {
+      case "E4":
+        sort = 1;
+        break;
+      case "MF2":
+        sort = 1;
+        break;
+      case "MF1":
+        sort = 2;
+        break;
+      case "E3":
+        sort = 2;
+        break;
+      case "E2":
+        sort = 3;
+        break;
+      case "N4":
+        sort = 4;
+        break;
+      case "E1":
+        sort = 5;
+        break;
+      case "PpN4":
+        sort = 6;
+        break;
+      case "PpN3":
+        sort = 7;
+        break;
+      case "PpN2":
+        sort = 8;
+        break;
+      case "PpN1":
+        sort = 9;
+        break;
+      case "Bapt":
+        sort = 10;
+        break;
+      case "N1":
+        sort = 11;
+        break;
+      case "N2":
+        sort = 12;
+        break;
+      case "N3":
+        sort = 13;
+        break;
+
+      default:
+        sort = 14;
+    }
+    return sort;
   }
 }

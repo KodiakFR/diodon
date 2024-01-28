@@ -42,8 +42,13 @@ const ParticipantSchema = CollectionSchema(
       name: r'selected',
       type: IsarType.bool,
     ),
-    r'type': PropertySchema(
+    r'sort': PropertySchema(
       id: 5,
+      name: r'sort',
+      type: IsarType.long,
+    ),
+    r'type': PropertySchema(
+      id: 6,
       name: r'type',
       type: IsarType.string,
     )
@@ -125,7 +130,8 @@ void _participantSerialize(
   writer.writeString(offsets[2], object.firstName);
   writer.writeString(offsets[3], object.name);
   writer.writeBool(offsets[4], object.selected);
-  writer.writeString(offsets[5], object.type);
+  writer.writeLong(offsets[5], object.sort);
+  writer.writeString(offsets[6], object.type);
 }
 
 Participant _participantDeserialize(
@@ -141,7 +147,8 @@ Participant _participantDeserialize(
   object.id = id;
   object.name = reader.readStringOrNull(offsets[3]);
   object.selected = reader.readBoolOrNull(offsets[4]);
-  object.type = reader.readStringOrNull(offsets[5]);
+  object.sort = reader.readLongOrNull(offsets[5]);
+  object.type = reader.readStringOrNull(offsets[6]);
   return object;
 }
 
@@ -163,6 +170,8 @@ P _participantDeserializeProp<P>(
     case 4:
       return (reader.readBoolOrNull(offset)) as P;
     case 5:
+      return (reader.readLongOrNull(offset)) as P;
+    case 6:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -955,6 +964,76 @@ extension ParticipantQueryFilter
     });
   }
 
+  QueryBuilder<Participant, Participant, QAfterFilterCondition> sortIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'sort',
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition>
+      sortIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'sort',
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition> sortEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'sort',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition> sortGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'sort',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition> sortLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'sort',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterFilterCondition> sortBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'sort',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Participant, Participant, QAfterFilterCondition> typeIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1294,6 +1373,18 @@ extension ParticipantQuerySortBy
     });
   }
 
+  QueryBuilder<Participant, Participant, QAfterSortBy> sortBySort() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sort', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterSortBy> sortBySortDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sort', Sort.desc);
+    });
+  }
+
   QueryBuilder<Participant, Participant, QAfterSortBy> sortByType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.asc);
@@ -1381,6 +1472,18 @@ extension ParticipantQuerySortThenBy
     });
   }
 
+  QueryBuilder<Participant, Participant, QAfterSortBy> thenBySort() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sort', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Participant, Participant, QAfterSortBy> thenBySortDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sort', Sort.desc);
+    });
+  }
+
   QueryBuilder<Participant, Participant, QAfterSortBy> thenByType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.asc);
@@ -1430,6 +1533,12 @@ extension ParticipantQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Participant, Participant, QDistinct> distinctBySort() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'sort');
+    });
+  }
+
   QueryBuilder<Participant, Participant, QDistinct> distinctByType(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1473,6 +1582,12 @@ extension ParticipantQueryProperty
   QueryBuilder<Participant, bool?, QQueryOperations> selectedProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'selected');
+    });
+  }
+
+  QueryBuilder<Participant, int?, QQueryOperations> sortProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'sort');
     });
   }
 

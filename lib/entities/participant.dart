@@ -5,7 +5,7 @@ import 'package:isar/isar.dart';
 part 'participant.g.dart';
 
 @collection
-class Participant{
+class Participant {
   Id id = Isar.autoIncrement;
   String? name;
   String? firstName;
@@ -13,6 +13,7 @@ class Participant{
   String? type;
   String? aptitude;
   bool? selected;
+  int? sort;
   final weekends = IsarLinks<Weekend>();
   final diveGroups = IsarLinks<DiveGroup>();
 }

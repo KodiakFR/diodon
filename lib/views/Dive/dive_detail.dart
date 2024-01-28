@@ -292,6 +292,8 @@ class _DiveDetailState extends State<DiveDetail> {
                                 .participants
                                 .map(
                                   (participant) => DataRow(
+                                    color: MaterialStateProperty.all(
+                                        _colorDataCell(participant)),
                                     cells: [
                                       DataCell(
                                           Text(participant.firstName ?? '')),
@@ -414,6 +416,8 @@ class _DiveDetailState extends State<DiveDetail> {
                         rows: participants
                             .map(
                               (Participant participant) => DataRow(
+                                color: MaterialStateProperty.all(
+                                    _colorDataCell(participant)),
                                 selected: participant.selected!,
                                 onSelectChanged: (isSelect) async {
                                   bool isInGroupDive = await isarService
@@ -435,14 +439,18 @@ class _DiveDetailState extends State<DiveDetail> {
                                                       .contains(participant))
                                               ? TextDecoration.lineThrough
                                               : null))),
-                                  DataCell(Text(participant.name ?? '',
-                                      style: TextStyle(
-                                          decoration: dive.divreGroups.any(
-                                                  (element) => element
-                                                      .participants
-                                                      .contains(participant))
-                                              ? TextDecoration.lineThrough
-                                              : null))),
+                                  DataCell(Container(
+                                    alignment: Alignment.center,
+                                    color: _colorDataCell(participant),
+                                    child: Text(participant.name ?? '',
+                                        style: TextStyle(
+                                            decoration: dive.divreGroups.any(
+                                                    (element) => element
+                                                        .participants
+                                                        .contains(participant))
+                                                ? TextDecoration.lineThrough
+                                                : null)),
+                                  )),
                                   DataCell(Text(participant.diveLevel ?? '',
                                       style: TextStyle(
                                           decoration: dive.divreGroups.any(
@@ -451,14 +459,18 @@ class _DiveDetailState extends State<DiveDetail> {
                                                       .contains(participant))
                                               ? TextDecoration.lineThrough
                                               : null))),
-                                  DataCell(Text(participant.aptitude ?? '',
+                                  DataCell(
+                                    Text(
+                                      participant.aptitude ?? '',
                                       style: TextStyle(
                                           decoration: dive.divreGroups.any(
                                                   (element) => element
                                                       .participants
                                                       .contains(participant))
                                               ? TextDecoration.lineThrough
-                                              : null))),
+                                              : null),
+                                    ),
+                                  ),
                                 ],
                               ),
                             )
@@ -816,5 +828,38 @@ class _DiveDetailState extends State<DiveDetail> {
                 );
               }));
         });
+  }
+
+  Color _colorDataCell(Participant participant) {
+    switch (participant.diveLevel) {
+      case "E4":
+        return Colors.red.shade900;
+      case "E3":
+        return Colors.red.shade700;
+      case "E2":
+        return Colors.red.shade500;
+      case "N4":
+        return Colors.red.shade300;
+      case "E1":
+        return Colors.red.shade100;
+      case "PpN4":
+        return Colors.blue.shade900;
+      case "PpN3":
+        return Colors.blue.shade700;
+      case "PpN2":
+        return Colors.blue.shade500;
+      case "Ppn1":
+        return Colors.blue.shade300;
+      case "Bapt":
+        return Colors.blue.shade100;
+      case "N3":
+        return Colors.green.shade900;
+      case "N2":
+        return Colors.green.shade700;
+      case "N1":
+        return Colors.green.shade500;
+      default:
+        return Colors.transparent;
+    }
   }
 }
