@@ -73,7 +73,9 @@ class HomePage extends StatelessWidget {
                     },
                     child: Text(weekends[index].title),
                   ),
-                  IconButton(onPressed: () {}, icon: const Icon(Icons.edit)),
+                  IconButton(onPressed: () {
+                    Navigator.pushNamed(context, "/updateWeekend", arguments: weekends[index]);
+                  }, icon: const Icon(Icons.edit)),
                   IconButton(
                       onPressed: () async {
                         bool isDelete =

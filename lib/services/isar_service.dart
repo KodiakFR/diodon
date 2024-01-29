@@ -94,6 +94,18 @@ class IsarService {
     }
   }
 
+  Future<bool> updateWeekend(Weekend weekend) async {
+    final isar = await db;
+    final List<Weekend> weekends =
+        await isar.weekends.filter().titleEqualTo(weekend.title).findAll();
+    if (weekends.length == 1) {
+      isar.writeTxnSync<int>(() => isar.weekends.putSync(weekend));
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<Weekend?> getWeekendByTitle(String title) async {
     final isar = await db;
     final List<Weekend> weekends =
