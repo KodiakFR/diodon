@@ -35,44 +35,40 @@ class WeekendDetail extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 20),
                 child: Wrap(
                   alignment: WrapAlignment.center,
+                  spacing: 25,
+                  runSpacing: 10,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          'Date de début: ${DateFormat('dd/MM/yyyy').format(weekend.start)}',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        Text(
-                          'Date de fin: ${DateFormat('dd/MM/yyyy').format(weekend.end)}',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        Text(
-                          'Nombre de plongées : ${weekend.nbDive}',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        Text(
-                          'Nombre de particiapants : ${weekend.participants.length.toString()}',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                      ],
+                    Text(
+                      'Date de début: ${DateFormat('dd/MM/yyyy').format(weekend.start)}',
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    const SizedBox(
-                      height: 60,
+                    Text(
+                      'Date de fin: ${DateFormat('dd/MM/yyyy').format(weekend.end)}',
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              "/addParticipants",
-                              arguments: weekend,
-                              (route) => false);
-                        },
-                        child:
-                            const Text('Afficher la liste des participants')),
+                    Text(
+                      'Nombre de plongées : ${weekend.nbDive}',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Text(
+                      'Nombre de particiapants : ${weekend.participants.length.toString()}',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                   ],
                 ),
               ),
+              const SizedBox(
+                height: 60,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        "/addParticipants",
+                        arguments: weekend,
+                        (route) => false);
+                  },
+                  child: const Text('Afficher la liste des participants')),
               const SizedBox(
                 height: 50,
               ),

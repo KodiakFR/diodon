@@ -58,6 +58,9 @@ class _DiveDetailState extends State<DiveDetail> {
                   ),
                   child: _recapDive(dive, context),
                 ),
+                const SizedBox(
+                  height: 10,
+                ),
                 Text(
                   'Gestion des palanquées',
                   style: Theme.of(context).textTheme.headlineMedium,
@@ -88,8 +91,7 @@ class _DiveDetailState extends State<DiveDetail> {
       children: [
         SingleChildScrollView(
           child: SizedBox(
-            height: MediaQuery.of(context).size.height / 1.4
-            ,
+            height: MediaQuery.of(context).size.height / 1.4,
             child: FutureBuilder(
               future: isarService.getAllDiveGroupForDive(dive),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -198,14 +200,14 @@ class _DiveDetailState extends State<DiveDetail> {
                                 padding: const EdgeInsets.only(bottom: 20),
                                 child: Column(
                                   children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
+                                    Wrap(
+                                      spacing: 20,
+                                      alignment: WrapAlignment.center,
                                       children: [
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 10),
-                                          child: Row(
+                                          child: Wrap(
                                             children: [
                                               const Text('Autonome: '),
                                               iconStandAlone
@@ -215,7 +217,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 10),
-                                          child: Row(
+                                          child: Wrap(
                                             children: [
                                               const Text('Encadrée: '),
                                               iconSupervised
@@ -525,51 +527,40 @@ class _DiveDetailState extends State<DiveDetail> {
   Wrap _recapDive(Dive dive, BuildContext context) {
     return Wrap(
       alignment: WrapAlignment.center,
+      spacing: 30,
+      runSpacing: 10,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Text(
-              'Date de départ: ${dive.dateDepart.day}/${dive.dateDepart.month}/${dive.dateDepart.year}',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            Text(
-              'Heure de départ: ${DateFormat.Hm().format(dive.dateDepart)}',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            Text(
-              'DP : ${dive.dp}',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            Text(
-              'Nombre de plongeurs : ${dive.nbDiver.toString()}',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ],
+        Text(
+          'Date de départ: ${dive.dateDepart.day}/${dive.dateDepart.month}/${dive.dateDepart.year}',
+          style: Theme.of(context).textTheme.titleMedium,
         ),
-        const SizedBox(
-          height: 40,
+        Text(
+          'Heure de départ: ${DateFormat.Hm().format(dive.dateDepart)}',
+          style: Theme.of(context).textTheme.titleMedium,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Text(
-              'Nom du navire : ${dive.boat}',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            Text(
-              'Capitaine : ${dive.captain}',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            Text(
-              'Site de plongée : ${dive.divingSite}',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            Text(
-              'Nombre de personnes : ${dive.nbPeople.toString()}',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ],
+        Text(
+          'DP : ${dive.dp}',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        Text(
+          'Nombre de plongeurs : ${dive.nbDiver.toString()}',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        Text(
+          'Nom du navire : ${dive.boat}',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        Text(
+          'Capitaine : ${dive.captain}',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        Text(
+          'Site de plongée : ${dive.divingSite}',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        Text(
+          'Nombre de personnes : ${dive.nbPeople.toString()}',
+          style: Theme.of(context).textTheme.titleMedium,
         )
       ],
     );
@@ -608,8 +599,7 @@ class _DiveDetailState extends State<DiveDetail> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
+                          Wrap(
                             children: [
                               Expanded(
                                 child: Padding(

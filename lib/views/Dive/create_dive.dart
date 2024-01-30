@@ -195,6 +195,9 @@ class _CreateDiveState extends State<CreateDive> {
                       ))
                 ],
               ),
+              const SizedBox(
+                height: 30,
+              ),
               ElevatedButton(
                   onPressed: () async {
                     if (formKey.currentState!.validate()) {

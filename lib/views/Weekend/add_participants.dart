@@ -122,7 +122,7 @@ class _AddParticipantsState extends State<AddParticipants> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(
-          "Ajout des participants du ${weekend.title}",
+          "Participants du ${weekend.title}",
           style: const TextStyle(color: Colors.white),
         ),
         centerTitle: true,
@@ -140,23 +140,26 @@ class _AddParticipantsState extends State<AddParticipants> {
               height: (MediaQuery.of(context).size.height / 1.3),
               child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
-                child: FutureBuilder(
-                  future: isarService.getParticipantsFromWeekend(weekend.id!),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Text(snapshot.error.toString());
-                    }
-                    if (snapshot.hasData) {
-                      List<Participant> participants = snapshot.data!;
-                      if (participants.isEmpty) {
-                        return const Center(
-                            child: Text(
-                                'Aucun Parcipant n\'est enregistré pour ce week-end'));
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: FutureBuilder(
+                    future: isarService.getParticipantsFromWeekend(weekend.id!),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Text(snapshot.error.toString());
                       }
-                      return _displayParticipants(participants, weekend);
-                    }
-                    return const CircularProgressIndicator();
-                  },
+                      if (snapshot.hasData) {
+                        List<Participant> participants = snapshot.data!;
+                        if (participants.isEmpty) {
+                          return const Center(
+                              child: Text(
+                                  'Aucun Parcipant n\'est enregistré pour ce week-end'));
+                        }
+                        return _displayParticipants(participants, weekend);
+                      }
+                      return const CircularProgressIndicator();
+                    },
+                  ),
                 ),
               ),
             ),
@@ -224,7 +227,7 @@ class _AddParticipantsState extends State<AddParticipants> {
         ),
         DataColumn(
           label: Expanded(
-            child: Text("Action"),
+            child: Text("Supprimer"),
           ),
         ),
       ],
@@ -317,8 +320,8 @@ class _AddParticipantsState extends State<AddParticipants> {
     _controllerFirstName.clear();
     _controllerName.clear();
     selectValueType = 'Plongeur';
-    const double widthForm = 300;
-    const double heightForm = 90;
+    double widthForm = MediaQuery.of(context).size.width / 2.8;
+    double heightForm = 90;
     return showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(

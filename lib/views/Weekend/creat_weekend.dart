@@ -43,112 +43,116 @@ class _CreateWeekendState extends State<CreateWeekend> {
         child: Form(
           key: _formKey,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 200),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                TextFormField(
-                  controller: _nbDive,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration:
-                      const InputDecoration(labelText: 'Nombre de plongées'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Le champs est obligatoire';
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  controller: _controllerStart,
-                  decoration: const InputDecoration(
-                    icon: Icon(Icons.calendar_today_rounded),
-                    labelText: 'Selectionnez la date de début du Week-end',
-                  ),
-                  onTap: () async {
-                    DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2022),
-                      lastDate: DateTime(2100),
-                    );
-                    if (pickedDate != null) {
-                      setState(() {
-                        _controllerStart.text =
-                            DateFormat('dd/MM/yyyy').format(pickedDate);
-                      });
-                    }
-                  },
-                  validator: (value) {
-                    return valideStartDate(value);
-                  },
-                ),
-                TextFormField(
-                  controller: _controllerEnd,
-                  decoration: const InputDecoration(
-                    icon: Icon(Icons.calendar_today_rounded),
-                    labelText: 'Selectionnez la date de fin du Week-end',
-                  ),
-                  onTap: () async {
-                    DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2022),
-                      lastDate: DateTime(2100),
-                    );
-                    if (pickedDate != null) {
-                      setState(() {
-                        _controllerEnd.text =
-                            DateFormat('dd/MM/yyyy').format(pickedDate);
-                      });
-                    }
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Le champs est obligatoire';
-                    }
-                    return null;
-                  },
-                ),
-                ElevatedButton(
-                    onPressed: (() async {
-                      if (_formKey.currentState!.validate()) {
-                        await initializeDateFormatting('fr');
-                        final String month =
-                            DateFormat.MMMM('fr').format(startDate);
-                        final String tilte =
-                            "Week-end du ${startDate.day} - ${endDate.day} $month ${startDate.year}";
-                        Weekend weekend = Weekend()
-                          ..title = tilte
-                          ..nbDive = int.parse(_nbDive.text)
-                          ..end = endDate
-                          ..start = startDate;
-                        bool isCreate = await isarService.saveWeekend(weekend);
-                        if (isCreate) {
-                          Weekend? weekend =
-                              await isarService.getWeekendByTitle(tilte);
-                          if (weekend != null) {
-                            Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                "/addParticipants",
-                                arguments: weekend,
-                                (route) => false);
-                          }
-                        } else {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                            content: Text(
-                              'Un Weekend avec le même nom existe déjà',
-                              textAlign: TextAlign.center,
-                            ),
-                            backgroundColor: Colors.red,
-                          ));
-                        }
+            padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width / 6),
+            child: Flexible(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  TextFormField(
+                    controller: _nbDive,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration:
+                        const InputDecoration(labelText: 'Nombre de plongées'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Le champs est obligatoire';
                       }
-                    }),
-                    child: const Text('Suivant'))
-              ],
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: _controllerStart,
+                    decoration: const InputDecoration(
+                      icon: Icon(Icons.calendar_today_rounded),
+                      labelText: 'Selectionnez la date de début du Week-end',
+                    ),
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2022),
+                        lastDate: DateTime(2100),
+                      );
+                      if (pickedDate != null) {
+                        setState(() {
+                          _controllerStart.text =
+                              DateFormat('dd/MM/yyyy').format(pickedDate);
+                        });
+                      }
+                    },
+                    validator: (value) {
+                      return valideStartDate(value);
+                    },
+                  ),
+                  TextFormField(
+                    controller: _controllerEnd,
+                    decoration: const InputDecoration(
+                      icon: Icon(Icons.calendar_today_rounded),
+                      labelText: 'Selectionnez la date de fin du Week-end',
+                    ),
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2022),
+                        lastDate: DateTime(2100),
+                      );
+                      if (pickedDate != null) {
+                        setState(() {
+                          _controllerEnd.text =
+                              DateFormat('dd/MM/yyyy').format(pickedDate);
+                        });
+                      }
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Le champs est obligatoire';
+                      }
+                      return null;
+                    },
+                  ),
+                  ElevatedButton(
+                      onPressed: (() async {
+                        if (_formKey.currentState!.validate()) {
+                          await initializeDateFormatting('fr');
+                          final String month =
+                              DateFormat.MMMM('fr').format(startDate);
+                          final String tilte =
+                              "Week-end du ${startDate.day} - ${endDate.day} $month ${startDate.year}";
+                          Weekend weekend = Weekend()
+                            ..title = tilte
+                            ..nbDive = int.parse(_nbDive.text)
+                            ..end = endDate
+                            ..start = startDate;
+                          bool isCreate =
+                              await isarService.saveWeekend(weekend);
+                          if (isCreate) {
+                            Weekend? weekend =
+                                await isarService.getWeekendByTitle(tilte);
+                            if (weekend != null) {
+                              Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  "/addParticipants",
+                                  arguments: weekend,
+                                  (route) => false);
+                            }
+                          } else {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text(
+                                'Un Weekend avec le même nom existe déjà',
+                                textAlign: TextAlign.center,
+                              ),
+                              backgroundColor: Colors.red,
+                            ));
+                          }
+                        }
+                      }),
+                      child: const Text('Suivant'))
+                ],
+              ),
             ),
           ),
         ),
