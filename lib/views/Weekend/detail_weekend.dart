@@ -1,6 +1,7 @@
 import 'package:diodon/entities/dive.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../entities/weekend.dart';
 
@@ -37,11 +38,11 @@ class WeekendDetail extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Text(
-                          'Date de début: ${weekend.start.day}/${weekend.start.month}/${weekend.start.year}',
+                          'Date de début: ${DateFormat('dd/MM/yyyy').format(weekend.start)}',
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         Text(
-                          'Date de fin: ${weekend.end.day}/${weekend.end.month}/${weekend.end.year}',
+                          'Date de fin: ${DateFormat('dd/MM/yyyy').format(weekend.end)}',
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         Text(
@@ -65,16 +66,21 @@ class WeekendDetail extends StatelessWidget {
                               arguments: weekend,
                               (route) => false);
                         },
-                        child: const Text('Afficher la liste des participants')),
+                        child:
+                            const Text('Afficher la liste des participants')),
                   ],
                 ),
               ),
-              const SizedBox(height: 50,),
+              const SizedBox(
+                height: 50,
+              ),
               Text(
                 'Liste des plongées',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
-               const SizedBox(height: 30,),
+              const SizedBox(
+                height: 30,
+              ),
               FutureBuilder(
                 future: isarService.getAllDiveByWeekend(weekend),
                 builder: (context, snapshot) {
@@ -97,8 +103,13 @@ class WeekendDetail extends StatelessWidget {
               ),
               ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(context, "/createDive",arguments: weekend, (route) => false);
-                  }, child: const Text('Ajouter une plongée'))
+                    Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        "/createDive",
+                        arguments: weekend,
+                        (route) => false);
+                  },
+                  child: const Text('Ajouter une plongée'))
             ],
           ),
         ),
