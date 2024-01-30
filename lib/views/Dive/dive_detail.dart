@@ -94,24 +94,24 @@ class _DiveDetailState extends State<DiveDetail> {
                   return Text(snapshot.error.toString());
                 }
                 if (snapshot.hasData) {
-                  List<DiveGroup> dive_groups = snapshot.data;
-                  if (dive_groups.isEmpty) {
+                  List<DiveGroup> diveGroups = snapshot.data;
+                  if (diveGroups.isEmpty) {
                     return const Center(
                       child: Text('Aucune palanquée n\'a été créée'),
                     );
                   }
                   return ListView.builder(
-                    itemCount: dive_groups.length,
+                    itemCount: diveGroups.length,
                     itemBuilder: (BuildContext context, int index) {
                       Icon iconStandAlone = const Icon(Icons.check_box);
                       Icon iconSupervised = const Icon(Icons.check_box);
-                      if (dive_groups[index].standAlone == false ||
-                          dive_groups[index].standAlone == null) {
+                      if (diveGroups[index].standAlone == false ||
+                          diveGroups[index].standAlone == null) {
                         iconStandAlone =
                             const Icon(Icons.check_box_outline_blank);
                       }
-                      if (dive_groups[index].supervised == false ||
-                          dive_groups[index].supervised == null) {
+                      if (diveGroups[index].supervised == false ||
+                          diveGroups[index].supervised == null) {
                         iconSupervised =
                             const Icon(Icons.check_box_outline_blank);
                       }
@@ -120,30 +120,59 @@ class _DiveDetailState extends State<DiveDetail> {
                         title: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(dive_groups[index].title!),
-                            IconButton(
-                                onPressed: () async {
-                                  List<Participant> particiapants =
-                                      await isarService
-                                          .getParticipantsSelected(dive);
-                                  for (var participant in particiapants) {
-                                    dive_groups[index]
-                                        .participants
-                                        .add(participant);
-                                    dive.divreGroups
-                                        .elementAt(index)
-                                        .participants
-                                        .add(participant);
-                                    participant.selected = false;
-                                    isarService.upDateParticipant(participant);
-                                  }
-                                  isarService
-                                      .updateDiveGroupe(dive_groups[index]);
-                                  Navigator.pushReplacementNamed(
-                                      context, "/diveDetail",
-                                      arguments: dive);
-                                },
-                                icon: const Icon(Icons.group_add_sharp))
+                            Text(diveGroups[index].title!),
+                            Row(
+                              children: [
+                                IconButton(
+                                    onPressed: () async {
+                                      List<Participant> particiapants =
+                                          await isarService
+                                              .getParticipantsSelected(dive);
+                                      for (var participant in particiapants) {
+                                        diveGroups[index]
+                                            .participants
+                                            .add(participant);
+                                        dive.divreGroups
+                                            .elementAt(index)
+                                            .participants
+                                            .add(participant);
+                                        participant.selected = false;
+                                        isarService
+                                            .upDateParticipant(participant);
+                                      }
+                                      isarService
+                                          .updateDiveGroupe(diveGroups[index]);
+                                      Navigator.pushReplacementNamed(
+                                          context, "/diveDetail",
+                                          arguments: dive);
+                                    },
+                                    icon: const Icon(Icons.group_add_sharp)),
+                                IconButton(
+                                    onPressed: () async {
+                                      bool delete = false;
+                                      delete = await isarService
+                                          .deleteDiveGroup(diveGroups[index]);
+                                      if (delete == false) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                          content: Text(
+                                            'Veuillez supprimer tous les participants de la palanquée avant la suppression',
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ));
+                                      } else {
+                                        Navigator.pushReplacementNamed(
+                                            context, "/diveDetail",
+                                            arguments: dive);
+                                      }
+                                    },
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ))
+                              ],
+                            ),
                           ],
                         ),
                         children: [
@@ -156,7 +185,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                   icon: const Icon(Icons.create),
                                   onPressed: () {
                                     _displayPopParameter(
-                                        dive, dive_groups[index], context);
+                                        dive, diveGroups[index], context);
                                   },
                                 )
                               ],
@@ -194,13 +223,13 @@ class _DiveDetailState extends State<DiveDetail> {
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 10),
                                           child: Text(
-                                              'Heure Imm: ${DateFormat.Hm().format(dive_groups[index].hourImmersion!)}'),
+                                              'Heure Imm: ${DateFormat.Hm().format(diveGroups[index].hourImmersion!)}'),
                                         ),
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 10),
                                           child: Text(
-                                              'Heure Sortie: ${DateFormat.Hm().format(dive_groups[index].riseHour!)}'),
+                                              'Heure Sortie: ${DateFormat.Hm().format(diveGroups[index].riseHour!)}'),
                                         ),
                                       ],
                                     ),
@@ -226,9 +255,9 @@ class _DiveDetailState extends State<DiveDetail> {
                                               ),
                                             ),
                                             Text(
-                                                'Profondeur: ${dive_groups[index].dpDeep} m'),
+                                                'Profondeur: ${diveGroups[index].dpDeep} m'),
                                             Text(
-                                                'Temps: ${dive_groups[index].dpTime} min'),
+                                                'Temps: ${diveGroups[index].dpTime} min'),
                                           ],
                                         ),
                                         Column(
@@ -246,11 +275,11 @@ class _DiveDetailState extends State<DiveDetail> {
                                               ),
                                             ),
                                             Text(
-                                                'Profondeur: ${dive_groups[index].realDeep} m'),
+                                                'Profondeur: ${diveGroups[index].realDeep} m'),
                                             Text(
-                                                'Temps: ${dive_groups[index].realTime} min'),
+                                                'Temps: ${diveGroups[index].realTime} min'),
                                             Text(
-                                                'Paliers: ${dive_groups[index].divingStop}'),
+                                                'Paliers: ${diveGroups[index].divingStop}'),
                                           ],
                                         )
                                       ],
@@ -288,7 +317,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                 ),
                               ),
                             ],
-                            rows: dive_groups[index]
+                            rows: diveGroups[index]
                                 .participants
                                 .map(
                                   (participant) => DataRow(
@@ -309,7 +338,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                               await isarService
                                                   .removeParticipantsInGroupDive(
                                                       participant,
-                                                      dive_groups[index]);
+                                                      diveGroups[index]);
                                               await isarService
                                                   .upDateParticipant(
                                                       participant);
@@ -361,6 +390,7 @@ class _DiveDetailState extends State<DiveDetail> {
 
               bool isSaved = await isarService.saveDiveGroup(dive, diveGroup);
               if (isSaved == true) {
+                dive = await IsarService().getDiveById(dive);
                 Navigator.pushReplacementNamed(
                     context, arguments: dive, "/diveDetail");
               }

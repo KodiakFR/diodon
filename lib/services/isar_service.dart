@@ -249,6 +249,12 @@ class IsarService {
     }
   }
 
+  Future<Dive> getDiveById(Dive dive) async {
+    final isar = await db;
+    List<Dive> dives = await isar.dives.filter().idEqualTo(dive.id).findAll();
+    return dives.first;
+  }
+
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------- DIVES GROUP -------------------------------------------------------------------------
 
@@ -334,6 +340,22 @@ class IsarService {
     if (participants.isEmpty) {
       return false;
     } else {
+      return true;
+    }
+  }
+
+  Future<bool> deleteDiveGroup(DiveGroup diveGroup) async {
+    final isar = await db;
+    List<Participant> participants = await isar.participants
+        .filter()
+        .diveGroups((q) => q.idEqualTo(diveGroup.id))
+        .findAll();
+    if (participants.isNotEmpty) {
+      return false;
+    } else {
+      await isar.writeTxn(() async {
+        await isar.diveGroups.delete(diveGroup.id);
+      });
       return true;
     }
   }
