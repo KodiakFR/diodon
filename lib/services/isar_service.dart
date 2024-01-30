@@ -255,6 +255,37 @@ class IsarService {
     return dives.first;
   }
 
+  Future<bool> updateDive(Dive dive) async {
+    final isar = await db;
+    final List<Dive> dives =
+        await isar.dives.filter().idEqualTo(dive.id).findAll();
+    if (dives.length == 1) {
+      isar.writeTxnSync<int>(() => isar.dives.putSync(dive));
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> deleteDive(Dive dive) async {
+    final isar = await db;
+    bool sucess = false;
+    List<DiveGroup> diveGroups = await isar.diveGroups
+        .filter()
+        .dive((q) => q.idEqualTo(dive.id))
+        .findAll();
+
+    for (var diveGroup in diveGroups) {
+      isar.writeTxnSync(() => isar.diveGroups.deleteSync(diveGroup.id));
+    }
+
+    List<Dive> dives = await isar.dives.filter().idEqualTo(dive.id).findAll();
+
+    for (var dive in dives) {
+      sucess = await isar.writeTxnSync(() => isar.dives.deleteSync(dive.id));
+    }
+    return sucess;
+  }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------- DIVES GROUP -------------------------------------------------------------------------
 

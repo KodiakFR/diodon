@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:diodon/entities/dive.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
@@ -6,12 +8,12 @@ import 'package:intl/intl.dart';
 import '../../entities/weekend.dart';
 
 class WeekendDetail extends StatelessWidget {
-  const WeekendDetail({super.key});
+  WeekendDetail({super.key});
+  final IsarService isarService = IsarService();
 
   @override
   Widget build(BuildContext context) {
     final weekend = ModalRoute.of(context)!.settings.arguments as Weekend;
-    final IsarService isarService = IsarService();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -92,7 +94,7 @@ class WeekendDetail extends StatelessWidget {
                   if (snapshot.hasData) {
                     final List<Dive> dives = snapshot.data!;
                     if (dives.isNotEmpty) {
-                      return _displayDives(dives);
+                      return _displayDives(dives, weekend);
                     } else {
                       return const Text(
                           "Aucune plongée n'a été créé pour ce week-end");
@@ -117,7 +119,7 @@ class WeekendDetail extends StatelessWidget {
     );
   }
 
-  Widget _displayDives(List<Dive> dives) {
+  Widget _displayDives(List<Dive> dives, Weekend weekend) {
     return Flexible(
       child: ListView.builder(
         padding: const EdgeInsets.all(8),
@@ -125,15 +127,50 @@ class WeekendDetail extends StatelessWidget {
         itemBuilder: (context, index) {
           return Column(
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      "/diveDetail",
-                      arguments: dives[index],
-                      (route) => false);
-                },
-                child: Text(dives[index].title),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          "/diveDetail",
+                          arguments: dives[index],
+                          (route) => false);
+                    },
+                    child: Text(dives[index].title),
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, "/updateDive",
+                            arguments: dives[index]);
+                      },
+                      icon: const Icon(Icons.edit)),
+                  IconButton(
+                      onPressed: () async {
+                        bool isDelete =
+                            await isarService.deleteDive(dives[index]);
+                        if (isDelete == true) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text(
+                              'La plongée à été supprimé',
+                              textAlign: TextAlign.center,
+                            ),
+                            backgroundColor: Colors.green,
+                          ));
+                          Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              "/weekendDetail",
+                              arguments: weekend,
+                              (route) => false);
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                      )),
+                ],
               ),
               const SizedBox(
                 width: 100,
