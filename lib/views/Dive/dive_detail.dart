@@ -46,34 +46,36 @@ class _DiveDetailState extends State<DiveDetail> {
               context, "/homePage", (route) => false),
         ),
       ),
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 20,
-                ),
-                child: _recapDive(dive, context),
-              ),
-              Text(
-                'Gestion des palanquées',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 5,
-                    child: _displayDiverList(dive),
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: 20,
                   ),
-                  Expanded(
-                    flex: 5,
-                    child: _displayGroupDiver(context, dive),
-                  )
-                ],
-              )
-            ],
+                  child: _recapDive(dive, context),
+                ),
+                Text(
+                  'Gestion des palanquées',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 5,
+                      child: _displayDiverList(dive),
+                    ),
+                    Expanded(
+                      flex: 5,
+                      child: _displayGroupDiver(context, dive),
+                    )
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -86,7 +88,8 @@ class _DiveDetailState extends State<DiveDetail> {
       children: [
         SingleChildScrollView(
           child: SizedBox(
-            height: MediaQuery.of(context).size.height / 1.6,
+            height: MediaQuery.of(context).size.height / 1.4
+            ,
             child: FutureBuilder(
               future: isarService.getAllDiveGroupForDive(dive),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -289,76 +292,72 @@ class _DiveDetailState extends State<DiveDetail> {
                               )
                             ],
                           ),
-                          DataTable(
-                            columns: const <DataColumn>[
-                              DataColumn(
-                                label: Expanded(
-                                  child: Text("Prénom"),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: DataTable(
+                              columnSpacing: 20,
+                              horizontalMargin: 5,
+                              columns: const <DataColumn>[
+                                DataColumn(
+                                  label: Text("Prénom"),
                                 ),
-                              ),
-                              DataColumn(
-                                label: Expanded(
-                                  child: Text("Nom"),
+                                DataColumn(
+                                  label: Text("Nom"),
                                 ),
-                              ),
-                              DataColumn(
-                                label: Expanded(
-                                  child: Text("Niveau"),
+                                DataColumn(
+                                  label: Text("Niveau"),
                                 ),
-                              ),
-                              DataColumn(
-                                label: Expanded(
-                                  child: Text("Aptitude"),
+                                DataColumn(
+                                  label: Text("Aptitude"),
                                 ),
-                              ),
-                              DataColumn(
-                                label: Expanded(
-                                  child: Text("Action"),
+                                DataColumn(
+                                  label: Text("Action"),
                                 ),
-                              ),
-                            ],
-                            rows: diveGroups[index]
-                                .participants
-                                .map(
-                                  (participant) => DataRow(
-                                    color: MaterialStateProperty.all(
-                                        _colorDataCell(participant)),
-                                    cells: [
-                                      DataCell(
-                                          Text(participant.firstName ?? '')),
-                                      DataCell(Text(participant.name ?? '')),
-                                      DataCell(
-                                          Text(participant.diveLevel ?? '')),
-                                      DataCell(
-                                          Text(participant.aptitude ?? '')),
-                                      DataCell(Row(
-                                        children: [
-                                          IconButton(
-                                            onPressed: () async {
-                                              await isarService
-                                                  .removeParticipantsInGroupDive(
-                                                      participant,
-                                                      diveGroups[index]);
-                                              await isarService
-                                                  .upDateParticipant(
-                                                      participant);
-                                              dive.divreGroups
-                                                  .elementAt(index)
-                                                  .participants
-                                                  .remove(participant);
-                                              Navigator.pushReplacementNamed(
-                                                  context, "/diveDetail",
-                                                  arguments: dive);
-                                            },
-                                            icon: const Icon(Icons.remove,
-                                                color: Colors.red),
-                                          )
-                                        ],
-                                      ))
-                                    ],
-                                  ),
-                                )
-                                .toList(),
+                              ],
+                              rows: diveGroups[index]
+                                  .participants
+                                  .map(
+                                    (participant) => DataRow(
+                                      color: MaterialStateProperty.all(
+                                          _colorDataCell(participant)),
+                                      cells: [
+                                        DataCell(
+                                            Text(participant.firstName ?? '')),
+                                        DataCell(Text(participant.name ?? '')),
+                                        DataCell(
+                                            Text(participant.diveLevel ?? '')),
+                                        DataCell(
+                                            Text(participant.aptitude ?? '')),
+                                        DataCell(Row(
+                                          children: [
+                                            IconButton(
+                                              onPressed: () async {
+                                                await isarService
+                                                    .removeParticipantsInGroupDive(
+                                                        participant,
+                                                        diveGroups[index]);
+                                                await isarService
+                                                    .upDateParticipant(
+                                                        participant);
+                                                dive.divreGroups
+                                                    .elementAt(index)
+                                                    .participants
+                                                    .remove(participant);
+                                                Navigator.pushReplacementNamed(
+                                                    context, "/diveDetail",
+                                                    arguments: dive);
+                                              },
+                                              icon: const Icon(
+                                                  Icons.remove_circle_rounded,
+                                                  color: Colors.white),
+                                            )
+                                          ],
+                                        )),
+                                      ],
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
                           )
                         ],
                       );
@@ -414,97 +413,102 @@ class _DiveDetailState extends State<DiveDetail> {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: SizedBox(
-                  height: MediaQuery.of(context).size.height / 1.6,
+                  height: MediaQuery.of(context).size.height / 1.4,
                   width: double.infinity,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
-                      child: DataTable(
-                        columns: const <DataColumn>[
-                          DataColumn(
-                            label: Expanded(
-                              child: Text("Prénom"),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(
+                          horizontalMargin: 10,
+                          columnSpacing: 20,
+                          columns: const <DataColumn>[
+                            DataColumn(
+                              label: Expanded(
+                                child: Text("Prénom"),
+                              ),
                             ),
-                          ),
-                          DataColumn(
-                            label: Expanded(
-                              child: Text("Nom"),
+                            DataColumn(
+                              label: Expanded(
+                                child: Text("Nom"),
+                              ),
                             ),
-                          ),
-                          DataColumn(
-                            label: Expanded(
-                              child: Text("Niveau"),
+                            DataColumn(
+                              label: Expanded(
+                                child: Text("Niveau"),
+                              ),
                             ),
-                          ),
-                          DataColumn(
-                            label: Expanded(
-                              child: Text("Aptitude"),
+                            DataColumn(
+                              label: Expanded(
+                                child: Text("Aptitude"),
+                              ),
                             ),
-                          ),
-                        ],
-                        rows: participants
-                            .map(
-                              (Participant participant) => DataRow(
-                                color: MaterialStateProperty.all(
-                                    _colorDataCell(participant)),
-                                selected: participant.selected!,
-                                onSelectChanged: (isSelect) async {
-                                  bool isInGroupDive = await isarService
-                                      .isInDiveGroup(dive, participant);
-                                  setState(() {
-                                    if (isInGroupDive == false) {
-                                      participant.selected = isSelect;
-                                      isarService
-                                          .upDateParticipant(participant);
-                                    }
-                                  });
-                                },
-                                cells: [
-                                  DataCell(Text(participant.firstName ?? '',
-                                      style: TextStyle(
-                                          decoration: dive.divreGroups.any(
-                                                  (element) => element
-                                                      .participants
-                                                      .contains(participant))
-                                              ? TextDecoration.lineThrough
-                                              : null))),
-                                  DataCell(Container(
-                                    alignment: Alignment.center,
-                                    color: _colorDataCell(participant),
-                                    child: Text(participant.name ?? '',
+                          ],
+                          rows: participants
+                              .map(
+                                (Participant participant) => DataRow(
+                                  color: MaterialStateProperty.all(
+                                      _colorDataCell(participant)),
+                                  selected: participant.selected!,
+                                  onSelectChanged: (isSelect) async {
+                                    bool isInGroupDive = await isarService
+                                        .isInDiveGroup(dive, participant);
+                                    setState(() {
+                                      if (isInGroupDive == false) {
+                                        participant.selected = isSelect;
+                                        isarService
+                                            .upDateParticipant(participant);
+                                      }
+                                    });
+                                  },
+                                  cells: [
+                                    DataCell(Text(participant.firstName ?? '',
                                         style: TextStyle(
                                             decoration: dive.divreGroups.any(
                                                     (element) => element
                                                         .participants
                                                         .contains(participant))
                                                 ? TextDecoration.lineThrough
-                                                : null)),
-                                  )),
-                                  DataCell(Text(participant.diveLevel ?? '',
-                                      style: TextStyle(
-                                          decoration: dive.divreGroups.any(
-                                                  (element) => element
-                                                      .participants
-                                                      .contains(participant))
-                                              ? TextDecoration.lineThrough
-                                              : null))),
-                                  DataCell(
-                                    Text(
-                                      participant.aptitude ?? '',
-                                      style: TextStyle(
-                                          decoration: dive.divreGroups.any(
-                                                  (element) => element
-                                                      .participants
-                                                      .contains(participant))
-                                              ? TextDecoration.lineThrough
-                                              : null),
+                                                : null))),
+                                    DataCell(Container(
+                                      alignment: Alignment.center,
+                                      child: Text(participant.name ?? '',
+                                          style: TextStyle(
+                                              decoration: dive.divreGroups.any(
+                                                      (element) => element
+                                                          .participants
+                                                          .contains(
+                                                              participant))
+                                                  ? TextDecoration.lineThrough
+                                                  : null)),
+                                    )),
+                                    DataCell(Text(participant.diveLevel ?? '',
+                                        style: TextStyle(
+                                            decoration: dive.divreGroups.any(
+                                                    (element) => element
+                                                        .participants
+                                                        .contains(participant))
+                                                ? TextDecoration.lineThrough
+                                                : null))),
+                                    DataCell(
+                                      Text(
+                                        participant.aptitude ?? '',
+                                        style: TextStyle(
+                                            decoration: dive.divreGroups.any(
+                                                    (element) => element
+                                                        .participants
+                                                        .contains(participant))
+                                                ? TextDecoration.lineThrough
+                                                : null),
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            )
-                            .toList(),
+                                  ],
+                                ),
+                              )
+                              .toList(),
+                        ),
                       ),
                     ),
                   ),
@@ -845,8 +849,6 @@ class _DiveDetailState extends State<DiveDetail> {
                                         context,
                                         arguments: dive,
                                         "/diveDetail");
-                                  } else {
-                                    print('Erreur de sauvegarde');
                                   }
                                 },
                                 child: const Text('Valider')),
@@ -889,7 +891,7 @@ class _DiveDetailState extends State<DiveDetail> {
       case "N1":
         return Colors.green.shade500;
       default:
-        return Colors.transparent;
+        return Colors.grey;
     }
   }
 }
