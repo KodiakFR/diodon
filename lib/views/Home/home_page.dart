@@ -3,6 +3,10 @@
 import 'package:diodon/entities/weekend.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../bloc/user_bloc.dart';
+import '../../entities/user.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
@@ -22,6 +26,15 @@ class HomePage extends StatelessWidget {
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
                 context, "/homePage", (route) => false),
           ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  context.read<UserBloc>().logOut();
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, "/connexion", (route) => false);
+                },
+                icon: const Icon(Icons.login_outlined))
+          ],
         ),
         body: SafeArea(
             child: Column(
@@ -73,9 +86,12 @@ class HomePage extends StatelessWidget {
                     },
                     child: Text(weekends[index].title),
                   ),
-                  IconButton(onPressed: () {
-                    Navigator.pushNamed(context, "/updateWeekend", arguments: weekends[index]);
-                  }, icon: const Icon(Icons.edit)),
+                  IconButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, "/updateWeekend",
+                            arguments: weekends[index]);
+                      },
+                      icon: const Icon(Icons.edit)),
                   IconButton(
                       onPressed: () async {
                         bool isDelete =
