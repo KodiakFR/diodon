@@ -96,6 +96,7 @@ class ConnexionView extends StatelessWidget {
                   child: Column(
                     children: [
                       TextFormField(
+                        obscureText: true,
                         decoration: const InputDecoration(
                           hintText: 'Entrez votre mot de passe',
                         ),

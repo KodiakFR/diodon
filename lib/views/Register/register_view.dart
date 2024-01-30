@@ -56,6 +56,7 @@ class RegisterView extends StatelessWidget {
                         hintText: 'Entrez votre nom', labelText: 'Nom'),
                   ),
                   TextFormField(
+                    obscureText: true,
                     validator: (value) {
                       password = value!;
                       if (value.isEmpty) {
@@ -71,6 +72,7 @@ class RegisterView extends StatelessWidget {
                     ),
                   ),
                   TextFormField(
+                    obscureText: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Le champs est obligatoire';
@@ -92,11 +94,15 @@ class RegisterView extends StatelessWidget {
                       onPressed: (() async {
                         if (_formKey.currentState!.validate()) {
                           final cryptPassword = Crypt.sha256(password);
-                          final newUser = User.register(firstName: firstName,name: name,password: cryptPassword.toString());
+                          final newUser = User.register(
+                              firstName: firstName,
+                              name: name,
+                              password: cryptPassword.toString());
                           bool userSave = await _isarService.saveUser(newUser);
                           if (userSave == true) {
                             Navigator.pushReplacementNamed(
-                                context, '/signatureDialog',arguments: newUser);
+                                context, '/signatureDialog',
+                                arguments: newUser);
                           } else {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(const SnackBar(
