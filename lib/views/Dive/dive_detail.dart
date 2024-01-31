@@ -46,328 +46,334 @@ class _DiveDetailState extends State<DiveDetail> {
               context, "/homePage", (route) => false),
         ),
       ),
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 20,
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 20,
+                ),
+                child: _recapDive(dive, context),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Gestion des palanquées',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 5,
+                    child: _displayDiverList(dive),
                   ),
-                  child: _recapDive(dive, context),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  'Gestion des palanquées',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 5,
-                      child: _displayDiverList(dive),
-                    ),
-                    Expanded(
-                      flex: 5,
-                      child: _displayGroupDiver(context, dive),
-                    )
-                  ],
-                )
-              ],
-            ),
+                  Expanded(
+                    flex: 5,
+                    child: _displayGroupDiver(context, dive),
+                  )
+                ],
+              )
+            ],
           ),
         ),
       ),
     );
   }
 
-  Column _displayGroupDiver(BuildContext context, Dive dive) {
+  Widget _displayGroupDiver(BuildContext context, Dive dive) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        SingleChildScrollView(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height / 1.4,
-            child: FutureBuilder(
-              future: isarService.getAllDiveGroupForDive(dive),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.hasError) {
-                  return Text(snapshot.error.toString());
-                }
-                if (snapshot.hasData) {
-                  List<DiveGroup> diveGroups = snapshot.data;
-                  if (diveGroups.isEmpty) {
-                    return const Center(
-                      child: Text('Aucune palanquée n\'a été créée'),
-                    );
+        SizedBox(
+          height: MediaQuery.of(context).size.height/1.45,
+          child: SingleChildScrollView(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height / 1.4,
+              child: FutureBuilder(
+                future: isarService.getAllDiveGroupForDive(dive),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.hasError) {
+                    return Text(snapshot.error.toString());
                   }
-                  return ListView.builder(
-                    itemCount: diveGroups.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      Icon iconStandAlone = const Icon(Icons.check_box);
-                      Icon iconSupervised = const Icon(Icons.check_box);
-                      if (diveGroups[index].standAlone == false ||
-                          diveGroups[index].standAlone == null) {
-                        iconStandAlone =
-                            const Icon(Icons.check_box_outline_blank);
-                      }
-                      if (diveGroups[index].supervised == false ||
-                          diveGroups[index].supervised == null) {
-                        iconSupervised =
-                            const Icon(Icons.check_box_outline_blank);
-                      }
-                      return ExpansionTile(
-                        initiallyExpanded: true,
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(diveGroups[index].title!),
-                            Row(
-                              children: [
-                                IconButton(
-                                    onPressed: () async {
-                                      List<Participant> particiapants =
-                                          await isarService
-                                              .getParticipantsSelected(dive);
-                                      for (var participant in particiapants) {
-                                        diveGroups[index]
-                                            .participants
-                                            .add(participant);
-                                        dive.divreGroups
-                                            .elementAt(index)
-                                            .participants
-                                            .add(participant);
-                                        participant.selected = false;
-                                        isarService
-                                            .upDateParticipant(participant);
-                                      }
-                                      isarService
-                                          .updateDiveGroupe(diveGroups[index]);
-                                      Navigator.pushReplacementNamed(
-                                          context, "/diveDetail",
-                                          arguments: dive);
-                                    },
-                                    icon: const Icon(Icons.group_add_sharp)),
-                                IconButton(
-                                    onPressed: () async {
-                                      bool delete = false;
-                                      delete = await isarService
-                                          .deleteDiveGroup(diveGroups[index]);
-                                      if (delete == false) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(const SnackBar(
-                                          content: Text(
-                                            'Veuillez supprimer tous les participants de la palanquée avant la suppression',
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          backgroundColor: Colors.red,
-                                        ));
-                                      } else {
-                                        Navigator.pushReplacementNamed(
-                                            context, "/diveDetail",
-                                            arguments: dive);
-                                      }
-                                    },
-                                    icon: const Icon(
-                                      Icons.delete,
-                                      color: Colors.red,
-                                    ))
-                              ],
-                            ),
-                          ],
-                        ),
-                        children: [
-                          ExpansionTile(
+                  if (snapshot.hasData) {
+                    List<DiveGroup> diveGroups = snapshot.data;
+                    if (diveGroups.isEmpty) {
+                      return const Center(
+                        child: Text('Aucune palanquée n\'a été créée'),
+                      );
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 40),
+                      child: ListView.builder(
+                        itemCount: diveGroups.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          Icon iconStandAlone = const Icon(Icons.check_box);
+                          Icon iconSupervised = const Icon(Icons.check_box);
+                          if (diveGroups[index].standAlone == false ||
+                              diveGroups[index].standAlone == null) {
+                            iconStandAlone =
+                                const Icon(Icons.check_box_outline_blank);
+                          }
+                          if (diveGroups[index].supervised == false ||
+                              diveGroups[index].supervised == null) {
+                            iconSupervised =
+                                const Icon(Icons.check_box_outline_blank);
+                          }
+                          return ExpansionTile(
+                            initiallyExpanded: true,
                             title: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text("Paramètres de plongée"),
-                                IconButton(
-                                  icon: const Icon(Icons.create),
-                                  onPressed: () {
-                                    _displayPopParameter(
-                                        dive, diveGroups[index], context);
-                                  },
-                                )
+                                Text(diveGroups[index].title!),
+                                Row(
+                                  children: [
+                                    IconButton(
+                                        onPressed: () async {
+                                          List<Participant> particiapants =
+                                              await isarService
+                                                  .getParticipantsSelected(dive);
+                                          for (var participant in particiapants) {
+                                            diveGroups[index]
+                                                .participants
+                                                .add(participant);
+                                            dive.divreGroups
+                                                .elementAt(index)
+                                                .participants
+                                                .add(participant);
+                                            participant.selected = false;
+                                            isarService
+                                                .upDateParticipant(participant);
+                                          }
+                                          isarService
+                                              .updateDiveGroupe(diveGroups[index]);
+                                          Navigator.pushReplacementNamed(
+                                              context, "/diveDetail",
+                                              arguments: dive);
+                                        },
+                                        icon: const Icon(Icons.group_add_sharp)),
+                                    IconButton(
+                                        onPressed: () async {
+                                          bool delete = false;
+                                          delete = await isarService
+                                              .deleteDiveGroup(diveGroups[index]);
+                                          if (delete == false) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                'Veuillez supprimer tous les participants de la palanquée avant la suppression',
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              backgroundColor: Colors.red,
+                                            ));
+                                          } else {
+                                            Navigator.pushReplacementNamed(
+                                                context, "/diveDetail",
+                                                arguments: dive);
+                                          }
+                                        },
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          color: Colors.red,
+                                        ))
+                                  ],
+                                ),
                               ],
                             ),
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 20),
-                                child: Column(
+                              ExpansionTile(
+                                title: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Wrap(
-                                      spacing: 20,
-                                      alignment: WrapAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          child: Wrap(
-                                            children: [
-                                              const Text('Autonome: '),
-                                              iconStandAlone
-                                            ],
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          child: Wrap(
-                                            children: [
-                                              const Text('Encadrée: '),
-                                              iconSupervised
-                                            ],
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          child: Text(
-                                              'Heure Imm: ${DateFormat.Hm().format(diveGroups[index].hourImmersion!)}'),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          child: Text(
-                                              'Heure Sortie: ${DateFormat.Hm().format(diveGroups[index].riseHour!)}'),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            const Padding(
-                                              padding:
-                                                  EdgeInsets.only(bottom: 10),
-                                              child: Text(
-                                                'Consigne DP',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ),
-                                            Text(
-                                                'Profondeur: ${diveGroups[index].dpDeep} m'),
-                                            Text(
-                                                'Temps: ${diveGroups[index].dpTime} min'),
-                                          ],
-                                        ),
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            const Padding(
-                                              padding: EdgeInsets.only(
-                                                  bottom: 10, top: 10),
-                                              child: Text(
-                                                'Réalisé',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ),
-                                            Text(
-                                                'Profondeur: ${diveGroups[index].realDeep} m'),
-                                            Text(
-                                                'Temps: ${diveGroups[index].realTime} min'),
-                                            Text(
-                                                'Paliers: ${diveGroups[index].divingStop}'),
-                                          ],
-                                        )
-                                      ],
+                                    const Text("Paramètres de plongée"),
+                                    IconButton(
+                                      icon: const Icon(Icons.create),
+                                      onPressed: () {
+                                        _displayPopParameter(
+                                            dive, diveGroups[index], context);
+                                      },
                                     )
                                   ],
                                 ),
-                              )
-                            ],
-                          ),
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: DataTable(
-                              columnSpacing: 20,
-                              horizontalMargin: 5,
-                              columns: const <DataColumn>[
-                                DataColumn(
-                                  label: Text("Prénom"),
-                                ),
-                                DataColumn(
-                                  label: Text("Nom"),
-                                ),
-                                DataColumn(
-                                  label: Text("Niveau"),
-                                ),
-                                DataColumn(
-                                  label: Text("Aptitude"),
-                                ),
-                                DataColumn(
-                                  label: Text("Action"),
-                                ),
-                              ],
-                              rows: diveGroups[index]
-                                  .participants
-                                  .map(
-                                    (participant) => DataRow(
-                                      color: MaterialStateProperty.all(
-                                          _colorDataCell(participant)),
-                                      cells: [
-                                        DataCell(
-                                            Text(participant.firstName ?? '')),
-                                        DataCell(Text(participant.name ?? '')),
-                                        DataCell(
-                                            Text(participant.diveLevel ?? '')),
-                                        DataCell(
-                                            Text(participant.aptitude ?? '')),
-                                        DataCell(Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 20),
+                                    child: Column(
+                                      children: [
+                                        Wrap(
+                                          spacing: 20,
+                                          alignment: WrapAlignment.center,
                                           children: [
-                                            IconButton(
-                                              onPressed: () async {
-                                                await isarService
-                                                    .removeParticipantsInGroupDive(
-                                                        participant,
-                                                        diveGroups[index]);
-                                                await isarService
-                                                    .upDateParticipant(
-                                                        participant);
-                                                dive.divreGroups
-                                                    .elementAt(index)
-                                                    .participants
-                                                    .remove(participant);
-                                                Navigator.pushReplacementNamed(
-                                                    context, "/diveDetail",
-                                                    arguments: dive);
-                                              },
-                                              icon: const Icon(
-                                                  Icons.remove_circle_rounded,
-                                                  color: Colors.white),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 10),
+                                              child: Wrap(
+                                                children: [
+                                                  const Text('Autonome: '),
+                                                  iconStandAlone
+                                                ],
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 10),
+                                              child: Wrap(
+                                                children: [
+                                                  const Text('Encadrée: '),
+                                                  iconSupervised
+                                                ],
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 10),
+                                              child: Text(
+                                                  'Heure Imm: ${DateFormat.Hm().format(diveGroups[index].hourImmersion!)}'),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 10),
+                                              child: Text(
+                                                  'Heure Sortie: ${DateFormat.Hm().format(diveGroups[index].riseHour!)}'),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                const Padding(
+                                                  padding:
+                                                      EdgeInsets.only(bottom: 10),
+                                                  child: Text(
+                                                    'Consigne DP',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                                Text(
+                                                    'Profondeur: ${diveGroups[index].dpDeep} m'),
+                                                Text(
+                                                    'Temps: ${diveGroups[index].dpTime} min'),
+                                              ],
+                                            ),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 10, top: 10),
+                                                  child: Text(
+                                                    'Réalisé',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                                Text(
+                                                    'Profondeur: ${diveGroups[index].realDeep} m'),
+                                                Text(
+                                                    'Temps: ${diveGroups[index].realTime} min'),
+                                                Text(
+                                                    'Paliers: ${diveGroups[index].divingStop}'),
+                                              ],
                                             )
                                           ],
-                                        )),
+                                        )
                                       ],
                                     ),
                                   )
-                                  .toList(),
-                            ),
-                          )
-                        ],
-                      );
-                    },
-                  );
-                }
-                return const Center(child: CircularProgressIndicator());
-              },
+                                ],
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 10),
+                                  child: DataTable(
+                                    columnSpacing: MediaQuery.of(context).size.width/20,
+                                    columns: const <DataColumn>[
+                                      DataColumn(
+                                        label: Text("Prénom"),
+                                      ),
+                                      DataColumn(
+                                        label: Text("Nom"),
+                                      ),
+                                      DataColumn(
+                                        label: Text("Niveau"),
+                                      ),
+                                      DataColumn(
+                                        label: Text("Aptitude"),
+                                      ),
+                                      DataColumn(
+                                        label: Text("Action"),
+                                      ),
+                                    ],
+                                    rows: diveGroups[index]
+                                        .participants
+                                        .map(
+                                          (participant) => DataRow(
+                                            color: MaterialStateProperty.all(
+                                                _colorDataCell(participant)),
+                                            cells: [
+                                              DataCell(
+                                                  Text(participant.firstName ?? '')),
+                                              DataCell(Text(participant.name ?? '')),
+                                              DataCell(
+                                                  Text(participant.diveLevel ?? '')),
+                                              DataCell(
+                                                  Text(participant.aptitude ?? '')),
+                                              DataCell(Row(
+                                                children: [
+                                                  IconButton(
+                                                    onPressed: () async {
+                                                      await isarService
+                                                          .removeParticipantsInGroupDive(
+                                                              participant,
+                                                              diveGroups[index]);
+                                                      await isarService
+                                                          .upDateParticipant(
+                                                              participant);
+                                                      dive.divreGroups
+                                                          .elementAt(index)
+                                                          .participants
+                                                          .remove(participant);
+                                                      Navigator.pushReplacementNamed(
+                                                          context, "/diveDetail",
+                                                          arguments: dive);
+                                                    },
+                                                    icon: const Icon(
+                                                        Icons.remove_circle_rounded,
+                                                        color: Colors.white),
+                                                  )
+                                                ],
+                                              )),
+                                            ],
+                                          ),
+                                        )
+                                        .toList(),
+                                  ),
+                                ),
+                              )
+                            ],
+                          );
+                        },
+                      ),
+                    );
+                  }
+                  return const Center(child: CircularProgressIndicator());
+                },
+              ),
             ),
           ),
         ),
@@ -388,7 +394,7 @@ class _DiveDetailState extends State<DiveDetail> {
                 ..riseHour = DateTime(1970)
                 ..standAlone = false
                 ..supervised = false;
-
+    
               bool isSaved = await isarService.saveDiveGroup(dive, diveGroup);
               if (isSaved == true) {
                 dive = await IsarService().getDiveById(dive);
@@ -424,8 +430,8 @@ class _DiveDetailState extends State<DiveDetail> {
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
-                          horizontalMargin: 10,
-                          columnSpacing: 20,
+                          //horizontalMargin: 10,
+                          columnSpacing: MediaQuery.of(context).size.width/20,
                           columns: const <DataColumn>[
                             DataColumn(
                               label: Expanded(
