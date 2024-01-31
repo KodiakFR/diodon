@@ -664,7 +664,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                           );
                                           if (pickedHour != null) {
                                             setState(() {
-                                              var df = DateFormat("h:mm a");
+                                              var df = DateFormat("HH:mm");
                                               var dt = df.parse(
                                                   pickedHour.format(context));
                                               controllerStartHour.text =
@@ -701,7 +701,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                           );
                                           if (pickedHour != null) {
                                             setState(() {
-                                              var df = DateFormat("h:mm a");
+                                              var df = DateFormat("HH:mm");
                                               var dt = df.parse(
                                                   pickedHour.format(context));
                                               controllerStartEnd.text =

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/user_bloc.dart';
-import '../../entities/user.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});

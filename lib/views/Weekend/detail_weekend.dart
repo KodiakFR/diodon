@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:diodon/entities/dive.dart';
-import 'package:diodon/entities/user.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

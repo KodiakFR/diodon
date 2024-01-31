@@ -129,7 +129,7 @@ class _CreateDiveState extends State<CreateDive> {
                               );
                               if (pickedHour != null) {
                                 setState(() {
-                                  var df = DateFormat("h:mm a");
+                                  var df = DateFormat("HH:mm");
                                   var dt = df.parse(pickedHour.format(context));
                                   controllerStartHour.text =
                                       DateFormat("HH:mm").format(dt);
