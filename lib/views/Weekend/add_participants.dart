@@ -321,7 +321,7 @@ class _AddParticipantsState extends State<AddParticipants> {
     _controllerName.clear();
     selectValueType = 'Plongeur';
     double widthForm = MediaQuery.of(context).size.width / 2.8;
-    double heightForm = 90;
+    double heightForm = MediaQuery.of(context).size.height / 8.5;
     return showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
