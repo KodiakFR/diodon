@@ -2,10 +2,13 @@
 
 import 'package:diodon/entities/weekend.dart';
 import 'package:diodon/services/isar_service.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../bloc/user_bloc.dart';
+import '../PDF/pdf.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
@@ -112,6 +115,11 @@ class HomePage extends StatelessWidget {
                         Icons.delete,
                         color: Colors.red,
                       )),
+                  IconButton(
+                      onPressed: () async {
+                        await _saveAsFile(context, weekends[index]);
+                      },
+                      icon: const Icon(Icons.file_open_outlined))
                 ],
               ),
               const SizedBox(
@@ -122,5 +130,17 @@ class HomePage extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Future<void> _saveAsFile(BuildContext context, Weekend weekend) async {
+    final bytes = await generatePdf(weekend);
+    final appDocDir = await getApplicationDocumentsDirectory();
+    final appDocPath = appDocDir.path;
+    await FileSaver.instance.saveAs(
+        name: "Fiche de sécurité du ${weekend.title}",
+        bytes: bytes,
+        filePath: appDocPath,
+        ext: "pdf",
+        mimeType: MimeType.other);
   }
 }

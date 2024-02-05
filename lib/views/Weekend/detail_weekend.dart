@@ -4,7 +4,6 @@ import 'package:diodon/entities/dive.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import '../../entities/weekend.dart';
 
 class WeekendDetail extends StatelessWidget {
@@ -166,9 +165,6 @@ class WeekendDetail extends StatelessWidget {
                         Icons.delete,
                         color: Colors.red,
                       )),
-                  IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.file_open_outlined))
                 ],
               ),
               const SizedBox(

@@ -390,4 +390,13 @@ class IsarService {
       return true;
     }
   }
+
+  Future<List<Participant>> getAllDiverForDiveGroup(DiveGroup diveGroup) async {
+    final isar = await db;
+    List<Participant> participants = await isar.participants
+        .filter()
+        .diveGroups((q) => q.idEqualTo(diveGroup.id))
+        .findAll();
+    return participants;
+  }
 }
