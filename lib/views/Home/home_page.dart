@@ -133,7 +133,7 @@ class HomePage extends StatelessWidget {
   }
 
   Future<void> _saveAsFile(BuildContext context, Weekend weekend) async {
-    final bytes = await generatePdf(weekend);
+    final bytes = await generatePdf(weekend, context);
     final appDocDir = await getApplicationDocumentsDirectory();
     final appDocPath = appDocDir.path;
     await FileSaver.instance.saveAs(
