@@ -45,10 +45,13 @@ Future<Uint8List> generatePdf(Weekend weekend, BuildContext context) async {
           participant.name!,
           participant.firstName!,
           participant.diveLevel!,
-          diveGroup.id.toString()
+          diveGroup.id.toString(),
+          participant.sort!.toString(),
+
         ];
         participantTable.add(participantRow);
       }
+      
     }
     pdf.addPage(pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
@@ -129,6 +132,7 @@ pw.Table _tableParticicpant(
       participantsDiveGroup.add(participant);
     }
   }
+  participantsDiveGroup.sort((a, b) => int.parse(a[4]).compareTo(int.parse(b[4])));
   return pw.TableHelper.fromTextArray(
     cellPadding: const pw.EdgeInsets.only(left: 3),
     tableWidth: pw.TableWidth.max,
