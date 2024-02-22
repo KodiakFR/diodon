@@ -402,7 +402,7 @@ class _DiveDetailState extends State<DiveDetail> {
               int numberDiveGroup = diveGroups.length + 1;
               DiveGroup diveGroup = DiveGroup()
                 ..dive.value = dive
-                ..title = "palanquée $numberDiveGroup"
+                ..title = "Palanquée $numberDiveGroup"
                 ..divingStop = ""
                 ..dpDeep = ""
                 ..dpTime = ""
