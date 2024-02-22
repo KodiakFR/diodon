@@ -107,6 +107,12 @@ class _DiveDetailState extends State<DiveDetail> {
                   return ListView.builder(
                     itemCount: diveGroups.length,
                     itemBuilder: (BuildContext context, int index) {
+                      List<Participant> particiapants = diveGroups[index].participants.toList();
+                      particiapants.sort((a, b) => a.sort!.compareTo(b.sort!),);
+                      diveGroups[index].participants.clear();
+                      for (var participant in particiapants) {
+                        diveGroups[index].participants.add(participant);
+                      }
                       Icon iconStandAlone = const Icon(Icons.check_box);
                       Icon iconSupervised = const Icon(Icons.check_box);
                       if (diveGroups[index].standAlone == false ||
