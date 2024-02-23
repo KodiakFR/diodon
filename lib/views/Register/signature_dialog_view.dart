@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:hand_signature/signature.dart';
 import 'package:flutter/services.dart';
 
-import '../../entities/user.dart';
 
 class SignatureDialog extends StatefulWidget {
   const SignatureDialog({super.key});
@@ -25,7 +24,7 @@ class _SignatureDialogState extends State<SignatureDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ModalRoute.of(context)!.settings.arguments as User;
+   // final user = ModalRoute.of(context)!.settings.arguments as User;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Signature'),
@@ -62,7 +61,7 @@ class _SignatureDialogState extends State<SignatureDialog> {
                   final signature = await exportSignature();
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) =>
-                        SignaturePreviewPage(signature: signature, user: user),
+                        SignaturePreviewPage(signature: signature),
                   ));
                 },
                 icon: const Icon(Icons.check),

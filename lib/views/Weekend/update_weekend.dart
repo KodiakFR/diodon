@@ -31,9 +31,9 @@ class _UpdateWeekend extends State<UpdateWeekend> {
     _controllerEnd.text = DateFormat('dd/MM/yyyy').format(weekend.end);
     return Scaffold(
       appBar: AppBar(
-          title: const Text(
-            "Création d'un week-end",
-            style: TextStyle(color: Colors.white),
+          title: Text(
+            "Modification du ${weekend.title}",
+            style: const TextStyle(color: Colors.white),
           ),
           centerTitle: true,
           actions: [

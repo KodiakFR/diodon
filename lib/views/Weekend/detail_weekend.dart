@@ -50,7 +50,7 @@ class WeekendDetail extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     Text(
-                      'Nombre de particiapants : ${weekend.participants.length.toString()}',
+                      'Nombre de participants : ${weekend.participants.length.toString()}',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ],

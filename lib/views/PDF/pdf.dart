@@ -1,4 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
+import 'package:diodon/bloc/connection_bloc.dart';
 import 'package:diodon/entities/dive.dart';
 import 'package:diodon/entities/dive_group.dart';
 import 'package:diodon/entities/participant.dart';
@@ -12,7 +15,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-import '../../bloc/user_bloc.dart';
 
 final isarService = IsarService();
 
@@ -27,8 +29,8 @@ Future<Uint8List> generatePdf(Weekend weekend, BuildContext context) async {
   if (dir != null) {
     dirPath = dir.path;
   }
-  final UserBloc userBloc = BlocProvider.of<UserBloc>(context);
-  File file = File("$dirPath/${userBloc.state.name}_${userBloc.state.firstName}.png");
+  final ConnexionBloc userBloc = BlocProvider.of<ConnexionBloc>(context);
+  File file = File("$dirPath/${userBloc.state.connectedUser!.name}_${userBloc.state.connectedUser!.firstName}.png");
   final bytes = await file.readAsBytes();
   final byteData = bytes.buffer.asUint8List();
   final signature = pw.MemoryImage(byteData);

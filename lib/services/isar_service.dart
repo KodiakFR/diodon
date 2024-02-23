@@ -71,6 +71,26 @@ class IsarService {
     }
   }
 
+  Future<bool> existUser(User user) async {
+    final isar = await db;
+    final List<User> users = await isar.users
+        .filter()
+        .firstNameEqualTo(user.firstName)
+        .nameEqualTo(user.name)
+        .findAll();
+    if (users.isEmpty) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  Future<bool> deleteUser(User user) async{
+    final isar = await db;
+    bool result = await isar.writeTxn(() => isar.users.delete(user.id));
+    return result;
+  }
+
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------- WEEKEND -----------------------------------------------------------------------------
   Future<List<Weekend>> getAllWeekend() async {
@@ -304,21 +324,21 @@ class IsarService {
 
   Future<List<DiveGroup>> getAllDiveGroupForDive(Dive dive) async {
     final isar = await db;
-    List<DiveGroup> dive_groups = await isar.diveGroups
+    List<DiveGroup> diveGroups = await isar.diveGroups
         .filter()
         .dive((d) => d.idEqualTo(dive.id))
         .findAll();
-    return dive_groups;
+    return diveGroups;
   }
 
   Future<bool> saveDiveGroup(Dive dive, DiveGroup diveGroup) async {
     final isar = await db;
-    List<DiveGroup> dive_groups = await isar.diveGroups
+    List<DiveGroup> diveGroups = await isar.diveGroups
         .filter()
         .dive((d) => d.idEqualTo(dive.id))
         .titleEqualTo(diveGroup.title)
         .findAll();
-    if (dive_groups.isEmpty) {
+    if (diveGroups.isEmpty) {
       isar.writeTxnSync(() => isar.diveGroups.putSync(diveGroup));
       return true;
     } else {
@@ -328,12 +348,12 @@ class IsarService {
 
   Future<bool> upDateDiveGroup(Dive dive, DiveGroup diveGroup) async {
     final isar = await db;
-    List<DiveGroup> dive_groups = await isar.diveGroups
+    List<DiveGroup> diveGroups = await isar.diveGroups
         .filter()
         .dive((d) => d.idEqualTo(dive.id))
         .titleEqualTo(diveGroup.title)
         .findAll();
-    if (dive_groups.isNotEmpty) {
+    if (diveGroups.isNotEmpty) {
       isar.writeTxnSync(() => isar.diveGroups.putSync(diveGroup));
       return true;
     } else {

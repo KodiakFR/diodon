@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:diodon/bloc/user_bloc.dart';
+import 'package:diodon/bloc/connection_bloc.dart';
 import 'package:diodon/entities/dive.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import '../../entities/user.dart';
 import '../../entities/weekend.dart';
 
 class CreateDive extends StatefulWidget {
@@ -70,12 +69,6 @@ class _CreateDiveState extends State<CreateDive> {
                             decoration: const InputDecoration(
                                 hintText: 'Site de la coléra',
                                 labelText: 'Site de plongée'),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Le champs est obligatoire';
-                              }
-                              return null;
-                            },
                           ),
                           TextFormField(
                             controller: controllerStartDate,
@@ -97,13 +90,6 @@ class _CreateDiveState extends State<CreateDive> {
                                           .format(pickedDate);
                                 });
                               }
-                            },
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Le champs est obligatoire';
-                              }
-
-                              return null;
                             },
                           ),
                           TextFormField(
@@ -137,10 +123,10 @@ class _CreateDiveState extends State<CreateDive> {
                               }
                             },
                           ),
-                          BlocBuilder<UserBloc, User>(
+                          BlocBuilder<ConnexionBloc, Connexion>(
                             builder: (context, state) {
                               controllerDP.text =
-                                  '${state.firstName} ${state.name}';
+                                  '${state.connectedUser!.firstName} ${state.connectedUser!.name}';
                               return TextFormField(
                                 controller: controllerDP,
                                 decoration: const InputDecoration(
@@ -201,18 +187,19 @@ class _CreateDiveState extends State<CreateDive> {
               ElevatedButton(
                   onPressed: () async {
                     if (formKey.currentState!.validate()) {
+                      DateTime date = DateTime(1970);
                       final List<Dive> dives =
                           await isarService.getAllDiveByWeekend(weekend);
                       //definition de la date de départ
-
-                      int year =
-                          int.parse(controllerStartDate.text.substring(6, 10));
-                      int month =
-                          int.parse(controllerStartDate.text.substring(3, 5));
-                      int day =
-                          int.parse(controllerStartDate.text.substring(0, 2));
-                      DateTime date = DateTime(year, month, day);
-
+                      if (controllerStartDate.text.isNotEmpty) {
+                        int year = int.parse(
+                            controllerStartDate.text.substring(6, 10));
+                        int month =
+                            int.parse(controllerStartDate.text.substring(3, 5));
+                        int day =
+                            int.parse(controllerStartDate.text.substring(0, 2));
+                        date = DateTime(year, month, day);
+                      }
                       if (controllerStartHour.text.isNotEmpty) {
                         int hour =
                             int.parse(controllerStartHour.text.substring(0, 2));
@@ -227,8 +214,12 @@ class _CreateDiveState extends State<CreateDive> {
                         ..dp = controllerDP.text
                         ..boat = controllerBoat.text
                         ..captain = controllerCaptainName.text
-                        ..nbPeople = int.parse(controllerNbPerson.text)
-                        ..nbDiver = int.parse(controllerNbDivers.text)
+                        ..nbPeople = controllerNbPerson.text.isEmpty
+                            ? 0
+                            : int.parse(controllerNbPerson.text)
+                        ..nbDiver = controllerNbDivers.text.isEmpty
+                            ? 0
+                            : int.parse(controllerNbDivers.text)
                         ..weekend.value = weekend;
 
                       bool isCreate = await isarService.saveDive(weekend, dive);

@@ -2,19 +2,18 @@
 
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:file_saver/file_saver.dart';
+import 'package:diodon/bloc/register_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../entities/user.dart';
 
 class SignaturePreviewPage extends StatelessWidget {
   final Uint8List signature;
-  final User user;
 
   const SignaturePreviewPage(
-      {super.key, required this.signature, required this.user});
+      {super.key, required this.signature});
 
   @override
   Widget build(BuildContext context) {
@@ -39,24 +38,20 @@ class SignaturePreviewPage extends StatelessWidget {
     if (!status.isGranted) {
       await Permission.storage.request();
     }
-    final Directory directory = await getApplicationDocumentsDirectory();
-    String directoryPath = directory.path;
-    final String name = '${user.name}_${user.firstName}.png';
-    String path = '$directoryPath/$name';
-    String filePath = await FileSaver.instance
-        .saveFile(name: name, bytes: signature, filePath: path);
-    final bool fileExist = await File(filePath).exists();
-    if (fileExist) {
-      Navigator.pushNamed(context, "/connexion");
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('L\'utilisateur a été sauvegardé avec succés'),
-        backgroundColor: Colors.green,
-      ));
-    } else {
-      const SnackBar(
-        content: Text('La création de l\'utilisateur à échoué, veuillez rééssayer'),
-        backgroundColor: Colors.red,
-      );
-    }
+    final String path = (await getApplicationCacheDirectory()).path;
+    File file = File('$path/newSignature.png');
+    await file.writeAsBytes(signature);
+    context.read<RegisterBloc>().changeFile(file, 'signature');
+    Navigator.pushNamed(context, "/register");
+    // final Directory directory = await getApplicationDocumentsDirectory();
+    // String directoryPath = directory.path;
+    // final String name = 'Signature_${user.name}_${user.firstName}.png';
+    // String path = '$directoryPath/$name';
+    // String filePath = await FileSaver.instance
+    //     .saveFile(name: name, bytes: signature, filePath: path);
+    // final bool fileExist = await File(filePath).exists();
+    // if (fileExist) {
+    //   Navigator.pushNamed(context, "/addStamp",arguments: user);
+    // }
   }
 }

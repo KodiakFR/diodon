@@ -57,25 +57,27 @@ class _DiveDetailState extends State<DiveDetail> {
                 ),
                 child: _recapDive(dive, context),
               ),
-              const SizedBox(
-                height: 10,
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  'Gestion des palanquées',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                  textAlign: TextAlign.center,
+                ),
               ),
-              Text(
-                'Gestion des palanquées',
-                style: Theme.of(context).textTheme.headlineMedium,
-                textAlign: TextAlign.center,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 5,
-                    child: _displayDiverList(dive),
-                  ),
-                  Expanded(
-                    flex: 5,
-                    child: _displayGroupDiver(context, dive),
-                  )
-                ],
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 5,
+                      child: _displayDiverList(dive),
+                    ),
+                    Expanded(
+                      flex: 5,
+                      child: _displayGroupDiver(context, dive),
+                    )
+                  ],
+                ),
               )
             ],
           ),
@@ -90,7 +92,7 @@ class _DiveDetailState extends State<DiveDetail> {
       children: [
         SingleChildScrollView(
           child: SizedBox(
-            height: MediaQuery.of(context).size.height / 1.6,
+            height: MediaQuery.of(context).size.height / 2,
             child: FutureBuilder(
               future: isarService.getAllDiveGroupForDive(dive),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -436,101 +438,97 @@ class _DiveDetailState extends State<DiveDetail> {
           final List<Participant> participants = snapshot.data!;
           return Padding(
             padding: const EdgeInsets.only(bottom: 20),
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height / 1.45,
-              width: double.infinity,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
                 child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: DataTable(
-                      //horizontalMargin: 10,
-                      columnSpacing: MediaQuery.of(context).size.width / 30,
-                      columns: const <DataColumn>[
-                        DataColumn(
-                          label: Expanded(
-                            child: Text("Prénom"),
-                          ),
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                    //horizontalMargin: 10,
+                    columnSpacing: MediaQuery.of(context).size.width / 30,
+                    columns: const <DataColumn>[
+                      DataColumn(
+                        label: Expanded(
+                          child: Text("Prénom"),
                         ),
-                        DataColumn(
-                          label: Expanded(
-                            child: Text("Nom"),
-                          ),
+                      ),
+                      DataColumn(
+                        label: Expanded(
+                          child: Text("Nom"),
                         ),
-                        DataColumn(
-                          label: Expanded(
-                            child: Text("Niveau"),
-                          ),
+                      ),
+                      DataColumn(
+                        label: Expanded(
+                          child: Text("Niveau"),
                         ),
-                        DataColumn(
-                          label: Expanded(
-                            child: Text("Aptitude"),
-                          ),
+                      ),
+                      DataColumn(
+                        label: Expanded(
+                          child: Text("Aptitude"),
                         ),
-                      ],
-                      rows: participants
-                          .map(
-                            (Participant participant) => DataRow(
-                              color: MaterialStateProperty.all(
-                                  _colorDataCell(participant)),
-                              selected: participant.selected!,
-                              onSelectChanged: (isSelect) async {
-                                bool isInGroupDive = await isarService
-                                    .isInDiveGroup(dive, participant);
-                                setState(() {
-                                  if (isInGroupDive == false) {
-                                    participant.selected = isSelect;
-                                    isarService.upDateParticipant(participant);
-                                  }
-                                });
-                              },
-                              cells: [
-                                DataCell(Text(participant.firstName ?? '',
+                      ),
+                    ],
+                    rows: participants
+                        .map(
+                          (Participant participant) => DataRow(
+                            color: MaterialStateProperty.all(
+                                _colorDataCell(participant)),
+                            selected: participant.selected!,
+                            onSelectChanged: (isSelect) async {
+                              bool isInGroupDive = await isarService
+                                  .isInDiveGroup(dive, participant);
+                              setState(() {
+                                if (isInGroupDive == false) {
+                                  participant.selected = isSelect;
+                                  isarService.upDateParticipant(participant);
+                                }
+                              });
+                            },
+                            cells: [
+                              DataCell(Text(participant.firstName ?? '',
+                                  style: TextStyle(
+                                      decoration: dive.divreGroups.any(
+                                              (element) => element
+                                                  .participants
+                                                  .contains(participant))
+                                          ? TextDecoration.lineThrough
+                                          : null))),
+                              DataCell(Container(
+                                alignment: Alignment.center,
+                                child: Text(participant.name ?? '',
                                     style: TextStyle(
                                         decoration: dive.divreGroups.any(
                                                 (element) => element
                                                     .participants
                                                     .contains(participant))
                                             ? TextDecoration.lineThrough
-                                            : null))),
-                                DataCell(Container(
-                                  alignment: Alignment.center,
-                                  child: Text(participant.name ?? '',
-                                      style: TextStyle(
-                                          decoration: dive.divreGroups.any(
-                                                  (element) => element
-                                                      .participants
-                                                      .contains(participant))
-                                              ? TextDecoration.lineThrough
-                                              : null)),
-                                )),
-                                DataCell(Text(participant.diveLevel ?? '',
-                                    style: TextStyle(
-                                        decoration: dive.divreGroups.any(
-                                                (element) => element
-                                                    .participants
-                                                    .contains(participant))
-                                            ? TextDecoration.lineThrough
-                                            : null))),
-                                DataCell(
-                                  Text(
-                                    participant.aptitude ?? '',
-                                    style: TextStyle(
-                                        decoration: dive.divreGroups.any(
-                                                (element) => element
-                                                    .participants
-                                                    .contains(participant))
-                                            ? TextDecoration.lineThrough
-                                            : null),
-                                  ),
+                                            : null)),
+                              )),
+                              DataCell(Text(participant.diveLevel ?? '',
+                                  style: TextStyle(
+                                      decoration: dive.divreGroups.any(
+                                              (element) => element
+                                                  .participants
+                                                  .contains(participant))
+                                          ? TextDecoration.lineThrough
+                                          : null))),
+                              DataCell(
+                                Text(
+                                  participant.aptitude ?? '',
+                                  style: TextStyle(
+                                      decoration: dive.divreGroups.any(
+                                              (element) => element
+                                                  .participants
+                                                  .contains(participant))
+                                          ? TextDecoration.lineThrough
+                                          : null),
                                 ),
-                              ],
-                            ),
-                          )
-                          .toList(),
-                    ),
+                              ),
+                            ],
+                          ),
+                        )
+                        .toList(),
                   ),
                 ),
               ),

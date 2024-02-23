@@ -1,4 +1,6 @@
-import 'package:diodon/bloc/user_bloc.dart';
+import 'package:diodon/bloc/connection_bloc.dart';
+import 'package:diodon/bloc/home_bloc.dart';
+import 'package:diodon/bloc/register_bloc.dart';
 import 'package:diodon/views/Connexion/connexion_view.dart';
 import 'package:diodon/views/Dive/create_dive.dart';
 import 'package:diodon/views/Dive/dive_detail.dart';
@@ -12,8 +14,6 @@ import 'package:diodon/views/Weekend/detail_weekend.dart';
 import 'package:diodon/views/Weekend/update_weekend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'entities/user.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +29,13 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => UserBloc(User.empty()),
+          create: (context) =>  ConnexionBloc(Connexion.empty()),
+        ),
+        BlocProvider(
+          create: (context) =>  RegisterBloc(Register.empty()),
+        ),
+         BlocProvider(
+          create: (context) =>  HomeBloc(Home.empty()),
         ),
       ],
       child: MaterialApp(
@@ -39,7 +45,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.orange,
         ),
         routes: {
-          "/connexion": (context) => ConnexionView(),
+          "/connexion": (context) => const ConnexionView(),
           "/register": (context) => RegisterView(),
           "/signatureDialog": (context) => const SignatureDialog(),
           "/homePage": (context) => HomePage(),
@@ -51,7 +57,7 @@ class MyApp extends StatelessWidget {
           "/updateWeekend": (context) => const UpdateWeekend(),
           "/updateDive": (context) => const UpdateDive(),
         },
-        home: ConnexionView(),
+        home: const ConnexionView(),
       ),
     );
   }
