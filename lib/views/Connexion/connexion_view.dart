@@ -14,6 +14,7 @@ class ConnexionView extends StatelessWidget {
   Widget build(BuildContext context) {
     final isarService = IsarService();
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text("Diodon"),
       ),
@@ -109,47 +110,48 @@ class ConnexionView extends StatelessWidget {
     final formKey = GlobalKey<FormState>();
     String mdp = '';
     return showDialog(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-              title: const Text(
-                'Connection',
-                textAlign: TextAlign.center,
-              ),
-              actions: [
-                Form(
-                  key: formKey,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                          hintText: 'Entrez votre mot de passe',
-                        ),
-                        validator: (value) {
-                          mdp = value!;
-                          if (value.isEmpty) {
-                            return 'Le champs est obligatoire';
-                          }
-                          return null;
-                        },
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, 'Cancel'),
-                        child: const Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          if (formKey.currentState!.validate()) {
-                            _connection(id, mdp, context);
-                          }
-                        },
-                        child: const Text('OK'),
-                      ),
-                    ],
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text(
+          'Connection',
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          Form(
+            key: formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    hintText: 'Entrez votre mot de passe',
                   ),
+                  validator: (value) {
+                    mdp = value!;
+                    if (value.isEmpty) {
+                      return 'Le champs est obligatoire';
+                    }
+                    return null;
+                  },
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'Cancel'),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    if (formKey.currentState!.validate()) {
+                      _connection(id, mdp, context);
+                    }
+                  },
+                  child: const Text('OK'),
                 ),
               ],
-            ));
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _connection(int id, String mdp, BuildContext context) async {

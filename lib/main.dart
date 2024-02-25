@@ -12,8 +12,10 @@ import 'package:diodon/views/Register/register_view.dart';
 import 'package:diodon/views/Register/signature_dialog_view.dart';
 import 'package:diodon/views/Weekend/detail_weekend.dart';
 import 'package:diodon/views/Weekend/update_weekend.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,21 +31,29 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) =>  ConnexionBloc(Connexion.empty()),
+          create: (context) => ConnexionBloc(Connexion.empty()),
         ),
         BlocProvider(
-          create: (context) =>  RegisterBloc(Register.empty()),
+          create: (context) => RegisterBloc(Register.empty()),
         ),
-         BlocProvider(
-          create: (context) =>  HomeBloc(Home.empty()),
+        BlocProvider(
+          create: (context) => HomeBloc(Home.empty()),
         ),
       ],
       child: MaterialApp(
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        locale: const Locale("fr", "FR"),
+        supportedLocales: const [Locale("fr", "FR")],
         debugShowCheckedModeBanner: false,
-        title: 'Diodon',
         theme: ThemeData(
+          primaryColor: Colors.orange,
           primarySwatch: Colors.orange,
         ),
+        title: 'Diodon',
         routes: {
           "/connexion": (context) => const ConnexionView(),
           "/register": (context) => RegisterView(),
@@ -51,7 +61,7 @@ class MyApp extends StatelessWidget {
           "/homePage": (context) => HomePage(),
           "/createWeekend": (context) => const CreateWeekend(),
           "/addParticipants": (context) => const AddParticipants(),
-          "/weekendDetail": (context) =>  WeekendDetail(),
+          "/weekendDetail": (context) => WeekendDetail(),
           "/createDive": (context) => const CreateDive(),
           "/diveDetail": (context) => const DiveDetail(),
           "/updateWeekend": (context) => const UpdateWeekend(),

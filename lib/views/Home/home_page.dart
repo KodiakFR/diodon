@@ -39,7 +39,8 @@ class HomePage extends StatelessWidget {
               icon: const Icon(Icons.login_outlined))
         ],
       ),
-      body: SafeArea(child: BlocBuilder<HomeBloc, Home>(
+      body: SafeArea(
+          child: BlocBuilder<HomeBloc, Home>(
         buildWhen: (previous, current) => previous != current,
         builder: (context, state) {
           return Column(
@@ -138,38 +139,40 @@ class HomePage extends StatelessWidget {
   }
 
   _displayPopDelete(Weekend weekend, BuildContext context) async {
-    return showDialog(context: context, builder: (context) => AlertDialog(
-      title: const Row(
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.warning, color: Colors.red),
+            Text(
+              'Suppression',
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        content: Text(
+            "Voulez vous vraiment supprimer le ${weekend.title}?\nCette suppression entrainera la suprresion des plongées et des planquées existantes"),
+        actions: [
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.warning, color: Colors.red),
-              Text(
-                'Suppression',
-                textAlign: TextAlign.center,
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  context.read<HomeBloc>().removeWeekend(weekend);
+                  Navigator.pop(context);
+                },
+                child: const Text('OK'),
               ),
             ],
           ),
-          content: Text("Voulez vous vraiment supprimer le ${weekend.title}?\nCette suppression entrainera la suprresion des plongées et des planquées existantes"),
-          actions: [
-           Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, 'Cancel'),
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () async {
-                  context.read<HomeBloc>().removeWeekend(weekend);
-                    Navigator.pop(context);
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          ],
-    ),);
-
-    
+        ],
+      ),
+    );
   }
 }

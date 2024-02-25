@@ -120,7 +120,7 @@ class _CreateWeekendState extends State<CreateWeekend> {
                         final String month =
                             DateFormat.MMMM('fr').format(startDate);
                         final String tilte =
-                            "Week-end du ${startDate.day} - ${endDate.day} $month ${startDate.year}";
+                            "Week-end du ${DateFormat('dd').format(startDate)} au ${DateFormat('dd').format(endDate)} $month ${startDate.year}";
                         Weekend weekend = Weekend()
                           ..title = tilte
                           ..nbDive = int.parse(_nbDive.text)

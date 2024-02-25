@@ -85,7 +85,7 @@ class IsarService {
     }
   }
 
-  Future<bool> deleteUser(User user) async{
+  Future<bool> deleteUser(User user) async {
     final isar = await db;
     bool result = await isar.writeTxn(() => isar.users.delete(user.id));
     return result;
@@ -117,7 +117,7 @@ class IsarService {
   Future<bool> updateWeekend(Weekend weekend) async {
     final isar = await db;
     final List<Weekend> weekends =
-        await isar.weekends.filter().titleEqualTo(weekend.title).findAll();
+        await isar.weekends.filter().idEqualTo(weekend.id).findAll();
     if (weekends.length == 1) {
       isar.writeTxnSync<int>(() => isar.weekends.putSync(weekend));
       return true;

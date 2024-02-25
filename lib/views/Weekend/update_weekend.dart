@@ -11,10 +11,12 @@ final _formKey = GlobalKey<FormState>();
 
 class UpdateWeekend extends StatefulWidget {
   const UpdateWeekend({super.key});
-
   @override
   State<UpdateWeekend> createState() => _UpdateWeekend();
 }
+
+@override
+void initState() {}
 
 class _UpdateWeekend extends State<UpdateWeekend> {
   final TextEditingController _controllerStart = TextEditingController();
@@ -23,12 +25,17 @@ class _UpdateWeekend extends State<UpdateWeekend> {
   late DateTime startDate;
   late DateTime endDate;
   final IsarService isarService = IsarService();
+  bool isInitialized = false;
+
   @override
   Widget build(BuildContext context) {
     final weekend = ModalRoute.of(context)!.settings.arguments as Weekend;
-    _nbDive.text = weekend.nbDive.toString();
-    _controllerStart.text = DateFormat('dd/MM/yyyy').format(weekend.start);
-    _controllerEnd.text = DateFormat('dd/MM/yyyy').format(weekend.end);
+    if (!isInitialized) {
+      _nbDive.text = weekend.nbDive.toString();
+      _controllerStart.text = DateFormat('dd/MM/yyyy').format(weekend.start);
+      _controllerEnd.text = DateFormat('dd/MM/yyyy').format(weekend.end);
+      isInitialized = true;
+    }
     return Scaffold(
       appBar: AppBar(
           title: Text(
@@ -72,6 +79,7 @@ class _UpdateWeekend extends State<UpdateWeekend> {
                   ),
                   onTap: () async {
                     DateTime? pickedDate = await showDatePicker(
+                      locale: const Locale('fr', 'FR'),
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime(2022),
@@ -96,6 +104,7 @@ class _UpdateWeekend extends State<UpdateWeekend> {
                   ),
                   onTap: () async {
                     DateTime? pickedDate = await showDatePicker(
+                      locale: const Locale('fr', 'FR'),
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime(2022),
@@ -119,9 +128,12 @@ class _UpdateWeekend extends State<UpdateWeekend> {
                     onPressed: (() async {
                       if (_formKey.currentState!.validate()) {
                         await initializeDateFormatting('fr');
+                        final String month =
+                            DateFormat.MMMM('fr').format(startDate);
                         Weekend updateweekend = Weekend()
                           ..id = weekend.id
-                          ..title = weekend.title
+                          ..title =
+                              "Week-end du ${DateFormat('dd').format(startDate)} au ${DateFormat('dd').format(endDate)} $month ${startDate.year}"
                           ..nbDive = int.parse(_nbDive.text)
                           ..end = endDate
                           ..start = startDate;
