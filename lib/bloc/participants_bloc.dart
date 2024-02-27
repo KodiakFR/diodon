@@ -32,4 +32,12 @@ class ParticipantsBloc extends Cubit<List<Participant>> {
     }
     return result;
   }
+
+  Future<void> updateParticipant(
+      Participant participant, Weekend weekend) async {
+    await isarService.upDateParticipant(participant);
+    List<Participant> participants =
+        await isarService.getParticipantsFromWeekend(weekend.id!);
+    emit(participants);
+  }
 }

@@ -116,6 +116,22 @@ class _AddParticipantsState extends State<AddParticipants> {
       value: "MF2",
       child: Text("MF2"),
     ),
+    const DropdownMenuItem(
+      value: "E4",
+      child: Text("E4"),
+    ),
+    const DropdownMenuItem(
+      value: "E3",
+      child: Text("E3"),
+    ),
+    const DropdownMenuItem(
+      value: "E2",
+      child: Text("E2"),
+    ),
+    const DropdownMenuItem(
+      value: "E1",
+      child: Text("E1"),
+    ),
   ];
 
   @override
@@ -208,6 +224,9 @@ class _AddParticipantsState extends State<AddParticipants> {
   }
 
   Widget _displayParticipants(List<Participant> participants, Weekend weekend) {
+    participants.sort(
+      (a, b) => a.sort!.compareTo(b.sort!),
+    );
     return DataTable(
       columns: const <DataColumn>[
         DataColumn(
@@ -259,6 +278,13 @@ class _AddParticipantsState extends State<AddParticipants> {
                             .removeParticipant(participant, weekend);
                       },
                       icon: const Icon(Icons.remove, color: Colors.red),
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        await _displayPopAddManuel(
+                            context, weekend, participant);
+                      },
+                      icon: const Icon(Icons.edit, color: Colors.black),
                     )
                   ],
                 ))
@@ -301,7 +327,7 @@ class _AddParticipantsState extends State<AddParticipants> {
                         ElevatedButton(
                           onPressed: () async {
                             Navigator.pop(context);
-                            await _displayPopAddManuel(context, weekend);
+                            await _displayPopAddManuel(context, weekend, null);
                           },
                           child: const Text('Ajouter'),
                         ),
@@ -320,10 +346,25 @@ class _AddParticipantsState extends State<AddParticipants> {
   }
 
   Future<void> _displayPopAddManuel(
-      BuildContext context, Weekend weekend) async {
+      BuildContext context, Weekend weekend, Participant? participant) async {
     _controllerFirstName.clear();
     _controllerName.clear();
-    selectValueType = 'Plongeur';
+    selectValueLevel = "";
+    selectValueType = "Plongeur";
+    if (participant != null) {
+      if (participant.firstName != null) {
+        _controllerFirstName.text = participant.firstName!;
+      }
+      if (participant.name != null) {
+        _controllerName.text = participant.name!;
+      }
+      if (participant.diveLevel != null) {
+        selectValueLevel = participant.diveLevel!;
+      }
+      if (participant.type != null && participant.type != "") {
+        selectValueType = participant.type!;
+      }
+    }
     double widthForm = MediaQuery.of(context).size.width / 2.8;
     double heightForm = MediaQuery.of(context).size.height / 8.5;
     return showDialog(
@@ -425,40 +466,60 @@ class _AddParticipantsState extends State<AddParticipants> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           ElevatedButton(
-                            child: const Text('Ajouter'),
+                            child: Text(
+                                participant == null ? 'Ajouter' : 'Modifier'),
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 String? aptitude =
                                     _defineAptitude(selectValueLevel);
-                                Participant participant = Participant()
-                                  ..firstName = _controllerFirstName.text
-                                  ..name = _controllerName.text.toUpperCase()
-                                  ..type = selectValueType
-                                  ..diveLevel = selectValueLevel
-                                  ..aptitude = aptitude
-                                  ..selected = false
-                                  ..weekends.add(weekend);
-                                bool isSaved = await context
-                                    .read<ParticipantsBloc>()
-                                    .addParticipant(participant, weekend);
-                                if (!isSaved) {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(const SnackBar(
-                                    content: Text(
-                                      'Le participant est déjà dans la liste',
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    backgroundColor: Colors.red,
-                                  ));
+                                if (participant == null) {
+                                  Participant newParticipant = Participant()
+                                    ..firstName = _controllerFirstName.text
+                                    ..name = _controllerName.text.toUpperCase()
+                                    ..type = selectValueType
+                                    ..diveLevel = selectValueLevel
+                                    ..aptitude = aptitude
+                                    ..selected = false
+                                    ..sort = _difineSort(selectValueLevel)
+                                    ..weekends.add(weekend);
+
+                                  bool isSaved = await context
+                                      .read<ParticipantsBloc>()
+                                      .addParticipant(newParticipant, weekend);
+                                  if (!isSaved) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                      content: Text(
+                                        'Le participant est déjà dans la liste',
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      backgroundColor: Colors.red,
+                                    ));
+                                  } else {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                      content: Text(
+                                        'Le participant a bien été ajouté',
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      backgroundColor: Colors.green,
+                                    ));
+                                  }
                                 } else {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(const SnackBar(
-                                    content: Text(
-                                      'Le participant a bien été ajouté',
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    backgroundColor: Colors.green,
-                                  ));
+                                  Participant newParticipant = Participant()
+                                    ..id = participant.id
+                                    ..firstName = _controllerFirstName.text
+                                    ..name = _controllerName.text.toUpperCase()
+                                    ..type = selectValueType
+                                    ..diveLevel = selectValueLevel
+                                    ..aptitude = aptitude
+                                    ..selected = false
+                                    ..sort = _difineSort(selectValueLevel)
+                                    ..weekends.add(weekend);
+                                  await context
+                                      .read<ParticipantsBloc>()
+                                      .updateParticipant(
+                                          newParticipant, weekend);
                                 }
                                 Navigator.pop(context);
                               }
