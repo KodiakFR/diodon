@@ -131,11 +131,8 @@ class _CreateWeekendState extends State<CreateWeekend> {
                           Weekend? weekend =
                               await isarService.getWeekendByTitle(tilte);
                           if (weekend != null) {
-                            Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                "/addParticipants",
-                                arguments: weekend,
-                                (route) => false);
+                            Navigator.pushNamed(context, "/addParticipants",
+                                arguments: weekend);
                           }
                         } else {
                           ScaffoldMessenger.of(context)

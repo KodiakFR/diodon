@@ -121,17 +121,18 @@ class _AddParticipantsState extends State<AddParticipants> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text(
-          "Participants du ${weekend.title}",
-          style: const TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.home, size: 40),
-          onPressed: () => Navigator.pushNamedAndRemoveUntil(
-              context, "/homePage", (route) => false),
-        ),
-      ),
+          title: Text(
+            "Participants du ${weekend.title}",
+            style: const TextStyle(color: Colors.white),
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.home, size: 40),
+              onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                  context, "/homePage", (route) => false),
+            ),
+          ]),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,

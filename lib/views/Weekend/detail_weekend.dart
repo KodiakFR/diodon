@@ -20,11 +20,13 @@ class WeekendDetail extends StatelessWidget {
           style: const TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.home, size: 40),
-          onPressed: () => Navigator.pushNamedAndRemoveUntil(
-              context, "/homePage", (route) => false),
-        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home, size: 40),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                context, "/homePage", (route) => false),
+          )
+        ],
       ),
       body: SafeArea(
         child: Center(
@@ -61,11 +63,8 @@ class WeekendDetail extends StatelessWidget {
               ),
               ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        "/addParticipants",
-                        arguments: weekend,
-                        (route) => false);
+                    Navigator.pushNamed(context, "/addParticipants",
+                        arguments: weekend);
                   },
                   child: const Text('Afficher la liste des participants')),
               const SizedBox(
@@ -127,11 +126,8 @@ class WeekendDetail extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          "/diveDetail",
-                          arguments: dives[index],
-                          (route) => false);
+                      Navigator.pushNamed(context, "/diveDetail",
+                          arguments: dives[index]);
                     },
                     child: Text(dives[index].title),
                   ),

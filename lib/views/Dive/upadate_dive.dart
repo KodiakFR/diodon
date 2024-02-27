@@ -41,17 +41,18 @@ class _UpdateDiveState extends State<UpdateDive> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Modification de la plongée',
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.home, size: 40),
-          onPressed: () => Navigator.pushNamedAndRemoveUntil(
-              context, "/homePage", (route) => false),
-        ),
-      ),
+          title: const Text(
+            'Modification de la plongée',
+            style: TextStyle(color: Colors.white),
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.home, size: 40),
+              onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                  context, "/homePage", (route) => false),
+            ),
+          ]),
       body: SingleChildScrollView(
         child: SafeArea(
             child: Form(

@@ -35,17 +35,18 @@ class _DiveDetailState extends State<DiveDetail> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text(
-          dive.title,
-          style: const TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.home, size: 40),
-          onPressed: () => Navigator.pushNamedAndRemoveUntil(
-              context, "/homePage", (route) => false),
-        ),
-      ),
+          title: Text(
+            dive.title,
+            style: const TextStyle(color: Colors.white),
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.home, size: 40),
+              onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                  context, "/homePage", (route) => false),
+            ),
+          ]),
       body: SafeArea(
         child: Center(
           child: Column(
@@ -109,8 +110,11 @@ class _DiveDetailState extends State<DiveDetail> {
                   return ListView.builder(
                     itemCount: diveGroups.length,
                     itemBuilder: (BuildContext context, int index) {
-                      List<Participant> particiapants = diveGroups[index].participants.toList();
-                      particiapants.sort((a, b) => a.sort!.compareTo(b.sort!),);
+                      List<Participant> particiapants =
+                          diveGroups[index].participants.toList();
+                      particiapants.sort(
+                        (a, b) => a.sort!.compareTo(b.sort!),
+                      );
                       diveGroups[index].participants.clear();
                       for (var participant in particiapants) {
                         diveGroups[index].participants.add(participant);
@@ -139,10 +143,8 @@ class _DiveDetailState extends State<DiveDetail> {
                                     onPressed: () async {
                                       List<Participant> particiapants =
                                           await isarService
-                                              .getParticipantsSelected(
-                                                  dive);
-                                      for (var participant
-                                          in particiapants) {
+                                              .getParticipantsSelected(dive);
+                                      for (var participant in particiapants) {
                                         diveGroups[index]
                                             .participants
                                             .add(participant);
@@ -154,20 +156,18 @@ class _DiveDetailState extends State<DiveDetail> {
                                         isarService
                                             .upDateParticipant(participant);
                                       }
-                                      isarService.updateDiveGroupe(
-                                          diveGroups[index]);
+                                      isarService
+                                          .updateDiveGroupe(diveGroups[index]);
                                       Navigator.pushReplacementNamed(
                                           context, "/diveDetail",
                                           arguments: dive);
                                     },
-                                    icon:
-                                        const Icon(Icons.group_add_sharp)),
+                                    icon: const Icon(Icons.group_add_sharp)),
                                 IconButton(
                                     onPressed: () async {
                                       bool delete = false;
-                                      delete =
-                                          await isarService.deleteDiveGroup(
-                                              diveGroups[index]);
+                                      delete = await isarService
+                                          .deleteDiveGroup(diveGroups[index]);
                                       if (delete == false) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(const SnackBar(
@@ -194,8 +194,7 @@ class _DiveDetailState extends State<DiveDetail> {
                         children: [
                           ExpansionTile(
                             title: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text("Paramètres de plongée"),
                                 IconButton(
@@ -217,9 +216,8 @@ class _DiveDetailState extends State<DiveDetail> {
                                       alignment: WrapAlignment.center,
                                       children: [
                                         Padding(
-                                          padding:
-                                              const EdgeInsets.symmetric(
-                                                  horizontal: 10),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
                                           child: Wrap(
                                             children: [
                                               const Text('Autonome: '),
@@ -228,9 +226,8 @@ class _DiveDetailState extends State<DiveDetail> {
                                           ),
                                         ),
                                         Padding(
-                                          padding:
-                                              const EdgeInsets.symmetric(
-                                                  horizontal: 10),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
                                           child: Wrap(
                                             children: [
                                               const Text('Encadrée: '),
@@ -239,16 +236,14 @@ class _DiveDetailState extends State<DiveDetail> {
                                           ),
                                         ),
                                         Padding(
-                                          padding:
-                                              const EdgeInsets.symmetric(
-                                                  horizontal: 10),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
                                           child: Text(
                                               'Heure Imm: ${DateFormat.Hm().format(diveGroups[index].hourImmersion!)}'),
                                         ),
                                         Padding(
-                                          padding:
-                                              const EdgeInsets.symmetric(
-                                                  horizontal: 10),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
                                           child: Text(
                                               'Heure Sortie: ${DateFormat.Hm().format(diveGroups[index].riseHour!)}'),
                                         ),
@@ -263,12 +258,11 @@ class _DiveDetailState extends State<DiveDetail> {
                                       children: [
                                         Column(
                                           mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             const Padding(
-                                              padding: EdgeInsets.only(
-                                                  bottom: 10),
+                                              padding:
+                                                  EdgeInsets.only(bottom: 10),
                                               child: Text(
                                                 'Consigne DP',
                                                 style: TextStyle(
@@ -284,8 +278,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                         ),
                                         Column(
                                           mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             const Padding(
                                               padding: EdgeInsets.only(
@@ -349,8 +342,8 @@ class _DiveDetailState extends State<DiveDetail> {
                                               Text(participant.name ?? '')),
                                           DataCell(Text(
                                               participant.diveLevel ?? '')),
-                                          DataCell(Text(
-                                              participant.aptitude ?? '')),
+                                          DataCell(
+                                              Text(participant.aptitude ?? '')),
                                           DataCell(Row(
                                             children: [
                                               IconButton(
@@ -358,8 +351,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                                   await isarService
                                                       .removeParticipantsInGroupDive(
                                                           participant,
-                                                          diveGroups[
-                                                              index]);
+                                                          diveGroups[index]);
                                                   await isarService
                                                       .upDateParticipant(
                                                           participant);
@@ -374,8 +366,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                                           arguments: dive);
                                                 },
                                                 icon: const Icon(
-                                                    Icons
-                                                        .remove_circle_rounded,
+                                                    Icons.remove_circle_rounded,
                                                     color: Colors.white),
                                               )
                                             ],
@@ -489,8 +480,7 @@ class _DiveDetailState extends State<DiveDetail> {
                               DataCell(Text(participant.firstName ?? '',
                                   style: TextStyle(
                                       decoration: dive.divreGroups.any(
-                                              (element) => element
-                                                  .participants
+                                              (element) => element.participants
                                                   .contains(participant))
                                           ? TextDecoration.lineThrough
                                           : null))),
@@ -508,8 +498,7 @@ class _DiveDetailState extends State<DiveDetail> {
                               DataCell(Text(participant.diveLevel ?? '',
                                   style: TextStyle(
                                       decoration: dive.divreGroups.any(
-                                              (element) => element
-                                                  .participants
+                                              (element) => element.participants
                                                   .contains(participant))
                                           ? TextDecoration.lineThrough
                                           : null))),
@@ -518,8 +507,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                   participant.aptitude ?? '',
                                   style: TextStyle(
                                       decoration: dive.divreGroups.any(
-                                              (element) => element
-                                                  .participants
+                                              (element) => element.participants
                                                   .contains(participant))
                                           ? TextDecoration.lineThrough
                                           : null),
