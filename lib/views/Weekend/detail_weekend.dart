@@ -1,8 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:diodon/bloc/dives_bloc.dart';
 import 'package:diodon/entities/dive.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import '../../entities/weekend.dart';
 
@@ -77,33 +79,34 @@ class WeekendDetail extends StatelessWidget {
               const SizedBox(
                 height: 30,
               ),
-              FutureBuilder(
-                future: isarService.getAllDiveByWeekend(weekend),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text(snapshot.error.toString()),
-                    );
-                  }
-                  if (snapshot.hasData) {
-                    final List<Dive> dives = snapshot.data!;
-                    if (dives.isNotEmpty) {
-                      return _displayDives(dives, weekend);
-                    } else {
-                      return const Text(
-                          "Aucune plongée n'a été créé pour ce week-end");
-                    }
-                  }
-                  return const CircularProgressIndicator();
+              BlocBuilder<DivesBloc, List<Dive>>(
+                builder: (context, state) {
+                  return FutureBuilder(
+                    future: isarService.getAllDiveByWeekend(weekend),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text(snapshot.error.toString()),
+                        );
+                      }
+                      if (snapshot.hasData) {
+                        context.read<DivesBloc>().initDives(snapshot.data!);
+                        if (state.isNotEmpty) {
+                          return _displayDives(state, weekend);
+                        } else {
+                          return const Text(
+                              "Aucune plongée n'a été créé pour ce week-end");
+                        }
+                      }
+                      return const CircularProgressIndicator();
+                    },
+                  );
                 },
               ),
               ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        "/createDive",
-                        arguments: weekend,
-                        (route) => false);
+                    Navigator.pushNamed(context, "/createDive",
+                        arguments: weekend);
                   },
                   child: const Text('Ajouter une plongée'))
             ],
@@ -139,8 +142,9 @@ class WeekendDetail extends StatelessWidget {
                       icon: const Icon(Icons.edit)),
                   IconButton(
                       onPressed: () async {
-                        bool isDelete =
-                            await isarService.deleteDive(dives[index]);
+                        bool isDelete = await context
+                            .read<DivesBloc>()
+                            .deleteDive(dives[index]);
                         if (isDelete == true) {
                           ScaffoldMessenger.of(context)
                               .showSnackBar(const SnackBar(
@@ -150,11 +154,6 @@ class WeekendDetail extends StatelessWidget {
                             ),
                             backgroundColor: Colors.green,
                           ));
-                          Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              "/weekendDetail",
-                              arguments: weekend,
-                              (route) => false);
                         }
                       },
                       icon: const Icon(

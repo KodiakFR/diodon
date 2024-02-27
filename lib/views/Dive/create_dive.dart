@@ -37,17 +37,18 @@ class _CreateDiveState extends State<CreateDive> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Création d\'une plongée',
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.home, size: 40),
-          onPressed: () => Navigator.pushNamedAndRemoveUntil(
-              context, "/homePage", (route) => false),
-        ),
-      ),
+          title: const Text(
+            'Création d\'une plongée',
+            style: TextStyle(color: Colors.white),
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.home, size: 40),
+              onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                  context, "/homePage", (route) => false),
+            ),
+          ]),
       body: SingleChildScrollView(
         child: SafeArea(
             child: Form(
@@ -224,11 +225,8 @@ class _CreateDiveState extends State<CreateDive> {
 
                       bool isCreate = await isarService.saveDive(weekend, dive);
                       if (isCreate == true) {
-                        Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            "/diveDetail",
-                            arguments: dive,
-                            (route) => false);
+                        Navigator.pushNamed(context, "/diveDetail",
+                            arguments: dive);
                       } else {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(const SnackBar(
