@@ -213,8 +213,9 @@ class IsarService {
     }
   }
 
-  Future<void> removeParticipantsInWeekend(
+  Future<bool> removeParticipantsInWeekend(
       Participant participant, Weekend weekend) async {
+    bool result = false;
     final isar = await db;
     List<Participant> participants = await isar.participants
         .filter()
@@ -224,8 +225,10 @@ class IsarService {
     if (participants.length == 1) {
       await isar.writeTxn(() async {
         await isar.participants.delete(participants[0].id);
+        result = true;
       });
     }
+    return result;
   }
 
   Future<void> upDateParticipant(Participant participant) async {

@@ -8,6 +8,9 @@ import 'package:diodon/entities/weekend.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../bloc/participants_bloc.dart';
 
 class AddParticipants extends StatefulWidget {
   const AddParticipants({super.key});
@@ -142,26 +145,32 @@ class _AddParticipantsState extends State<AddParticipants> {
               child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: FutureBuilder(
-                    future: isarService.getParticipantsFromWeekend(weekend.id!),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return Text(snapshot.error.toString());
-                      }
-                      if (snapshot.hasData) {
-                        List<Participant> participants = snapshot.data!;
-                        if (participants.isEmpty) {
-                          return const Center(
-                              child: Text(
-                                  'Aucun Parcipant n\'est enregistré pour ce week-end'));
-                        }
-                        return _displayParticipants(participants, weekend);
-                      }
-                      return const CircularProgressIndicator();
-                    },
-                  ),
-                ),
+                    scrollDirection: Axis.horizontal,
+                    child: BlocBuilder<ParticipantsBloc, List<Participant>>(
+                      builder: (context, state) {
+                        return FutureBuilder(
+                          future: isarService
+                              .getParticipantsFromWeekend(weekend.id!),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              return Text(snapshot.error.toString());
+                            }
+                            if (snapshot.hasData) {
+                              context
+                                  .read<ParticipantsBloc>()
+                                  .initParticipants(snapshot.data!);
+                              if (state.isEmpty) {
+                                return const Center(
+                                    child: Text(
+                                        'Aucun Parcipant n\'est enregistré pour ce week-end'));
+                              }
+                              return _displayParticipants(state, weekend);
+                            }
+                            return const CircularProgressIndicator();
+                          },
+                        );
+                      },
+                    )),
               ),
             ),
             Row(
@@ -245,15 +254,9 @@ class _AddParticipantsState extends State<AddParticipants> {
                   children: [
                     IconButton(
                       onPressed: () async {
-                        await isarService.removeParticipantsInWeekend(
-                            participant, weekend);
-                        final weekendUpdate =
-                            await isarService.getWeekendByTitle(weekend.title);
-                        Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            "/addParticipants",
-                            arguments: weekendUpdate,
-                            (route) => false);
+                        await context
+                            .read<ParticipantsBloc>()
+                            .removeParticipant(participant, weekend);
                       },
                       icon: const Icon(Icons.remove, color: Colors.red),
                     )
@@ -435,25 +438,29 @@ class _AddParticipantsState extends State<AddParticipants> {
                                   ..aptitude = aptitude
                                   ..selected = false
                                   ..weekends.add(weekend);
-                                bool isSaved = await isarService
-                                    .addParticipants(weekend, participant);
-                                if (isSaved) {
-                                  Navigator.pushNamedAndRemoveUntil(
-                                      context,
-                                      "/addParticipants",
-                                      arguments: weekend,
-                                      (route) => false);
-                                } else {
-                                  Navigator.pop(context);
+                                bool isSaved = await context
+                                    .read<ParticipantsBloc>()
+                                    .addParticipant(participant, weekend);
+                                if (!isSaved) {
                                   ScaffoldMessenger.of(context)
                                       .showSnackBar(const SnackBar(
                                     content: Text(
-                                      'L\'utilisateur est déjà dans la liste',
+                                      'Le participant est déjà dans la liste',
                                       textAlign: TextAlign.center,
                                     ),
                                     backgroundColor: Colors.red,
                                   ));
+                                } else {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(const SnackBar(
+                                    content: Text(
+                                      'Le participant a bien été ajouté',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    backgroundColor: Colors.green,
+                                  ));
                                 }
+                                Navigator.pop(context);
                               }
                             },
                           ),
@@ -506,11 +513,19 @@ class _AddParticipantsState extends State<AddParticipants> {
             ..sort = _difineSort(participantString[19])
             ..weekends.add(weekend);
           if (participant.name != "" && participant.name != "NOM") {
-            await isarService.addParticipants(weekend, participant);
+            await context
+                .read<ParticipantsBloc>()
+                .addParticipant(participant, weekend);
           }
         }
-        Navigator.pushNamedAndRemoveUntil(
-            context, "/addParticipants", arguments: weekend, (route) => false);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+            'Les participants ont bien été ajouté',
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: Colors.green,
+        ));
+        Navigator.pop(context);
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

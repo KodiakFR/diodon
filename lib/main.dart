@@ -1,6 +1,8 @@
 import 'package:diodon/bloc/connection_bloc.dart';
 import 'package:diodon/bloc/home_bloc.dart';
+import 'package:diodon/bloc/participants_bloc.dart';
 import 'package:diodon/bloc/register_bloc.dart';
+import 'package:diodon/entities/participant.dart';
 import 'package:diodon/views/Connexion/connexion_view.dart';
 import 'package:diodon/views/Dive/create_dive.dart';
 import 'package:diodon/views/Dive/dive_detail.dart';
@@ -37,6 +39,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => HomeBloc(Home.empty()),
+        ),
+        BlocProvider(
+          create: (context) => ParticipantsBloc([]),
         ),
       ],
       child: MaterialApp(
