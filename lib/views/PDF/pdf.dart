@@ -15,25 +15,32 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-
 final isarService = IsarService();
 
 Future<Uint8List> generatePdf(Weekend weekend, BuildContext context) async {
   final pdf = pw.Document(title: "Feuille de sécurité");
   final List<Dive> dives = await isarService.getAllDiveByWeekend(weekend);
-  final logoImage = pw.MemoryImage(
-    (await rootBundle.load('images/cropped-logo_diodon-officiel2-carre-edited.jpg')).buffer.asUint8List()
-  );
+  final logoImage = pw.MemoryImage((await rootBundle
+          .load('images/cropped-logo_diodon-officiel2-carre-edited.jpg'))
+      .buffer
+      .asUint8List());
   Directory? dir = await getExternalStorageDirectory();
   String dirPath = "";
   if (dir != null) {
     dirPath = dir.path;
   }
   final ConnexionBloc userBloc = BlocProvider.of<ConnexionBloc>(context);
-  File file = File("$dirPath/${userBloc.state.connectedUser!.name}_${userBloc.state.connectedUser!.firstName}.png");
-  final bytes = await file.readAsBytes();
-  final byteData = bytes.buffer.asUint8List();
-  final signature = pw.MemoryImage(byteData);
+  File fileSign = File(
+      "$dirPath/Signature_${userBloc.state.connectedUser!.name}_${userBloc.state.connectedUser!.firstName}.png");
+  final bytesSign = await fileSign.readAsBytes();
+  final byteDataSign = bytesSign.buffer.asUint8List();
+  final signature = pw.MemoryImage(byteDataSign);
+
+  File fileStamp = File(
+      "$dirPath/Stamp_${userBloc.state.connectedUser!.name}_${userBloc.state.connectedUser!.firstName}.png");
+  final bytesStamp = await fileStamp.readAsBytes();
+  final byteDataStamp = bytesStamp.buffer.asUint8List();
+  final stamp = pw.MemoryImage(byteDataStamp);
 
   for (var dive in dives) {
     final List<DiveGroup> diveGroups =
@@ -47,13 +54,12 @@ Future<Uint8List> generatePdf(Weekend weekend, BuildContext context) async {
           participant.name!,
           participant.firstName!,
           participant.diveLevel!,
+          participant.aptitude!,
           diveGroup.id.toString(),
           participant.sort!.toString(),
-
         ];
         participantTable.add(participantRow);
       }
-      
     }
     pdf.addPage(pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
@@ -80,7 +86,9 @@ Future<Uint8List> generatePdf(Weekend weekend, BuildContext context) async {
         pw.Row(
           mainAxisAlignment: pw.MainAxisAlignment.end,
           children: [
-            pw.Image(logoImage,width: 125),
+            pw.Image(logoImage, width: 125),
+            pw.SizedBox(width: 30),
+            pw.Image(stamp, width: 100),
             pw.Image(signature, width: 150),
           ],
         ),
@@ -127,14 +135,16 @@ pw.Table _tableParticicpant(
     'Nom',
     'Prénom',
     'Niveau',
+    'Aptitude',
   ];
   List<List<String>> participantsDiveGroup = [];
   for (var participant in participantTable) {
-    if (diveGroup.id.toString() == participant[3]) {
+    if (diveGroup.id.toString() == participant[4]) {
       participantsDiveGroup.add(participant);
     }
   }
-  participantsDiveGroup.sort((a, b) => int.parse(a[4]).compareTo(int.parse(b[4])));
+  participantsDiveGroup
+      .sort((a, b) => int.parse(a[5]).compareTo(int.parse(b[5])));
   return pw.TableHelper.fromTextArray(
     cellPadding: const pw.EdgeInsets.only(left: 3),
     tableWidth: pw.TableWidth.max,
