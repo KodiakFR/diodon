@@ -111,36 +111,36 @@ class _DiveDetailState extends State<DiveDetail> {
                           context
                               .read<DiveDetailBloc>()
                               .initDiverGroup(snapshot.data);
-                          if (state.divegroups!.isEmpty) {
+                          if (state.divegroups.isEmpty) {
                             return const Center(
                               child: Text('Aucune palanquée n\'a été créée'),
                             );
                           }
                           return ListView.builder(
-                            itemCount: state.divegroups!.length,
+                            itemCount: state.divegroups.length,
                             itemBuilder: (BuildContext context, int index) {
                               List<Participant> particiapants = state
-                                  .divegroups![index].participants
+                                  .divegroups[index].participants
                                   .toList();
                               particiapants.sort(
                                 (a, b) => a.sort!.compareTo(b.sort!),
                               );
-                              state.divegroups![index].participants.clear();
+                              state.divegroups[index].participants.clear();
                               for (var participant in particiapants) {
-                                state.divegroups![index].participants
+                                state.divegroups[index].participants
                                     .add(participant);
                               }
                               Icon iconStandAlone = const Icon(Icons.check_box);
                               Icon iconSupervised = const Icon(Icons.check_box);
-                              if (state.divegroups![index].standAlone ==
+                              if (state.divegroups[index].standAlone ==
                                       false ||
-                                  state.divegroups![index].standAlone == null) {
+                                  state.divegroups[index].standAlone == null) {
                                 iconStandAlone =
                                     const Icon(Icons.check_box_outline_blank);
                               }
-                              if (state.divegroups![index].supervised ==
+                              if (state.divegroups[index].supervised ==
                                       false ||
-                                  state.divegroups![index].supervised == null) {
+                                  state.divegroups[index].supervised == null) {
                                 iconSupervised =
                                     const Icon(Icons.check_box_outline_blank);
                               }
@@ -150,7 +150,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(state.divegroups![index].title!),
+                                    Text(state.divegroups[index].title!),
                                     Row(
                                       children: [
                                         IconButton(
@@ -161,11 +161,10 @@ class _DiveDetailState extends State<DiveDetail> {
                                                           dive);
                                               for (var participant
                                                   in particiapants) {
-                                                state.divegroups![index]
+                                                state.divegroups[index]
                                                     .participants
                                                     .add(participant);
-                                                state.divegroups!
-                                                    .elementAt(index)
+                                                state.divegroups.elementAt(index)
                                                     .participants
                                                     .add(participant);
                                                 participant.selected = false;
@@ -177,7 +176,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                               context
                                                   .read<DiveDetailBloc>()
                                                   .updateDiveGroup(
-                                                      state.divegroups![index]);
+                                                      state.divegroups[index]);
                                             },
                                             icon: const Icon(
                                                 Icons.group_add_sharp)),
@@ -187,7 +186,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                               delete = await context
                                                   .read<DiveDetailBloc>()
                                                   .deleteDiveGroup(
-                                                      state.divegroups![index],dive);
+                                                      state.divegroups[index],dive);
                                               if (delete == false) {
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(
@@ -220,7 +219,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                           onPressed: () {
                                             _displayPopParameter(
                                                 dive,
-                                                state.divegroups![index],
+                                                state.divegroups[index],
                                                 context);
                                           },
                                         )
@@ -263,14 +262,14 @@ class _DiveDetailState extends State<DiveDetail> {
                                                           .symmetric(
                                                       horizontal: 10),
                                                   child: Text(
-                                                      'Heure Imm: ${DateFormat.Hm().format(state.divegroups![index].hourImmersion!)}'),
+                                                      'Heure Imm: ${DateFormat.Hm().format(state.divegroups[index].hourImmersion!)}'),
                                                 ),
                                                 Padding(
                                                   padding: const EdgeInsets
                                                           .symmetric(
                                                       horizontal: 10),
                                                   child: Text(
-                                                      'Heure Sortie: ${DateFormat.Hm().format(state.divegroups![index].riseHour!)}'),
+                                                      'Heure Sortie: ${DateFormat.Hm().format(state.divegroups[index].riseHour!)}'),
                                                 ),
                                               ],
                                             ),
@@ -298,9 +297,9 @@ class _DiveDetailState extends State<DiveDetail> {
                                                       ),
                                                     ),
                                                     Text(
-                                                        'Profondeur: ${state.divegroups![index].dpDeep} m'),
+                                                        'Profondeur: ${state.divegroups[index].dpDeep} m'),
                                                     Text(
-                                                        'Temps: ${state.divegroups![index].dpTime} min'),
+                                                        'Temps: ${state.divegroups[index].dpTime} min'),
                                                   ],
                                                 ),
                                                 Column(
@@ -320,11 +319,11 @@ class _DiveDetailState extends State<DiveDetail> {
                                                       ),
                                                     ),
                                                     Text(
-                                                        'Profondeur: ${state.divegroups![index].realDeep} m'),
+                                                        'Profondeur: ${state.divegroups[index].realDeep} m'),
                                                     Text(
-                                                        'Temps: ${state.divegroups![index].realTime} min'),
+                                                        'Temps: ${state.divegroups[index].realTime} min'),
                                                     Text(
-                                                        'Paliers: ${state.divegroups![index].divingStop}'),
+                                                        'Paliers: ${state.divegroups[index].divingStop}'),
                                                   ],
                                                 )
                                               ],
@@ -361,7 +360,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                           ),
                                         ],
                                         rows: state
-                                            .divegroups![index].participants
+                                            .divegroups[index].participants
                                             .map(
                                               (participant) => DataRow(
                                                 color:
@@ -389,7 +388,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                                                   DiveDetailBloc>()
                                                               .removeParticipantsInGroupDive(
                                                                   participant,
-                                                                  state.divegroups![
+                                                                  state.divegroups[
                                                                       index]);
 
                                                           await context
@@ -478,8 +477,7 @@ class _DiveDetailState extends State<DiveDetail> {
                             ),
                           ),
                         ],
-                        rows: state.divers!
-                            .map(
+                        rows: state.divers.map(
                               (Participant participant) => DataRow(
                                 color: MaterialStateProperty.all(
                                     _colorDataCell(participant)),
@@ -499,7 +497,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                 cells: [
                                   DataCell(Text(participant.firstName ?? '',
                                       style: TextStyle(
-                                          decoration: state.divegroups!.any(
+                                          decoration: state.divegroups.any(
                                                   (element) => element
                                                       .participants
                                                       .contains(participant))
@@ -509,7 +507,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                     alignment: Alignment.center,
                                     child: Text(participant.name ?? '',
                                         style: TextStyle(
-                                            decoration: state.divegroups!.any(
+                                            decoration: state.divegroups.any(
                                                     (element) => element
                                                         .participants
                                                         .contains(participant))
@@ -518,7 +516,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                   )),
                                   DataCell(Text(participant.diveLevel ?? '',
                                       style: TextStyle(
-                                          decoration: state.divegroups!.any(
+                                          decoration: state.divegroups.any(
                                                   (element) => element
                                                       .participants
                                                       .contains(participant))
@@ -528,7 +526,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                     Text(
                                       participant.aptitude ?? '',
                                       style: TextStyle(
-                                          decoration: state.divegroups!.any(
+                                          decoration: state.divegroups.any(
                                                   (element) => element
                                                       .participants
                                                       .contains(participant))

@@ -144,7 +144,7 @@ class WeekendDetail extends StatelessWidget {
                       onPressed: () async {
                         bool isDelete = await context
                             .read<DivesBloc>()
-                            .deleteDive(dives[index]);
+                            .deleteDive(dives[index],weekend);
                         if (isDelete == true) {
                           ScaffoldMessenger.of(context)
                               .showSnackBar(const SnackBar(

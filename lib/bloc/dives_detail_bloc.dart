@@ -21,12 +21,10 @@ class DiveDetailBloc extends Cubit<DiveDetailModel> {
   Future<bool> isInDiveGroup(Dive dive, Participant participant) async {
     bool result = await isarService.isInDiveGroup(dive, participant);
     if (!result) {
-      state.divers!
-              .where((element) => element.id == participant.id)
+      state.divers.where((element) => element.id == participant.id)
               .first
               .selected =
-          !state.divers!
-              .where((element) => element.id == participant.id)
+          !state.divers.where((element) => element.id == participant.id)
               .first
               .selected!;
       emit(state);
@@ -54,7 +52,7 @@ class DiveDetailBloc extends Cubit<DiveDetailModel> {
     if (isSaved) {
       DiveDetailModel newState =
           DiveDetailModel(state.divers, state.divegroups);
-      newState.divegroups!.add(diveGroup);
+      newState.divegroups.add(diveGroup);
       emit(newState);
     }
   }
@@ -77,7 +75,7 @@ class DiveDetailBloc extends Cubit<DiveDetailModel> {
     if (result) {
       DiveDetailModel newState =
           DiveDetailModel(state.divers, state.divegroups);
-      newState.divegroups!.add(diveGroup);
+      newState.divegroups.add(diveGroup);
       emit(newState);
     }
   }
@@ -87,7 +85,7 @@ class DiveDetailBloc extends Cubit<DiveDetailModel> {
     if (result) {
       DiveDetailModel newState =
           DiveDetailModel(state.divers, state.divegroups);
-      newState.divers!.add(participant);
+      newState.divers.add(participant);
       emit(newState);
     }
   }
@@ -97,7 +95,7 @@ class DiveDetailBloc extends Cubit<DiveDetailModel> {
     if (result) {
       DiveDetailModel newState =
           DiveDetailModel(state.divers, state.divegroups);
-      newState.divegroups!.add(diveGroup);
+      newState.divegroups.add(diveGroup);
       emit(newState);
     }
   }
@@ -109,7 +107,7 @@ class DiveDetailBloc extends Cubit<DiveDetailModel> {
     if (result) {
       DiveDetailModel newState =
           DiveDetailModel(state.divers, state.divegroups);
-      newState.divegroups!.add(diveGroup);
+      newState.divegroups.add(diveGroup);
       emit(newState);
     }
   }

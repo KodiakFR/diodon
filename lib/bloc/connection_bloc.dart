@@ -32,8 +32,6 @@ class ConnexionBloc extends Cubit<Connexion> {
         if (fileSignature.existsSync() && fileStamp.existsSync()) {
           await fileStamp.delete();
           await fileSignature.delete();
-        }else{
-          print("error");
         }
 
         Connexion newState = state.copyWith(
