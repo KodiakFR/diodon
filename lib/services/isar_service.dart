@@ -231,9 +231,14 @@ class IsarService {
     return result;
   }
 
-  Future<void> upDateParticipant(Participant participant) async {
+  Future<bool> upDateParticipant(Participant participant) async {
+    bool result = false;
     final isar = await db;
-    isar.writeTxnSync(() => isar.participants.putSync(participant));
+    int id = isar.writeTxnSync(() => isar.participants.putSync(participant));
+    if (id == participant.id) {
+      result = true;
+    }
+    return result;
   }
 
   Future<List<Participant>> getParticipantsSelected(Dive dive) async {
@@ -364,13 +369,19 @@ class IsarService {
     }
   }
 
-  Future<void> updateDiveGroupe(DiveGroup diveGroup) async {
+  Future<bool> updateDiveGroupe(DiveGroup diveGroup) async {
+    bool result = false;
     final isar = await db;
-    isar.writeTxnSync(() => isar.diveGroups.putSync(diveGroup));
+    int id = isar.writeTxnSync(() => isar.diveGroups.putSync(diveGroup));
+    if (id == diveGroup.id) {
+      result = true;
+    }
+    return result;
   }
 
-  Future<void> removeParticipantsInGroupDive(
+  Future<bool> removeParticipantsInGroupDive(
       Participant participant, DiveGroup diveGroup) async {
+    bool result = false;
     final isar = await db;
     List<Participant> participants = await isar.participants
         .filter()
@@ -379,8 +390,12 @@ class IsarService {
         .findAll();
     if (participants.length == 1) {
       diveGroup.participants.remove(participants[0]);
-      isar.writeTxnSync(() => isar.diveGroups.putSync(diveGroup));
+      int id = isar.writeTxnSync(() => isar.diveGroups.putSync(diveGroup));
+      if (id == diveGroup.id) {
+        result = true;
+      }
     }
+    return result;
   }
 
   Future<bool> isInDiveGroup(Dive dive, Participant participant) async {
@@ -398,7 +413,7 @@ class IsarService {
     }
   }
 
-  Future<bool> deleteDiveGroup(DiveGroup diveGroup) async {
+  Future<bool> deleteDiveGroup(DiveGroup diveGroup, Dive dive) async {
     final isar = await db;
     List<Participant> participants = await isar.participants
         .filter()
@@ -410,6 +425,18 @@ class IsarService {
       await isar.writeTxn(() async {
         await isar.diveGroups.delete(diveGroup.id);
       });
+      List<DiveGroup> diveGroups = await isar.diveGroups
+          .filter()
+          .dive((d) => d.idEqualTo(dive.id))
+          .findAll();
+      int index = int.parse(diveGroup.title!.split(" ")[1]) - 1;
+      if (index <= diveGroups.length) {
+        for (var i = index; i < diveGroups.length; i++) {
+          diveGroups[i].title = "Palanquée ${i + 1}";
+          isar.writeTxnSync(() => isar.diveGroups.putSync(diveGroups[i]));
+        }
+      }
+
       return true;
     }
   }
