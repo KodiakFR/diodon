@@ -2,6 +2,7 @@
 
 import 'package:diodon/entities/weekend.dart';
 import 'package:diodon/services/isar_service.dart';
+import 'package:diodon/views/Widget/app_bar_custo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -27,19 +28,7 @@ class _CreateWeekendState extends State<CreateWeekend> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-          title: const Text(
-            "Création d'un week-end",
-            style: TextStyle(color: Colors.white),
-          ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.home, size: 40),
-              onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                  context, "/homePage", (route) => false),
-            ),
-          ]),
+      appBar: const CustoAppBar("Création d'un week end"),
       body: SafeArea(
         child: Form(
           key: _formKey,

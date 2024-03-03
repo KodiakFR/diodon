@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 
 import '../../bloc/dives_detail_bloc.dart';
 import '../../entities/dive.dart';
+import '../Widget/app_bar_custo.dart';
 
 final _formKey = GlobalKey<FormState>();
 bool standAlone = false;
@@ -36,19 +37,7 @@ class _DiveDetailState extends State<DiveDetail> {
     final dive = ModalRoute.of(context)!.settings.arguments as Dive;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-          title: Text(
-            dive.title,
-            style: const TextStyle(color: Colors.white),
-          ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.home, size: 40),
-              onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                  context, "/homePage", (route) => false),
-            ),
-          ]),
+      appBar: CustoAppBar(dive.title),
       body: SafeArea(
         child: Center(
           child: Column(
@@ -119,9 +108,8 @@ class _DiveDetailState extends State<DiveDetail> {
                           return ListView.builder(
                             itemCount: state.divegroups.length,
                             itemBuilder: (BuildContext context, int index) {
-                              List<Participant> particiapants = state
-                                  .divegroups[index].participants
-                                  .toList();
+                              List<Participant> particiapants =
+                                  state.divegroups[index].participants.toList();
                               particiapants.sort(
                                 (a, b) => a.sort!.compareTo(b.sort!),
                               );
@@ -132,14 +120,12 @@ class _DiveDetailState extends State<DiveDetail> {
                               }
                               Icon iconStandAlone = const Icon(Icons.check_box);
                               Icon iconSupervised = const Icon(Icons.check_box);
-                              if (state.divegroups[index].standAlone ==
-                                      false ||
+                              if (state.divegroups[index].standAlone == false ||
                                   state.divegroups[index].standAlone == null) {
                                 iconStandAlone =
                                     const Icon(Icons.check_box_outline_blank);
                               }
-                              if (state.divegroups[index].supervised ==
-                                      false ||
+                              if (state.divegroups[index].supervised == false ||
                                   state.divegroups[index].supervised == null) {
                                 iconSupervised =
                                     const Icon(Icons.check_box_outline_blank);
@@ -164,7 +150,8 @@ class _DiveDetailState extends State<DiveDetail> {
                                                 state.divegroups[index]
                                                     .participants
                                                     .add(participant);
-                                                state.divegroups.elementAt(index)
+                                                state.divegroups
+                                                    .elementAt(index)
                                                     .participants
                                                     .add(participant);
                                                 participant.selected = false;
@@ -186,7 +173,8 @@ class _DiveDetailState extends State<DiveDetail> {
                                               delete = await context
                                                   .read<DiveDetailBloc>()
                                                   .deleteDiveGroup(
-                                                      state.divegroups[index],dive);
+                                                      state.divegroups[index],
+                                                      dive);
                                               if (delete == false) {
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(
@@ -477,7 +465,8 @@ class _DiveDetailState extends State<DiveDetail> {
                             ),
                           ),
                         ],
-                        rows: state.divers.map(
+                        rows: state.divers
+                            .map(
                               (Participant participant) => DataRow(
                                 color: MaterialStateProperty.all(
                                     _colorDataCell(participant)),
@@ -868,16 +857,12 @@ class _DiveDetailState extends State<DiveDetail> {
 
   Color _colorDataCell(Participant participant) {
     switch (participant.diveLevel) {
-      case "E4":
+      case "MF2":
         return Colors.red.shade900;
-      case "E3":
+      case "MF1":
         return Colors.red.shade700;
-      case "E2":
-        return Colors.red.shade500;
       case "N4":
-        return Colors.red.shade300;
-      case "E1":
-        return Colors.red.shade100;
+        return Colors.red.shade500;
       case "PpN4":
         return Colors.blue.shade900;
       case "PpN3":

@@ -206,11 +206,8 @@ class _AddParticipantsState extends State<AddParticipants> {
                     Weekend? weekendUpdate =
                         await isarService.getWeekendByTitle(weekend.title);
                     if (weekendUpdate != null) {
-                      Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          "/weekendDetail",
-                          arguments: weekendUpdate,
-                          (route) => false);
+                      Navigator.pushNamed(context, "/weekendDetail",
+                          arguments: weekendUpdate);
                     }
                   },
                   child: const Text("Valider"),
@@ -358,7 +355,8 @@ class _AddParticipantsState extends State<AddParticipants> {
       if (participant.name != null) {
         _controllerName.text = participant.name!;
       }
-      if (participant.diveLevel != null) {
+      if (participant.diveLevel != null &&
+          levelItems.every((item) => item.value == participant.diveLevel)) {
         selectValueLevel = participant.diveLevel!;
       }
       if (participant.type != null && participant.type != "") {
@@ -371,8 +369,10 @@ class _AddParticipantsState extends State<AddParticipants> {
         context: context,
         builder: (BuildContext context) => AlertDialog(
               scrollable: true,
-              title: const Text(
-                "Ajouter un participant",
+              title: Text(
+                participant == null
+                    ? "Ajouter un participant"
+                    : "Modification de ${participant.firstName} ${participant.name}",
                 textAlign: TextAlign.center,
               ),
               actions: [

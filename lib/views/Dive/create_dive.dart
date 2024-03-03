@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../entities/weekend.dart';
+import '../Widget/app_bar_custo.dart';
 
 class CreateDive extends StatefulWidget {
   const CreateDive({Key? key}) : super(key: key);
@@ -36,19 +37,7 @@ class _CreateDiveState extends State<CreateDive> {
     final weekend = ModalRoute.of(context)!.settings.arguments as Weekend;
 
     return Scaffold(
-      appBar: AppBar(
-          title: const Text(
-            'Création d\'une plongée',
-            style: TextStyle(color: Colors.white),
-          ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.home, size: 40),
-              onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                  context, "/homePage", (route) => false),
-            ),
-          ]),
+      appBar: const CustoAppBar("Création d'un plongée"),
       body: SingleChildScrollView(
         child: SafeArea(
             child: Form(

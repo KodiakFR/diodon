@@ -3,6 +3,7 @@
 import 'package:diodon/bloc/dives_bloc.dart';
 import 'package:diodon/entities/dive.dart';
 import 'package:diodon/services/isar_service.dart';
+import 'package:diodon/views/Widget/app_bar_custo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -16,20 +17,7 @@ class WeekendDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     final weekend = ModalRoute.of(context)!.settings.arguments as Weekend;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          weekend.title,
-          style: const TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.home, size: 40),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                context, "/homePage", (route) => false),
-          )
-        ],
-      ),
+      appBar: CustoAppBar(weekend.title),
       body: SafeArea(
         child: Center(
           child: Column(
@@ -144,7 +132,7 @@ class WeekendDetail extends StatelessWidget {
                       onPressed: () async {
                         bool isDelete = await context
                             .read<DivesBloc>()
-                            .deleteDive(dives[index],weekend);
+                            .deleteDive(dives[index], weekend);
                         if (isDelete == true) {
                           ScaffoldMessenger.of(context)
                               .showSnackBar(const SnackBar(

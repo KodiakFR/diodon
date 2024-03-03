@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+import '../Widget/app_bar_custo.dart';
+
 class UpdateDive extends StatefulWidget {
   const UpdateDive({Key? key}) : super(key: key);
 
@@ -24,6 +26,7 @@ class _UpdateDiveState extends State<UpdateDive> {
   final TextEditingController controllerCaptainName = TextEditingController();
   final TextEditingController controllerNbPerson = TextEditingController();
   final TextEditingController controllerNbDivers = TextEditingController();
+  bool isIntialized = false;
 
   final IsarService isarService = IsarService();
 
@@ -31,28 +34,20 @@ class _UpdateDiveState extends State<UpdateDive> {
   Widget build(BuildContext context) {
     final dive = ModalRoute.of(context)!.settings.arguments as Dive;
     constrollerDiveSite.text = dive.divingSite;
-    controllerStartDate.text = DateFormat('dd/MM/yyyy').format(dive.dateDepart);
-    controllerStartHour.text = DateFormat("HH:mm").format(dive.dateDepart);
-    controllerDP.text = dive.dp;
-    controllerBoat.text = dive.boat;
-    controllerCaptainName.text = dive.captain;
-    controllerNbPerson.text = dive.nbPeople.toString();
-    controllerNbDivers.text = dive.nbDiver.toString();
+    if (!isIntialized) {
+      controllerStartDate.text =
+          DateFormat('dd/MM/yyyy').format(dive.dateDepart);
+      controllerStartHour.text = DateFormat("HH:mm").format(dive.dateDepart);
+      controllerDP.text = dive.dp;
+      controllerBoat.text = dive.boat;
+      controllerCaptainName.text = dive.captain;
+      controllerNbPerson.text = dive.nbPeople.toString();
+      controllerNbDivers.text = dive.nbDiver.toString();
+      isIntialized = true;
+    }
 
     return Scaffold(
-      appBar: AppBar(
-          title: const Text(
-            'Modification de la plongée',
-            style: TextStyle(color: Colors.white),
-          ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.home, size: 40),
-              onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                  context, "/homePage", (route) => false),
-            ),
-          ]),
+      appBar: CustoAppBar("Modification de la ${dive.title}"),
       body: SingleChildScrollView(
         child: SafeArea(
             child: Form(
@@ -73,12 +68,6 @@ class _UpdateDiveState extends State<UpdateDive> {
                             controller: constrollerDiveSite,
                             decoration: const InputDecoration(
                                 labelText: 'Site de plongée'),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Le champs est obligatoire';
-                              }
-                              return null;
-                            },
                           ),
                           TextFormField(
                             controller: controllerStartDate,
@@ -105,7 +94,6 @@ class _UpdateDiveState extends State<UpdateDive> {
                               if (value == null || value.isEmpty) {
                                 return 'Le champs est obligatoire';
                               }
-
                               return null;
                             },
                           ),
@@ -132,7 +120,7 @@ class _UpdateDiveState extends State<UpdateDive> {
                               );
                               if (pickedHour != null) {
                                 setState(() {
-                                  var df = DateFormat("h:mm a");
+                                  var df = DateFormat("HH:mm");
                                   var dt = df.parse(pickedHour.format(context));
                                   controllerStartHour.text =
                                       DateFormat("HH:mm").format(dt);
@@ -186,11 +174,22 @@ class _UpdateDiveState extends State<UpdateDive> {
                               decoration: const InputDecoration(
                                   labelText:
                                       'Nombre de plongeurs sur le bateau'),
+                              validator: (value) {
+                                if (value != null &&
+                                    int.parse(value) >
+                                        int.parse(controllerNbPerson.text)) {
+                                  return 'Le nombre de plongeurs est plus élevé que le nombre de personne sur le bateau';
+                                }
+                                return null;
+                              },
                             ),
                           ],
                         ),
                       ))
                 ],
+              ),
+              const SizedBox(
+                height: 30,
               ),
               ElevatedButton(
                   onPressed: () async {
@@ -228,11 +227,8 @@ class _UpdateDiveState extends State<UpdateDive> {
                         Weekend? weekend = await isarService
                             .getWeekendByTitle(dive.weekend.value!.title);
                         if (weekend != null) {
-                          Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              "/weekendDetail",
-                              arguments: weekend,
-                              (route) => false);
+                          Navigator.pushNamed(context, "/weekendDetail",
+                              arguments: weekend);
                         }
                       } else {
                         ScaffoldMessenger.of(context)

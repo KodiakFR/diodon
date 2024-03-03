@@ -174,6 +174,16 @@ class IsarService {
 
     return success;
   }
+
+  Future<Weekend?> getWeekendFromDive(Dive dive) async {
+    final isar = await db;
+
+    final List<Weekend> weekends = await isar.weekends
+        .filter()
+        .dives((q) => q.idEqualTo(dive.id))
+        .findAll();
+    return weekends.first;
+  }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------- PARTICIPANTS-------------------------------------------------------------------------
 

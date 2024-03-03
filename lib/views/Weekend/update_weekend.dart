@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
+import '../Widget/app_bar_custo.dart';
+
 final _formKey = GlobalKey<FormState>();
 
 class UpdateWeekend extends StatefulWidget {
@@ -37,19 +39,7 @@ class _UpdateWeekend extends State<UpdateWeekend> {
       isInitialized = true;
     }
     return Scaffold(
-      appBar: AppBar(
-          title: Text(
-            "Modification du ${weekend.title}",
-            style: const TextStyle(color: Colors.white),
-          ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.home, size: 40),
-              onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                  context, "/homePage", (route) => false),
-            ),
-          ]),
+      appBar: CustoAppBar("Modification du ${weekend.title}"),
       body: SafeArea(
         child: Form(
           key: _formKey,
