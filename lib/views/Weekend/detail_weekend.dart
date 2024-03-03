@@ -130,19 +130,7 @@ class WeekendDetail extends StatelessWidget {
                       icon: const Icon(Icons.edit)),
                   IconButton(
                       onPressed: () async {
-                        bool isDelete = await context
-                            .read<DivesBloc>()
-                            .deleteDive(dives[index], weekend);
-                        if (isDelete == true) {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                            content: Text(
-                              'La plongée à été supprimé',
-                              textAlign: TextAlign.center,
-                            ),
-                            backgroundColor: Colors.green,
-                          ));
-                        }
+                        _displayPopDelete(dives[index], weekend, context);
                       },
                       icon: const Icon(
                         Icons.delete,
@@ -156,6 +144,54 @@ class WeekendDetail extends StatelessWidget {
             ],
           );
         },
+      ),
+    );
+  }
+
+  _displayPopDelete(Dive dive, Weekend weekend, BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.warning, color: Colors.red),
+            Text(
+              'Suppression',
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        content: Text(
+            "Voulez vous vraiment supprimer la ${dive.title}?\nCette suppression entrainera la suprresion des planquées existantes"),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  bool isDelete =
+                      await context.read<DivesBloc>().deleteDive(dive, weekend);
+                  if (isDelete == true) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text(
+                        'La plongée à été supprimé',
+                        textAlign: TextAlign.center,
+                      ),
+                      backgroundColor: Colors.green,
+                    ));
+                  }
+                  Navigator.pop(context);
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

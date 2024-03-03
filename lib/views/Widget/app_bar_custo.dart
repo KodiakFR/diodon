@@ -21,7 +21,7 @@ class CustoAppBar extends StatelessWidget implements PreferredSizeWidget {
           onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context, "/homePage", (route) => false),
         ),
-        SizedBox(
+        const SizedBox(
           width: 20,
         ),
         IconButton(
