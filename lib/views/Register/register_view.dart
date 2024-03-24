@@ -20,7 +20,6 @@ class RegisterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Diodon"),
@@ -111,7 +110,9 @@ class RegisterView extends StatelessWidget {
                             child: ElevatedButton(
                               onPressed: () async {
                                 FilePickerResult? result =
-                                    await FilePicker.platform.pickFiles();
+                                    await FilePicker.platform.pickFiles(
+                                  type: FileType.image,
+                                );
                                 if (result != null) {
                                   context.read<RegisterBloc>().changeFile(
                                       File(result.files.single.path!), 'stamp');
@@ -133,7 +134,9 @@ class RegisterView extends StatelessWidget {
                             child: ElevatedButton(
                               onPressed: () async {
                                 FilePickerResult? result =
-                                    await FilePicker.platform.pickFiles();
+                                    await FilePicker.platform.pickFiles(
+                                  type: FileType.image,
+                                );
                                 if (result != null) {
                                   final file = File(result.files.single.path!);
                                   context
