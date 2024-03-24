@@ -18,11 +18,9 @@ class CreateWeekend extends StatefulWidget {
 }
 
 class _CreateWeekendState extends State<CreateWeekend> {
-  final TextEditingController _controllerStart = TextEditingController();
-  final TextEditingController _controllerEnd = TextEditingController();
+  final TextEditingController _controllerDate = TextEditingController();
   final TextEditingController _nbDive = TextEditingController();
-  late DateTime startDate;
-  late DateTime endDate;
+  late DateTimeRange date;
   final IsarService isarService = IsarService();
   @override
   Widget build(BuildContext context) {
@@ -52,46 +50,25 @@ class _CreateWeekendState extends State<CreateWeekend> {
                   },
                 ),
                 TextFormField(
-                  controller: _controllerStart,
-                  decoration: const InputDecoration(
-                    icon: Icon(Icons.calendar_today_rounded),
-                    labelText: 'Selectionnez la date de début du Week-end',
-                  ),
-                  onTap: () async {
-                    DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2022),
-                      lastDate: DateTime(2100),
-                    );
-                    if (pickedDate != null) {
-                      setState(() {
-                        _controllerStart.text =
-                            DateFormat('dd/MM/yyyy').format(pickedDate);
-                      });
-                    }
-                  },
-                  validator: (value) {
-                    return valideStartDate(value);
-                  },
-                ),
-                TextFormField(
-                  controller: _controllerEnd,
+                  controller: _controllerDate,
                   decoration: const InputDecoration(
                     icon: Icon(Icons.calendar_today_rounded),
                     labelText: 'Selectionnez la date de fin du Week-end',
                   ),
                   onTap: () async {
-                    DateTime? pickedDate = await showDatePicker(
+                    DateTimeRange? pickedDate = await showDateRangePicker(
                       context: context,
-                      initialDate: DateTime.now(),
+                      initialDateRange: DateTimeRange(
+                          start: DateTime.now(), end: DateTime.now()),
                       firstDate: DateTime(2022),
                       lastDate: DateTime(2100),
+                      keyboardType: TextInputType.datetime,
                     );
                     if (pickedDate != null) {
                       setState(() {
-                        _controllerEnd.text =
-                            DateFormat('dd/MM/yyyy').format(pickedDate);
+                        _controllerDate.text =
+                            "${DateFormat('dd/MM/yyyy').format(pickedDate.start)} - ${DateFormat('dd/MM/yyyy').format(pickedDate.end)}";
+                        date = pickedDate;
                       });
                     }
                   },
@@ -107,14 +84,14 @@ class _CreateWeekendState extends State<CreateWeekend> {
                       if (_formKey.currentState!.validate()) {
                         await initializeDateFormatting('fr');
                         final String month =
-                            DateFormat.MMMM('fr').format(startDate);
+                            DateFormat.MMMM('fr').format(date.start);
                         final String tilte =
-                            "Week-end du ${DateFormat('dd').format(startDate)} au ${DateFormat('dd').format(endDate)} $month ${startDate.year}";
+                            "Week-end du ${DateFormat('dd').format(date.start)} au ${DateFormat('dd').format(date.end)} $month ${date.start.year}";
                         Weekend weekend = Weekend()
                           ..title = tilte
                           ..nbDive = int.parse(_nbDive.text)
-                          ..end = endDate
-                          ..start = startDate;
+                          ..end = date.end
+                          ..start = date.start;
                         bool isCreate = await isarService.saveWeekend(weekend);
                         if (isCreate) {
                           Weekend? weekend =
@@ -142,29 +119,5 @@ class _CreateWeekendState extends State<CreateWeekend> {
         ),
       ),
     );
-  }
-
-  String? valideStartDate(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Le champs est obligatoire';
-    } else {
-      int dayStart = int.parse(value.substring(0, 2));
-      int monthStart = int.parse(value.substring(3, 5));
-      int yearStart = int.parse(value.substring(6, 10));
-      startDate = DateTime(yearStart, monthStart, dayStart);
-      if (startDate.isBefore(DateTime.now())) {
-        return 'La date ne peut pas être antérieure à la date du jour';
-      }
-      if (_controllerEnd.text.isNotEmpty) {
-        int dayEnd = int.parse(_controllerEnd.text.substring(0, 2));
-        int monthEnd = int.parse(_controllerEnd.text.substring(3, 5));
-        int yearEnd = int.parse(_controllerEnd.text.substring(6, 10));
-        endDate = DateTime(yearEnd, monthEnd, dayEnd);
-        if (startDate.isAfter(endDate)) {
-          return 'La date de début du Weekend est supérieure à la date de fin';
-        }
-      }
-    }
-    return null;
   }
 }
