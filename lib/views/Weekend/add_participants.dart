@@ -9,6 +9,7 @@ import 'package:diodon/services/isar_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:string_extensions/string_extensions.dart';
 
 import '../../bloc/participants_bloc.dart';
 
@@ -474,7 +475,7 @@ class _AddParticipantsState extends State<AddParticipants> {
                                     _defineAptitude(selectValueLevel);
                                 if (participant == null) {
                                   Participant newParticipant = Participant()
-                                    ..firstName = _controllerFirstName.text
+                                    ..firstName = _controllerFirstName.text.toTitleCase()
                                     ..name = _controllerName.text.toUpperCase()
                                     ..type = selectValueType
                                     ..diveLevel = selectValueLevel
@@ -508,7 +509,7 @@ class _AddParticipantsState extends State<AddParticipants> {
                                 } else {
                                   Participant newParticipant = Participant()
                                     ..id = participant.id
-                                    ..firstName = _controllerFirstName.text
+                                    ..firstName = _controllerFirstName.text.toTitleCase()
                                     ..name = _controllerName.text.toUpperCase()
                                     ..type = selectValueType
                                     ..diveLevel = selectValueLevel
