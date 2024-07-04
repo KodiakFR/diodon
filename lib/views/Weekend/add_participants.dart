@@ -27,6 +27,7 @@ class _AddParticipantsState extends State<AddParticipants> {
 
   final TextEditingController _controllerName = TextEditingController();
   final TextEditingController _controllerFirstName = TextEditingController();
+  final TextEditingController _controllerValueLevel = TextEditingController();
   String selectValueType = "Plongeur";
   String selectValueLevel = "";
   List<DropdownMenuItem<String>> typeItems = [
@@ -132,6 +133,10 @@ class _AddParticipantsState extends State<AddParticipants> {
     const DropdownMenuItem(
       value: "E1",
       child: Text("E1"),
+    ),
+    const DropdownMenuItem(
+      value: "Autre",
+      child: Text("Autre"),
     ),
   ];
 
@@ -369,15 +374,17 @@ class _AddParticipantsState extends State<AddParticipants> {
     return showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-              scrollable: true,
-              title: Text(
-                participant == null
-                    ? "Ajouter un participant"
-                    : "Modification de ${participant.firstName} ${participant.name}",
-                textAlign: TextAlign.center,
-              ),
-              actions: [
-                Form(
+            scrollable: true,
+            title: Text(
+              participant == null
+                  ? "Ajouter un participant"
+                  : "Modification de ${participant.firstName} ${participant.name}",
+              textAlign: TextAlign.center,
+            ),
+            content: StatefulBuilder(
+              builder: (context, setState) {
+                _controllerValueLevel.text = "";
+                return Form(
                   key: _formKey,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -463,6 +470,24 @@ class _AddParticipantsState extends State<AddParticipants> {
                       const SizedBox(
                         height: 20,
                       ),
+                      if (selectValueLevel == "Autre")
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _controllerValueLevel,
+                                decoration:
+                                    const InputDecoration(labelText: 'Niveau'),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Le champs est obligatoire';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -471,11 +496,15 @@ class _AddParticipantsState extends State<AddParticipants> {
                                 participant == null ? 'Ajouter' : 'Modifier'),
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
+                                if (_controllerValueLevel.text != "") {
+                                  selectValueLevel = _controllerValueLevel.text;
+                                }
                                 String? aptitude =
                                     _defineAptitude(selectValueLevel);
                                 if (participant == null) {
                                   Participant newParticipant = Participant()
-                                    ..firstName = _controllerFirstName.text.toTitleCase()
+                                    ..firstName =
+                                        _controllerFirstName.text.toTitleCase()
                                     ..name = _controllerName.text.toUpperCase()
                                     ..type = selectValueType
                                     ..diveLevel = selectValueLevel
@@ -509,7 +538,8 @@ class _AddParticipantsState extends State<AddParticipants> {
                                 } else {
                                   Participant newParticipant = Participant()
                                     ..id = participant.id
-                                    ..firstName = _controllerFirstName.text.toTitleCase()
+                                    ..firstName =
+                                        _controllerFirstName.text.toTitleCase()
                                     ..name = _controllerName.text.toUpperCase()
                                     ..type = selectValueType
                                     ..diveLevel = selectValueLevel
@@ -538,9 +568,9 @@ class _AddParticipantsState extends State<AddParticipants> {
                       ),
                     ],
                   ),
-                )
-              ],
-            ));
+                );
+              },
+            )));
   }
 
   _pickAndReadCSV(Weekend weekend) async {
