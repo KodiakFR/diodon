@@ -377,7 +377,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                                               .removeParticipantsInGroupDive(
                                                                   participant,
                                                                   state.divegroups[
-                                                                      index]);
+                                                                      index], index);
 
                                                           await context
                                                               .read<
