@@ -30,6 +30,7 @@ class _AddParticipantsState extends State<AddParticipants> {
   final TextEditingController _controllerValueLevel = TextEditingController();
   String selectValueType = "Plongeur";
   String selectValueLevel = "";
+  String? selectValueAptitude = "";
   List<DropdownMenuItem<String>> typeItems = [
     const DropdownMenuItem(
       value: "Plongeur",
@@ -137,6 +138,45 @@ class _AddParticipantsState extends State<AddParticipants> {
     const DropdownMenuItem(
       value: "Autre",
       child: Text("Autre"),
+    ),
+  ];
+
+  List<DropdownMenuItem<String>> aptitudeItems = [
+    const DropdownMenuItem(
+      value: "",
+      child: Text(""),
+    ),
+    const DropdownMenuItem(
+      value: "PE20",
+      child: Text("PE20"),
+    ),
+    const DropdownMenuItem(
+      value: "PA20",
+      child: Text("PA20"),
+    ),
+    const DropdownMenuItem(
+      value: "PE40",
+      child: Text("PE40"),
+    ),
+    const DropdownMenuItem(
+      value: "PE60",
+      child: Text("PE60"),
+    ),
+    const DropdownMenuItem(
+      value: "PA60",
+      child: Text("PA60"),
+    ),
+    const DropdownMenuItem(
+      value: "E2",
+      child: Text("E2"),
+    ),
+    const DropdownMenuItem(
+      value: "E3",
+      child: Text("E3"),
+    ),
+    const DropdownMenuItem(
+      value: "E4",
+      child: Text("E4"),
     ),
   ];
 
@@ -354,6 +394,7 @@ class _AddParticipantsState extends State<AddParticipants> {
     _controllerName.clear();
     selectValueLevel = "";
     selectValueType = "Plongeur";
+    selectValueAptitude = "";
     if (participant != null) {
       if (participant.firstName != null) {
         _controllerFirstName.text = participant.firstName!;
@@ -361,12 +402,14 @@ class _AddParticipantsState extends State<AddParticipants> {
       if (participant.name != null) {
         _controllerName.text = participant.name!;
       }
-      if (participant.diveLevel != null &&
-          levelItems.every((item) => item.value == participant.diveLevel)) {
+      if (participant.diveLevel != null ) {
         selectValueLevel = participant.diveLevel!;
       }
       if (participant.type != null && participant.type != "") {
         selectValueType = participant.type!;
+      }
+      if(participant.aptitude != null){
+        selectValueAptitude = participant.aptitude;
       }
     }
     double widthForm = MediaQuery.of(context).size.width / 2.8;
@@ -467,27 +510,36 @@ class _AddParticipantsState extends State<AddParticipants> {
                           )
                         ],
                       ),
+                      if (selectValueLevel == "Autre")
+                        TextFormField(
+                          controller: _controllerValueLevel,
+                          decoration:
+                              const InputDecoration(labelText: 'Niveau'),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Le champs est obligatoire';
+                            }
+                            return null;
+                          },
+                        ),
                       const SizedBox(
                         height: 20,
                       ),
-                      if (selectValueLevel == "Autre")
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextFormField(
-                                controller: _controllerValueLevel,
-                                decoration:
-                                    const InputDecoration(labelText: 'Niveau'),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Le champs est obligatoire';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
+                      DropdownButtonFormField(
+                        decoration:
+                            const InputDecoration(labelText: "Aptitude"),
+                        value: selectValueAptitude,
+                        icon: const Icon(Icons.arrow_downward),
+                        items: aptitudeItems,
+                        onChanged: (String? value) {
+                          setState(() {
+                            selectValueAptitude = value!;
+                          });
+                        },
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -499,8 +551,10 @@ class _AddParticipantsState extends State<AddParticipants> {
                                 if (_controllerValueLevel.text != "") {
                                   selectValueLevel = _controllerValueLevel.text;
                                 }
-                                String? aptitude =
-                                    _defineAptitude(selectValueLevel);
+                                if (selectValueAptitude == "") {
+                                  selectValueAptitude =
+                                      _defineAptitude(selectValueLevel);
+                                }
                                 if (participant == null) {
                                   Participant newParticipant = Participant()
                                     ..firstName =
@@ -508,7 +562,7 @@ class _AddParticipantsState extends State<AddParticipants> {
                                     ..name = _controllerName.text.toUpperCase()
                                     ..type = selectValueType
                                     ..diveLevel = selectValueLevel
-                                    ..aptitude = aptitude
+                                    ..aptitude = selectValueAptitude
                                     ..selected = false
                                     ..sort = _difineSort(selectValueLevel)
                                     ..weekends.add(weekend);
@@ -543,7 +597,7 @@ class _AddParticipantsState extends State<AddParticipants> {
                                     ..name = _controllerName.text.toUpperCase()
                                     ..type = selectValueType
                                     ..diveLevel = selectValueLevel
-                                    ..aptitude = aptitude
+                                    ..aptitude = selectValueAptitude
                                     ..selected = false
                                     ..sort = _difineSort(selectValueLevel)
                                     ..weekends.add(weekend);
