@@ -245,20 +245,6 @@ class _DiveDetailState extends State<DiveDetail> {
                                                     ],
                                                   ),
                                                 ),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      horizontal: 10),
-                                                  child: Text(
-                                                      'Heure Imm: ${DateFormat.Hm().format(state.divegroups[index].hourImmersion!)}'),
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      horizontal: 10),
-                                                  child: Text(
-                                                      'Heure Sortie: ${DateFormat.Hm().format(state.divegroups[index].riseHour!)}'),
-                                                ),
                                               ],
                                             ),
                                             const SizedBox(
@@ -587,8 +573,6 @@ class _DiveDetailState extends State<DiveDetail> {
   }
 
   _displayPopParameter(Dive dive, DiveGroup diveGroup, BuildContext context) {
-    controllerStartHour.text = DateFormat.Hm().format(diveGroup.hourImmersion!);
-    controllerStartEnd.text = DateFormat.Hm().format(diveGroup.riseHour!);
     if (diveGroup.dpDeep != null) {
       controllerDeepMaxDP.text = diveGroup.dpDeep!;
     }
@@ -832,8 +816,6 @@ class _DiveDetailState extends State<DiveDetail> {
                                       dateEnd = dateEnd.add(Duration(
                                           hours: hour, minutes: minute));
                                     }
-                                    diveGroup.hourImmersion = dateStart;
-                                    diveGroup.riseHour = dateEnd;
                                     diveGroup.dpDeep = controllerDeepMaxDP.text;
                                     diveGroup.dpTime = controllerTimeMaxDP.text;
                                     diveGroup.realDeep =

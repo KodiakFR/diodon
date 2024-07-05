@@ -41,10 +41,8 @@ class DiveDetailBloc extends Cubit<DiveDetailModel> {
       ..divingStop = ""
       ..dpDeep = ""
       ..dpTime = ""
-      ..hourImmersion = DateTime(1970)
       ..realDeep = ""
       ..realTime = ""
-      ..riseHour = DateTime(1970)
       ..standAlone = false
       ..supervised = false;
 

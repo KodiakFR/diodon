@@ -103,12 +103,6 @@ pw.Table _tableDive(List<DiveGroup> diveGroups, int index) {
       tableWidth: pw.TableWidth.max,
       border: pw.TableBorder.all(),
       children: [
-        pw.TableRow(children: [
-          pw.Text(
-              " Heure imm: ${DateFormat('HH:mm').format(diveGroups[index].hourImmersion!)}"),
-          pw.Text(
-              " Heure sortie: ${DateFormat('HH:mm').format(diveGroups[index].riseHour!)}"),
-        ]),
         pw.TableRow(
           children: [
             pw.Text(' Consignes DP'),

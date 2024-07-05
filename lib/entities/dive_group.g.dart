@@ -32,38 +32,28 @@ const DiveGroupSchema = CollectionSchema(
       name: r'dpTime',
       type: IsarType.string,
     ),
-    r'hourImmersion': PropertySchema(
-      id: 3,
-      name: r'hourImmersion',
-      type: IsarType.dateTime,
-    ),
     r'realDeep': PropertySchema(
-      id: 4,
+      id: 3,
       name: r'realDeep',
       type: IsarType.string,
     ),
     r'realTime': PropertySchema(
-      id: 5,
+      id: 4,
       name: r'realTime',
       type: IsarType.string,
     ),
-    r'riseHour': PropertySchema(
-      id: 6,
-      name: r'riseHour',
-      type: IsarType.dateTime,
-    ),
     r'standAlone': PropertySchema(
-      id: 7,
+      id: 5,
       name: r'standAlone',
       type: IsarType.bool,
     ),
     r'supervised': PropertySchema(
-      id: 8,
+      id: 6,
       name: r'supervised',
       type: IsarType.bool,
     ),
     r'title': PropertySchema(
-      id: 9,
+      id: 7,
       name: r'title',
       type: IsarType.string,
     )
@@ -150,13 +140,11 @@ void _diveGroupSerialize(
   writer.writeString(offsets[0], object.divingStop);
   writer.writeString(offsets[1], object.dpDeep);
   writer.writeString(offsets[2], object.dpTime);
-  writer.writeDateTime(offsets[3], object.hourImmersion);
-  writer.writeString(offsets[4], object.realDeep);
-  writer.writeString(offsets[5], object.realTime);
-  writer.writeDateTime(offsets[6], object.riseHour);
-  writer.writeBool(offsets[7], object.standAlone);
-  writer.writeBool(offsets[8], object.supervised);
-  writer.writeString(offsets[9], object.title);
+  writer.writeString(offsets[3], object.realDeep);
+  writer.writeString(offsets[4], object.realTime);
+  writer.writeBool(offsets[5], object.standAlone);
+  writer.writeBool(offsets[6], object.supervised);
+  writer.writeString(offsets[7], object.title);
 }
 
 DiveGroup _diveGroupDeserialize(
@@ -169,14 +157,12 @@ DiveGroup _diveGroupDeserialize(
   object.divingStop = reader.readStringOrNull(offsets[0]);
   object.dpDeep = reader.readStringOrNull(offsets[1]);
   object.dpTime = reader.readStringOrNull(offsets[2]);
-  object.hourImmersion = reader.readDateTimeOrNull(offsets[3]);
   object.id = id;
-  object.realDeep = reader.readStringOrNull(offsets[4]);
-  object.realTime = reader.readStringOrNull(offsets[5]);
-  object.riseHour = reader.readDateTimeOrNull(offsets[6]);
-  object.standAlone = reader.readBoolOrNull(offsets[7]);
-  object.supervised = reader.readBoolOrNull(offsets[8]);
-  object.title = reader.readStringOrNull(offsets[9]);
+  object.realDeep = reader.readStringOrNull(offsets[3]);
+  object.realTime = reader.readStringOrNull(offsets[4]);
+  object.standAlone = reader.readBoolOrNull(offsets[5]);
+  object.supervised = reader.readBoolOrNull(offsets[6]);
+  object.title = reader.readStringOrNull(offsets[7]);
   return object;
 }
 
@@ -194,18 +180,14 @@ P _diveGroupDeserializeProp<P>(
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 4:
       return (reader.readStringOrNull(offset)) as P;
     case 5:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
     case 6:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
     case 7:
-      return (reader.readBoolOrNull(offset)) as P;
-    case 8:
-      return (reader.readBoolOrNull(offset)) as P;
-    case 9:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -749,80 +731,6 @@ extension DiveGroupQueryFilter
     });
   }
 
-  QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition>
-      hourImmersionIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'hourImmersion',
-      ));
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition>
-      hourImmersionIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'hourImmersion',
-      ));
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition>
-      hourImmersionEqualTo(DateTime? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'hourImmersion',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition>
-      hourImmersionGreaterThan(
-    DateTime? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'hourImmersion',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition>
-      hourImmersionLessThan(
-    DateTime? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'hourImmersion',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition>
-      hourImmersionBetween(
-    DateTime? lower,
-    DateTime? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'hourImmersion',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
   QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition> idEqualTo(
       Id value) {
     return QueryBuilder.apply(this, (query) {
@@ -1172,76 +1080,6 @@ extension DiveGroupQueryFilter
     });
   }
 
-  QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition> riseHourIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'riseHour',
-      ));
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition>
-      riseHourIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'riseHour',
-      ));
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition> riseHourEqualTo(
-      DateTime? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'riseHour',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition> riseHourGreaterThan(
-    DateTime? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'riseHour',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition> riseHourLessThan(
-    DateTime? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'riseHour',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition> riseHourBetween(
-    DateTime? lower,
-    DateTime? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'riseHour',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
   QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition> standAloneIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1560,18 +1398,6 @@ extension DiveGroupQuerySortBy on QueryBuilder<DiveGroup, DiveGroup, QSortBy> {
     });
   }
 
-  QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> sortByHourImmersion() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'hourImmersion', Sort.asc);
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> sortByHourImmersionDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'hourImmersion', Sort.desc);
-    });
-  }
-
   QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> sortByRealDeep() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'realDeep', Sort.asc);
@@ -1593,18 +1419,6 @@ extension DiveGroupQuerySortBy on QueryBuilder<DiveGroup, DiveGroup, QSortBy> {
   QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> sortByRealTimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'realTime', Sort.desc);
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> sortByRiseHour() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'riseHour', Sort.asc);
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> sortByRiseHourDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'riseHour', Sort.desc);
     });
   }
 
@@ -1683,18 +1497,6 @@ extension DiveGroupQuerySortThenBy
     });
   }
 
-  QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> thenByHourImmersion() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'hourImmersion', Sort.asc);
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> thenByHourImmersionDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'hourImmersion', Sort.desc);
-    });
-  }
-
   QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -1728,18 +1530,6 @@ extension DiveGroupQuerySortThenBy
   QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> thenByRealTimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'realTime', Sort.desc);
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> thenByRiseHour() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'riseHour', Sort.asc);
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> thenByRiseHourDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'riseHour', Sort.desc);
     });
   }
 
@@ -1803,12 +1593,6 @@ extension DiveGroupQueryWhereDistinct
     });
   }
 
-  QueryBuilder<DiveGroup, DiveGroup, QDistinct> distinctByHourImmersion() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'hourImmersion');
-    });
-  }
-
   QueryBuilder<DiveGroup, DiveGroup, QDistinct> distinctByRealDeep(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1820,12 +1604,6 @@ extension DiveGroupQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'realTime', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<DiveGroup, DiveGroup, QDistinct> distinctByRiseHour() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'riseHour');
     });
   }
 
@@ -1875,12 +1653,6 @@ extension DiveGroupQueryProperty
     });
   }
 
-  QueryBuilder<DiveGroup, DateTime?, QQueryOperations> hourImmersionProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'hourImmersion');
-    });
-  }
-
   QueryBuilder<DiveGroup, String?, QQueryOperations> realDeepProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'realDeep');
@@ -1890,12 +1662,6 @@ extension DiveGroupQueryProperty
   QueryBuilder<DiveGroup, String?, QQueryOperations> realTimeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'realTime');
-    });
-  }
-
-  QueryBuilder<DiveGroup, DateTime?, QQueryOperations> riseHourProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'riseHour');
     });
   }
 

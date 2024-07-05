@@ -111,12 +111,8 @@ class HomeBloc extends Cubit<Home> {
         if (diveGroup.divingStop!.isEmpty ||
             diveGroup.dpDeep!.isEmpty ||
             diveGroup.dpTime!.isEmpty ||
-            (diveGroup.hourImmersion!.hour == 0 &&
-                diveGroup.hourImmersion!.minute == 0) ||
             diveGroup.realDeep!.isEmpty ||
             diveGroup.realTime!.isEmpty ||
-            (diveGroup.riseHour!.hour == 0 &&
-                diveGroup.riseHour!.minute == 0) ||
             (diveGroup.standAlone! == false && diveGroup.supervised == false)) {
           return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
