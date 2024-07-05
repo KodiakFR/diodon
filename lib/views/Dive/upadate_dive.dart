@@ -26,6 +26,7 @@ class _UpdateDiveState extends State<UpdateDive> {
   final TextEditingController controllerCaptainName = TextEditingController();
   final TextEditingController controllerNbPerson = TextEditingController();
   final TextEditingController controllerNbDivers = TextEditingController();
+  final TextEditingController controllerInstruction = TextEditingController();
   bool isIntialized = false;
 
   final IsarService isarService = IsarService();
@@ -54,138 +55,150 @@ class _UpdateDiveState extends State<UpdateDive> {
           key: formKey,
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Column(
                 children: [
-                  Expanded(
-                    flex: 5,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 50),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          TextFormField(
-                            controller: constrollerDiveSite,
-                            decoration: const InputDecoration(
-                                labelText: 'Site de plongée'),
-                          ),
-                          TextFormField(
-                            controller: controllerStartDate,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.calendar_today_rounded),
-                              labelText: 'Selectionnez la date de la plongée',
-                            ),
-                            onTap: () async {
-                              DateTime? pickedDate = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime(2022),
-                                lastDate: DateTime(2100),
-                              );
-                              if (pickedDate != null) {
-                                setState(() {
-                                  controllerStartDate.text =
-                                      DateFormat('dd/MM/yyyy')
-                                          .format(pickedDate);
-                                });
-                              }
-                            },
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Le champs est obligatoire';
-                              }
-                              return null;
-                            },
-                          ),
-                          TextFormField(
-                            controller: controllerStartHour,
-                            showCursor: true,
-                            readOnly: true,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.calendar_today_rounded),
-                              labelText:
-                                  'Selectionnez l\'heure de début de plongée',
-                            ),
-                            onTap: () async {
-                              TimeOfDay? pickedHour = await showTimePicker(
-                                context: context,
-                                initialTime: TimeOfDay.now(),
-                                builder: (BuildContext context, Widget? child) {
-                                  return MediaQuery(
-                                    data: MediaQuery.of(context)
-                                        .copyWith(alwaysUse24HourFormat: true),
-                                    child: child!,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        flex: 5,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 50),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              TextFormField(
+                                controller: constrollerDiveSite,
+                                decoration: const InputDecoration(
+                                    labelText: 'Site de plongée'),
+                              ),
+                              TextFormField(
+                                controller: controllerStartDate,
+                                decoration: const InputDecoration(
+                                  icon: Icon(Icons.calendar_today_rounded),
+                                  labelText: 'Selectionnez la date de la plongée',
+                                ),
+                                onTap: () async {
+                                  DateTime? pickedDate = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime(2022),
+                                    lastDate: DateTime(2100),
                                   );
+                                  if (pickedDate != null) {
+                                    setState(() {
+                                      controllerStartDate.text =
+                                          DateFormat('dd/MM/yyyy')
+                                              .format(pickedDate);
+                                    });
+                                  }
                                 },
-                              );
-                              if (pickedHour != null) {
-                                setState(() {
-                                  var df = DateFormat("HH:mm");
-                                  var dt = df.parse(pickedHour.format(context));
-                                  controllerStartHour.text =
-                                      DateFormat("HH:mm").format(dt);
-                                });
-                              }
-                            },
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Le champs est obligatoire';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              TextFormField(
+                                controller: controllerStartHour,
+                                showCursor: true,
+                                readOnly: true,
+                                decoration: const InputDecoration(
+                                  icon: Icon(Icons.calendar_today_rounded),
+                                  labelText:
+                                      'Selectionnez l\'heure de début de plongée',
+                                ),
+                                onTap: () async {
+                                  TimeOfDay? pickedHour = await showTimePicker(
+                                    context: context,
+                                    initialTime: TimeOfDay.now(),
+                                    builder: (BuildContext context, Widget? child) {
+                                      return MediaQuery(
+                                        data: MediaQuery.of(context)
+                                            .copyWith(alwaysUse24HourFormat: true),
+                                        child: child!,
+                                      );
+                                    },
+                                  );
+                                  if (pickedHour != null) {
+                                    setState(() {
+                                      var df = DateFormat("HH:mm");
+                                      var dt = df.parse(pickedHour.format(context));
+                                      controllerStartHour.text =
+                                          DateFormat("HH:mm").format(dt);
+                                    });
+                                  }
+                                },
+                              ),
+                              TextFormField(
+                                controller: controllerDP,
+                                decoration: const InputDecoration(
+                                  labelText: 'Nom du DP',
+                                ),
+                              )
+                            ],
                           ),
-                          TextFormField(
-                            controller: controllerDP,
-                            decoration: const InputDecoration(
-                              labelText: 'Nom du DP',
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                      flex: 5,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 50),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            TextFormField(
-                              controller: controllerBoat,
-                              decoration: const InputDecoration(
-                                  labelText: 'Nom du bateau'),
-                            ),
-                            TextFormField(
-                              controller: controllerCaptainName,
-                              decoration: const InputDecoration(
-                                  labelText: 'Nom du capitaine'),
-                            ),
-                            TextFormField(
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                              controller: controllerNbPerson,
-                              keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(
-                                  labelText:
-                                      'Nombre de personnes sur le bateau'),
-                            ),
-                            TextFormField(
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                              controller: controllerNbDivers,
-                              keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(
-                                  labelText:
-                                      'Nombre de plongeurs sur le bateau'),
-                              validator: (value) {
-                                if (value != null &&
-                                    int.parse(value) >
-                                        int.parse(controllerNbPerson.text)) {
-                                  return 'Le nombre de plongeurs est plus élevé que le nombre de personne sur le bateau';
-                                }
-                                return null;
-                              },
-                            ),
-                          ],
                         ),
-                      ))
+                      ),
+                      Expanded(
+                          flex: 5,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 50),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                TextFormField(
+                                  controller: controllerBoat,
+                                  decoration: const InputDecoration(
+                                      labelText: 'Nom du bateau'),
+                                ),
+                                TextFormField(
+                                  controller: controllerCaptainName,
+                                  decoration: const InputDecoration(
+                                      labelText: 'Nom du capitaine'),
+                                ),
+                                TextFormField(
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ],
+                                  controller: controllerNbPerson,
+                                  keyboardType: TextInputType.number,
+                                  decoration: const InputDecoration(
+                                      labelText:
+                                          'Nombre de personnes sur le bateau'),
+                                ),
+                                TextFormField(
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ],
+                                  controller: controllerNbDivers,
+                                  keyboardType: TextInputType.number,
+                                  decoration: const InputDecoration(
+                                      labelText:
+                                          'Nombre de plongeurs sur le bateau'),
+                                  validator: (value) {
+                                    if (value != null &&
+                                        int.parse(value) >
+                                            int.parse(controllerNbPerson.text)) {
+                                      return 'Le nombre de plongeurs est plus élevé que le nombre de personne sur le bateau';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ],
+                            ),
+                          ))
+                    ],
+                  ),
+                   Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 50),
+                    child: TextFormField(
+                      controller: controllerInstruction,
+                      decoration:
+                          const InputDecoration(labelText: 'Instruction du DP'),
+                    ),
+                  )
                 ],
               ),
               const SizedBox(
@@ -220,6 +233,7 @@ class _UpdateDiveState extends State<UpdateDive> {
                         ..captain = controllerCaptainName.text
                         ..nbPeople = int.parse(controllerNbPerson.text)
                         ..nbDiver = int.parse(controllerNbDivers.text)
+                        ..instructionDp = controllerInstruction.text
                         ..weekend.value = dive.weekend.value;
 
                       bool isUpdate = await isarService.updateDive(updateDive);

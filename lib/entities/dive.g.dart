@@ -42,18 +42,23 @@ const DiveSchema = CollectionSchema(
       name: r'dp',
       type: IsarType.string,
     ),
-    r'nbDiver': PropertySchema(
+    r'instructionDp': PropertySchema(
       id: 5,
+      name: r'instructionDp',
+      type: IsarType.string,
+    ),
+    r'nbDiver': PropertySchema(
+      id: 6,
       name: r'nbDiver',
       type: IsarType.long,
     ),
     r'nbPeople': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'nbPeople',
       type: IsarType.long,
     ),
     r'title': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'title',
       type: IsarType.string,
     )
@@ -96,6 +101,7 @@ int _diveEstimateSize(
   bytesCount += 3 + object.captain.length * 3;
   bytesCount += 3 + object.divingSite.length * 3;
   bytesCount += 3 + object.dp.length * 3;
+  bytesCount += 3 + object.instructionDp.length * 3;
   bytesCount += 3 + object.title.length * 3;
   return bytesCount;
 }
@@ -111,9 +117,10 @@ void _diveSerialize(
   writer.writeDateTime(offsets[2], object.dateDepart);
   writer.writeString(offsets[3], object.divingSite);
   writer.writeString(offsets[4], object.dp);
-  writer.writeLong(offsets[5], object.nbDiver);
-  writer.writeLong(offsets[6], object.nbPeople);
-  writer.writeString(offsets[7], object.title);
+  writer.writeString(offsets[5], object.instructionDp);
+  writer.writeLong(offsets[6], object.nbDiver);
+  writer.writeLong(offsets[7], object.nbPeople);
+  writer.writeString(offsets[8], object.title);
 }
 
 Dive _diveDeserialize(
@@ -129,9 +136,10 @@ Dive _diveDeserialize(
   object.divingSite = reader.readString(offsets[3]);
   object.dp = reader.readString(offsets[4]);
   object.id = id;
-  object.nbDiver = reader.readLong(offsets[5]);
-  object.nbPeople = reader.readLong(offsets[6]);
-  object.title = reader.readString(offsets[7]);
+  object.instructionDp = reader.readString(offsets[5]);
+  object.nbDiver = reader.readLong(offsets[6]);
+  object.nbPeople = reader.readLong(offsets[7]);
+  object.title = reader.readString(offsets[8]);
   return object;
 }
 
@@ -153,10 +161,12 @@ P _diveDeserializeProp<P>(
     case 4:
       return (reader.readString(offset)) as P;
     case 5:
-      return (reader.readLong(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 6:
       return (reader.readLong(offset)) as P;
     case 7:
+      return (reader.readLong(offset)) as P;
+    case 8:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -873,6 +883,136 @@ extension DiveQueryFilter on QueryBuilder<Dive, Dive, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> instructionDpEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'instructionDp',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> instructionDpGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'instructionDp',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> instructionDpLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'instructionDp',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> instructionDpBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'instructionDp',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> instructionDpStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'instructionDp',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> instructionDpEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'instructionDp',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> instructionDpContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'instructionDp',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> instructionDpMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'instructionDp',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> instructionDpIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'instructionDp',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> instructionDpIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'instructionDp',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<Dive, Dive, QAfterFilterCondition> nbDiverEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -1240,6 +1380,18 @@ extension DiveQuerySortBy on QueryBuilder<Dive, Dive, QSortBy> {
     });
   }
 
+  QueryBuilder<Dive, Dive, QAfterSortBy> sortByInstructionDp() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'instructionDp', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Dive, Dive, QAfterSortBy> sortByInstructionDpDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'instructionDp', Sort.desc);
+    });
+  }
+
   QueryBuilder<Dive, Dive, QAfterSortBy> sortByNbDiver() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'nbDiver', Sort.asc);
@@ -1350,6 +1502,18 @@ extension DiveQuerySortThenBy on QueryBuilder<Dive, Dive, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Dive, Dive, QAfterSortBy> thenByInstructionDp() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'instructionDp', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Dive, Dive, QAfterSortBy> thenByInstructionDpDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'instructionDp', Sort.desc);
+    });
+  }
+
   QueryBuilder<Dive, Dive, QAfterSortBy> thenByNbDiver() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'nbDiver', Sort.asc);
@@ -1422,6 +1586,14 @@ extension DiveQueryWhereDistinct on QueryBuilder<Dive, Dive, QDistinct> {
     });
   }
 
+  QueryBuilder<Dive, Dive, QDistinct> distinctByInstructionDp(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'instructionDp',
+          caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<Dive, Dive, QDistinct> distinctByNbDiver() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'nbDiver');
@@ -1476,6 +1648,12 @@ extension DiveQueryProperty on QueryBuilder<Dive, Dive, QQueryProperty> {
   QueryBuilder<Dive, String, QQueryOperations> dpProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'dp');
+    });
+  }
+
+  QueryBuilder<Dive, String, QQueryOperations> instructionDpProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'instructionDp');
     });
   }
 

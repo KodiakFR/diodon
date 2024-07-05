@@ -16,6 +16,7 @@ class Dive {
   late String captain;
   late int nbPeople;
   late int nbDiver;
+  late String instructionDp;
   @Backlink(to: "dive")
   final divreGroups = IsarLinks<DiveGroup>();
   final weekend = IsarLink<Weekend>();

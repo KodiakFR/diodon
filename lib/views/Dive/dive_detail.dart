@@ -577,6 +577,10 @@ class _DiveDetailState extends State<DiveDetail> {
         Text(
           'Nombre de personnes : ${dive.nbPeople.toString()}',
           style: Theme.of(context).textTheme.titleMedium,
+        ),
+         Text(
+          'Instruction DP : ${dive.instructionDp}',
+          style: Theme.of(context).textTheme.titleMedium,
         )
       ],
     );
