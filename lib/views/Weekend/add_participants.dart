@@ -403,7 +403,14 @@ class _AddParticipantsState extends State<AddParticipants> {
         _controllerName.text = participant.name!;
       }
       if (participant.diveLevel != null ) {
-        selectValueLevel = participant.diveLevel!;
+        if(levelItems.contains(participant.diveLevel)){
+          selectValueLevel = participant.diveLevel!;
+          _controllerValueLevel.text = "";
+        }
+        else{
+          selectValueLevel = "Autre";
+          _controllerValueLevel.text = participant.diveLevel!;
+        }
       }
       if (participant.type != null && participant.type != "") {
         selectValueType = participant.type!;
@@ -426,7 +433,6 @@ class _AddParticipantsState extends State<AddParticipants> {
             ),
             content: StatefulBuilder(
               builder: (context, setState) {
-                _controllerValueLevel.text = "";
                 return Form(
                   key: _formKey,
                   child: Column(
