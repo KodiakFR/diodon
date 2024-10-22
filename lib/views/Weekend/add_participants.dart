@@ -518,6 +518,7 @@ class _AddParticipantsState extends State<AddParticipants> {
                               onChanged: (String? value) {
                                 setState(() {
                                   selectValueLevel = value!;
+                                  _controllerValueLevel.text = "";
                                 });
                               },
                             ),
