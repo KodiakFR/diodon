@@ -7,6 +7,7 @@ import 'package:diodon/views/Widget/app_bar_custo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import '../../bloc/home_bloc.dart';
 import '../../entities/weekend.dart';
 
 class WeekendDetail extends StatelessWidget {
@@ -136,6 +137,13 @@ class WeekendDetail extends StatelessWidget {
                         Icons.delete,
                         color: Colors.red,
                       )),
+                      IconButton(
+                      onPressed: () async {
+                        await context
+                            .read<HomeBloc>()
+                            .saveFile(context, weekend, dives[index]);
+                      },
+                      icon: const Icon(Icons.file_open_outlined))
                 ],
               ),
               const SizedBox(

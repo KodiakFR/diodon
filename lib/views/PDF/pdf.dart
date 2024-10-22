@@ -17,9 +17,8 @@ import 'package:pdf/widgets.dart' as pw;
 
 final isarService = IsarService();
 
-Future<Uint8List> generatePdf(Weekend weekend, BuildContext context) async {
+Future<Uint8List> generatePdf(Dive dive, BuildContext context) async {
   final pdf = pw.Document(title: "Feuille de sécurité");
-  final List<Dive> dives = await isarService.getAllDiveByWeekend(weekend);
   final logoImage = pw.MemoryImage((await rootBundle
           .load('images/cropped-logo_diodon-officiel2-carre-edited.jpg'))
       .buffer
@@ -42,59 +41,58 @@ Future<Uint8List> generatePdf(Weekend weekend, BuildContext context) async {
   final byteDataStamp = bytesStamp.buffer.asUint8List();
   final stamp = pw.MemoryImage(byteDataStamp);
 
-  for (var dive in dives) {
-    final List<DiveGroup> diveGroups =
-        await isarService.getAllDiveGroupForDive(dive);
-    List<List<String>> participantTable = [];
-    for (var diveGroup in diveGroups) {
-      List<Participant> participants =
-          await isarService.getAllDiverForDiveGroup(diveGroup);
-      for (var participant in participants) {
-        List<String> participantRow = [
-          participant.name!,
-          participant.firstName!,
-          participant.diveLevel!,
-          participant.aptitude!,
-          diveGroup.id.toString(),
-          participant.sort!.toString(),
-        ];
-        participantTable.add(participantRow);
-      }
+  final List<DiveGroup> diveGroups =
+      await isarService.getAllDiveGroupForDive(dive);
+  List<List<String>> participantTable = [];
+  for (var diveGroup in diveGroups) {
+    List<Participant> participants =
+        await isarService.getAllDiverForDiveGroup(diveGroup);
+    for (var participant in participants) {
+      List<String> participantRow = [
+        participant.name!,
+        participant.firstName!,
+        participant.diveLevel!,
+        participant.aptitude!,
+        diveGroup.id.toString(),
+        participant.sort!.toString(),
+      ];
+      participantTable.add(participantRow);
     }
-    pdf.addPage(pw.MultiPage(
-      pageFormat: PdfPageFormat.a4,
-      orientation: pw.PageOrientation.landscape,
-      build: (pw.Context context) => [
-        _headerPdf(dive),
-        pw.SizedBox(height: 20),
-        pw.ListView.builder(
-            itemCount: diveGroups.length,
-            itemBuilder: (context, index) {
-              return pw.Column(children: [
-                pw.Text(diveGroups[index].title!,
-                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                pw.GridView(
-                    crossAxisSpacing: 10,
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.25,
-                    children: [
-                      _tableParticicpant(diveGroups[index], participantTable),
-                      _tableDive(diveGroups, index),
-                    ]),
-              ]);
-            }),
-        pw.Row(
-          mainAxisAlignment: pw.MainAxisAlignment.end,
-          children: [
-            pw.Image(logoImage, width: 125),
-            pw.SizedBox(width: 30),
-            pw.Image(stamp, width: 100),
-            pw.Image(signature, width: 150),
-          ],
-        ),
-      ],
-    ));
   }
+  pdf.addPage(pw.MultiPage(
+    pageFormat: PdfPageFormat.a4,
+    orientation: pw.PageOrientation.landscape,
+    build: (pw.Context context) => [
+      _headerPdf(dive),
+      pw.SizedBox(height: 20),
+      pw.ListView.builder(
+          itemCount: diveGroups.length,
+          itemBuilder: (context, index) {
+            return pw.Column(children: [
+              pw.Text(diveGroups[index].title!,
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              pw.GridView(
+                  crossAxisSpacing: 10,
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.25,
+                  children: [
+                    _tableParticicpant(diveGroups[index], participantTable),
+                    _tableDive(diveGroups, index),
+                  ]),
+            ]);
+          }),
+      pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.end,
+        children: [
+          pw.Image(logoImage, width: 125),
+          pw.SizedBox(width: 30),
+          pw.Image(stamp, width: 100),
+          pw.Image(signature, width: 150),
+        ],
+      ),
+    ],
+  ));
+
   return pdf.save();
 }
 

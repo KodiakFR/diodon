@@ -30,7 +30,7 @@ class HomeBloc extends Cubit<Home> {
     }
   }
 
-  Future<Object> saveFile(BuildContext context, Weekend weekend) async {
+  Future<Object> saveFile(BuildContext context, Weekend weekend, Dive dive) async {
     bool isValided = false;
     final ConnexionBloc userBloc = BlocProvider.of<ConnexionBloc>(context);
     List<Participant> participants =
@@ -126,7 +126,7 @@ class HomeBloc extends Cubit<Home> {
     }
     isValided = true;
     if (isValided) {
-      final bytes = await generatePdf(weekend, context);
+      final bytes = await generatePdf(dive, context);
       final appDocDir = await getApplicationDocumentsDirectory();
       final appDocPath = appDocDir.path;
       String? resultString = await FileSaver.instance.saveAs(
