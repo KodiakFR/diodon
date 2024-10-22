@@ -395,6 +395,8 @@ class _AddParticipantsState extends State<AddParticipants> {
     selectValueLevel = "";
     selectValueType = "Plongeur";
     selectValueAptitude = "";
+    _controllerValueLevel.text = "";
+    var flagLevel = false;
     if (participant != null) {
       if (participant.firstName != null) {
         _controllerFirstName.text = participant.firstName!;
@@ -402,25 +404,31 @@ class _AddParticipantsState extends State<AddParticipants> {
       if (participant.name != null) {
         _controllerName.text = participant.name!;
       }
-      if (participant.diveLevel != null ) {
-        if(levelItems.contains(participant.diveLevel)){
-          selectValueLevel = participant.diveLevel!;
-          _controllerValueLevel.text = "";
+      if (participant.diveLevel != null) {
+        for (var level in levelItems) {
+          if(level.value == participant.diveLevel){
+            flagLevel = true;
+          }
         }
-        else{
+        if(flagLevel == true){
+           selectValueLevel = participant.diveLevel!;
+        }else{
           selectValueLevel = "Autre";
           _controllerValueLevel.text = participant.diveLevel!;
+
         }
+         
       }
       if (participant.type != null && participant.type != "") {
         selectValueType = participant.type!;
       }
-      if(participant.aptitude != null){
+      if (participant.aptitude != null) {
         selectValueAptitude = participant.aptitude;
       }
     }
     double widthForm = MediaQuery.of(context).size.width / 2.8;
     double heightForm = MediaQuery.of(context).size.height / 8.5;
+    
     return showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
