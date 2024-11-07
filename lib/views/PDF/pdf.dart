@@ -5,7 +5,6 @@ import 'package:diodon/bloc/connection_bloc.dart';
 import 'package:diodon/entities/dive.dart';
 import 'package:diodon/entities/dive_group.dart';
 import 'package:diodon/entities/participant.dart';
-import 'package:diodon/entities/weekend.dart';
 import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -69,7 +68,7 @@ Future<Uint8List> generatePdf(Dive dive, BuildContext context) async {
           itemCount: diveGroups.length,
           itemBuilder: (context, index) {
             return pw.Column(children: [
-              pw.Text(diveGroups[index].title!,
+              pw.Text('Palanquée ${index + 1}',
                   style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
               pw.GridView(
                   crossAxisSpacing: 10,
