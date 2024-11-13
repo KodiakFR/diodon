@@ -1,4 +1,4 @@
-package com.example.diodon
+package com.diodon.diodon
 
 import io.flutter.embedding.android.FlutterActivity
 
