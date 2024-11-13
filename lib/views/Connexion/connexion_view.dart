@@ -6,6 +6,7 @@ import 'package:diodon/services/isar_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../entities/user.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ConnexionView extends StatelessWidget {
   const ConnexionView({super.key});
@@ -26,7 +27,7 @@ class ConnexionView extends StatelessWidget {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Text('Connexion',
+                  Text(AppLocalizations.of(context)!.helloWorld,
                       style: Theme.of(context).textTheme.displayMedium),
                   FutureBuilder(
                       future: isarService.getAllUsers(),
