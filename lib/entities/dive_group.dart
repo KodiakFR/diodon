@@ -11,8 +11,6 @@ class DiveGroup{
   late String? title;
   late bool? standAlone;
   late bool? supervised;
-  late DateTime? hourImmersion;
-  late DateTime? riseHour;
   late String? dpDeep;
   late String? dpTime;
   late String? realDeep;

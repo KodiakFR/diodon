@@ -9,6 +9,7 @@ import 'package:diodon/services/isar_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:string_extensions/string_extensions.dart';
 
 import '../../bloc/participants_bloc.dart';
 
@@ -26,8 +27,10 @@ class _AddParticipantsState extends State<AddParticipants> {
 
   final TextEditingController _controllerName = TextEditingController();
   final TextEditingController _controllerFirstName = TextEditingController();
+  final TextEditingController _controllerValueLevel = TextEditingController();
   String selectValueType = "Plongeur";
   String selectValueLevel = "";
+  String? selectValueAptitude = "";
   List<DropdownMenuItem<String>> typeItems = [
     const DropdownMenuItem(
       value: "Plongeur",
@@ -131,6 +134,49 @@ class _AddParticipantsState extends State<AddParticipants> {
     const DropdownMenuItem(
       value: "E1",
       child: Text("E1"),
+    ),
+    const DropdownMenuItem(
+      value: "Autre",
+      child: Text("Autre"),
+    ),
+  ];
+
+  List<DropdownMenuItem<String>> aptitudeItems = [
+    const DropdownMenuItem(
+      value: "",
+      child: Text(""),
+    ),
+    const DropdownMenuItem(
+      value: "PE20",
+      child: Text("PE20"),
+    ),
+    const DropdownMenuItem(
+      value: "PA20",
+      child: Text("PA20"),
+    ),
+    const DropdownMenuItem(
+      value: "PE40",
+      child: Text("PE40"),
+    ),
+    const DropdownMenuItem(
+      value: "PE60",
+      child: Text("PE60"),
+    ),
+    const DropdownMenuItem(
+      value: "PA60",
+      child: Text("PA60"),
+    ),
+    const DropdownMenuItem(
+      value: "E2",
+      child: Text("E2"),
+    ),
+    const DropdownMenuItem(
+      value: "E3",
+      child: Text("E3"),
+    ),
+    const DropdownMenuItem(
+      value: "E4",
+      child: Text("E4"),
     ),
   ];
 
@@ -348,6 +394,9 @@ class _AddParticipantsState extends State<AddParticipants> {
     _controllerName.clear();
     selectValueLevel = "";
     selectValueType = "Plongeur";
+    selectValueAptitude = "";
+    _controllerValueLevel.text = "";
+    var flagLevel = false;
     if (participant != null) {
       if (participant.firstName != null) {
         _controllerFirstName.text = participant.firstName!;
@@ -355,28 +404,44 @@ class _AddParticipantsState extends State<AddParticipants> {
       if (participant.name != null) {
         _controllerName.text = participant.name!;
       }
-      if (participant.diveLevel != null &&
-          levelItems.every((item) => item.value == participant.diveLevel)) {
-        selectValueLevel = participant.diveLevel!;
+      if (participant.diveLevel != null) {
+        for (var level in levelItems) {
+          if(level.value == participant.diveLevel){
+            flagLevel = true;
+          }
+        }
+        if(flagLevel == true){
+           selectValueLevel = participant.diveLevel!;
+        }else{
+          selectValueLevel = "Autre";
+          _controllerValueLevel.text = participant.diveLevel!;
+
+        }
+         
       }
       if (participant.type != null && participant.type != "") {
         selectValueType = participant.type!;
       }
+      if (participant.aptitude != null) {
+        selectValueAptitude = participant.aptitude;
+      }
     }
     double widthForm = MediaQuery.of(context).size.width / 2.8;
     double heightForm = MediaQuery.of(context).size.height / 8.5;
+    
     return showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-              scrollable: true,
-              title: Text(
-                participant == null
-                    ? "Ajouter un participant"
-                    : "Modification de ${participant.firstName} ${participant.name}",
-                textAlign: TextAlign.center,
-              ),
-              actions: [
-                Form(
+            scrollable: true,
+            title: Text(
+              participant == null
+                  ? "Ajouter un participant"
+                  : "Modification de ${participant.firstName} ${participant.name}",
+              textAlign: TextAlign.center,
+            ),
+            content: StatefulBuilder(
+              builder: (context, setState) {
+                return Form(
                   key: _formKey,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -453,11 +518,39 @@ class _AddParticipantsState extends State<AddParticipants> {
                               onChanged: (String? value) {
                                 setState(() {
                                   selectValueLevel = value!;
+                                  _controllerValueLevel.text = "";
                                 });
                               },
                             ),
                           )
                         ],
+                      ),
+                      if (selectValueLevel == "Autre")
+                        TextFormField(
+                          controller: _controllerValueLevel,
+                          decoration:
+                              const InputDecoration(labelText: 'Niveau'),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Le champs est obligatoire';
+                            }
+                            return null;
+                          },
+                        ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      DropdownButtonFormField(
+                        decoration:
+                            const InputDecoration(labelText: "Aptitude"),
+                        value: selectValueAptitude,
+                        icon: const Icon(Icons.arrow_downward),
+                        items: aptitudeItems,
+                        onChanged: (String? value) {
+                          setState(() {
+                            selectValueAptitude = value!;
+                          });
+                        },
                       ),
                       const SizedBox(
                         height: 20,
@@ -470,15 +563,21 @@ class _AddParticipantsState extends State<AddParticipants> {
                                 participant == null ? 'Ajouter' : 'Modifier'),
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                String? aptitude =
-                                    _defineAptitude(selectValueLevel);
+                                if (_controllerValueLevel.text != "") {
+                                  selectValueLevel = _controllerValueLevel.text;
+                                }
+                                if (selectValueAptitude == "") {
+                                  selectValueAptitude =
+                                      _defineAptitude(selectValueLevel);
+                                }
                                 if (participant == null) {
                                   Participant newParticipant = Participant()
-                                    ..firstName = _controllerFirstName.text
+                                    ..firstName =
+                                        _controllerFirstName.text.toTitleCase()
                                     ..name = _controllerName.text.toUpperCase()
                                     ..type = selectValueType
                                     ..diveLevel = selectValueLevel
-                                    ..aptitude = aptitude
+                                    ..aptitude = selectValueAptitude
                                     ..selected = false
                                     ..sort = _difineSort(selectValueLevel)
                                     ..weekends.add(weekend);
@@ -508,11 +607,12 @@ class _AddParticipantsState extends State<AddParticipants> {
                                 } else {
                                   Participant newParticipant = Participant()
                                     ..id = participant.id
-                                    ..firstName = _controllerFirstName.text
+                                    ..firstName =
+                                        _controllerFirstName.text.toTitleCase()
                                     ..name = _controllerName.text.toUpperCase()
                                     ..type = selectValueType
                                     ..diveLevel = selectValueLevel
-                                    ..aptitude = aptitude
+                                    ..aptitude = selectValueAptitude
                                     ..selected = false
                                     ..sort = _difineSort(selectValueLevel)
                                     ..weekends.add(weekend);
@@ -537,9 +637,9 @@ class _AddParticipantsState extends State<AddParticipants> {
                       ),
                     ],
                   ),
-                )
-              ],
-            ));
+                );
+              },
+            )));
   }
 
   _pickAndReadCSV(Weekend weekend) async {

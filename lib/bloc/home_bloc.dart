@@ -30,7 +30,8 @@ class HomeBloc extends Cubit<Home> {
     }
   }
 
-  Future<Object> saveFile(BuildContext context, Weekend weekend) async {
+  Future<Object> saveFile(
+      BuildContext context, Weekend weekend, Dive dive) async {
     bool isValided = false;
     final ConnexionBloc userBloc = BlocProvider.of<ConnexionBloc>(context);
     List<Participant> participants =
@@ -59,88 +60,82 @@ class HomeBloc extends Cubit<Home> {
       }
     }
 
-    List<Dive> dives = await isarService.getAllDiveByWeekend(weekend);
-    for (var dive in dives) {
-      if (dive.divingSite.isEmpty ||
-          dive.boat.isEmpty ||
-          dive.captain.isEmpty ||
-          dive.dateDepart == DateTime(1970, 1, 1) ||
-          dive.dp.isEmpty ||
-          dive.nbDiver == 0 ||
-          dive.nbPeople == 0) {
+    if (dive.divingSite.isEmpty ||
+        dive.boat.isEmpty ||
+        dive.captain.isEmpty ||
+        dive.dateDepart == DateTime(1970, 1, 1) ||
+        dive.dp.isEmpty ||
+        dive.nbDiver == 0 ||
+        dive.nbPeople == 0) {
+      return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          "La ${dive.title} n'est pas correctement renseignée. Certains champs sont vide",
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.red,
+      ));
+    }
+    if (dive.dateDepart.isBefore(weekend.start) ||
+        dive.dateDepart.isAfter(weekend.end.add(const Duration(days: 1)))) {
+      return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          "La date de ${dive.title} n'est pas inclus dans la date du week-end",
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.red,
+      ));
+    }
+    if ("${userBloc.state.connectedUser!.firstName} ${userBloc.state.connectedUser!.name}" !=
+        dive.dp) {
+      return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          "La personne connecté n'est pas le DP de ${dive.title}, seul le DP peut générer le PDF",
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.red,
+      ));
+    }
+    final List<DiveGroup> divegroups =
+        await isarService.getAllDiveGroupForDive(dive);
+    for (var diveGroup in divegroups) {
+      if (diveGroup.participants.isEmpty) {
         return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
-            "La ${dive.title} n'est pas correctement renseignée. Certains champs sont vide",
+            "La ${diveGroup.title} de la ${dive.title} est vide. Veuillez la supprimer",
             textAlign: TextAlign.center,
           ),
           backgroundColor: Colors.red,
         ));
       }
-      if (dive.dateDepart.isBefore(weekend.start) ||
-          dive.dateDepart.isAfter(weekend.end.add(const Duration(days: 1)))) {
+      if (diveGroup.divingStop!.isEmpty ||
+          diveGroup.dpDeep!.isEmpty ||
+          diveGroup.dpTime!.isEmpty ||
+          diveGroup.realDeep!.isEmpty ||
+          diveGroup.realTime!.isEmpty ||
+          (diveGroup.standAlone! == false && diveGroup.supervised == false)) {
         return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
-            "La date de ${dive.title} n'est pas inclus dans la date du week-end",
+            "Les paramètres de la planquée de ${diveGroup.title} ne sont pas toutes renseignés",
             textAlign: TextAlign.center,
           ),
           backgroundColor: Colors.red,
         ));
-      }
-      if ("${userBloc.state.connectedUser!.firstName} ${userBloc.state.connectedUser!.name}" !=
-          dive.dp) {
-        return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            "La personne connecté n'est pas le DP de ${dive.title}, seul le DP peut générer le PDF",
-            textAlign: TextAlign.center,
-          ),
-          backgroundColor: Colors.red,
-        ));
-      }
-      final List<DiveGroup> divegroups =
-          await isarService.getAllDiveGroupForDive(dive);
-      for (var diveGroup in divegroups) {
-        if (diveGroup.participants.isEmpty) {
-          return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-              "La ${diveGroup.title} de la ${dive.title} est vide. Veuillez la supprimer",
-              textAlign: TextAlign.center,
-            ),
-            backgroundColor: Colors.red,
-          ));
-        }
-        if (diveGroup.divingStop!.isEmpty ||
-            diveGroup.dpDeep!.isEmpty ||
-            diveGroup.dpTime!.isEmpty ||
-            (diveGroup.hourImmersion!.hour == 0 &&
-                diveGroup.hourImmersion!.minute == 0) ||
-            diveGroup.realDeep!.isEmpty ||
-            diveGroup.realTime!.isEmpty ||
-            (diveGroup.riseHour!.hour == 0 &&
-                diveGroup.riseHour!.minute == 0) ||
-            (diveGroup.standAlone! == false && diveGroup.supervised == false)) {
-          return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-              "Les paramètres de la ${diveGroup.title} de la ${dive.title} ne sont pas toutes renseignés",
-              textAlign: TextAlign.center,
-            ),
-            backgroundColor: Colors.red,
-          ));
-        }
       }
     }
+
     isValided = true;
     if (isValided) {
-      final bytes = await generatePdf(weekend, context);
+      final bytes = await generatePdf(dive, context);
       final appDocDir = await getApplicationDocumentsDirectory();
       final appDocPath = appDocDir.path;
       String? resultString = await FileSaver.instance.saveAs(
-          name: "Fiche de sécurité du ${weekend.title}",
+          name: "Fiche de sécurité du ${weekend.title} - ${dive.title}",
           bytes: bytes,
           filePath: appDocPath,
           ext: "pdf",
           mimeType: MimeType.other);
       if (resultString != null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text(
             "Le PDF a été correctement généré",
             textAlign: TextAlign.center,

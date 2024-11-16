@@ -245,20 +245,6 @@ class _DiveDetailState extends State<DiveDetail> {
                                                     ],
                                                   ),
                                                 ),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      horizontal: 10),
-                                                  child: Text(
-                                                      'Heure Imm: ${DateFormat.Hm().format(state.divegroups[index].hourImmersion!)}'),
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      horizontal: 10),
-                                                  child: Text(
-                                                      'Heure Sortie: ${DateFormat.Hm().format(state.divegroups[index].riseHour!)}'),
-                                                ),
                                               ],
                                             ),
                                             const SizedBox(
@@ -377,7 +363,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                                               .removeParticipantsInGroupDive(
                                                                   participant,
                                                                   state.divegroups[
-                                                                      index]);
+                                                                      index], index);
 
                                                           await context
                                                               .read<
@@ -577,14 +563,16 @@ class _DiveDetailState extends State<DiveDetail> {
         Text(
           'Nombre de personnes : ${dive.nbPeople.toString()}',
           style: Theme.of(context).textTheme.titleMedium,
+        ),
+         Text(
+          'Instruction DP : ${dive.instructionDp}',
+          style: Theme.of(context).textTheme.titleMedium,
         )
       ],
     );
   }
 
   _displayPopParameter(Dive dive, DiveGroup diveGroup, BuildContext context) {
-    controllerStartHour.text = DateFormat.Hm().format(diveGroup.hourImmersion!);
-    controllerStartEnd.text = DateFormat.Hm().format(diveGroup.riseHour!);
     if (diveGroup.dpDeep != null) {
       controllerDeepMaxDP.text = diveGroup.dpDeep!;
     }
@@ -828,8 +816,6 @@ class _DiveDetailState extends State<DiveDetail> {
                                       dateEnd = dateEnd.add(Duration(
                                           hours: hour, minutes: minute));
                                     }
-                                    diveGroup.hourImmersion = dateStart;
-                                    diveGroup.riseHour = dateEnd;
                                     diveGroup.dpDeep = controllerDeepMaxDP.text;
                                     diveGroup.dpTime = controllerTimeMaxDP.text;
                                     diveGroup.realDeep =

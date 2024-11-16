@@ -778,6 +778,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  string_extensions:
+    dependency: "direct main"
+    description:
+      name: string_extensions
+      sha256: f528763cbd60ebcd37c500624300cbde27995a60060809785d85d60b4e2dbb0a
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.4"
   string_scanner:
     dependency: transitive
     description:

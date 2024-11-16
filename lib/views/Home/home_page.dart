@@ -85,13 +85,7 @@ class HomePage extends StatelessWidget {
                         Icons.delete,
                         color: Colors.red,
                       )),
-                  IconButton(
-                      onPressed: () async {
-                        await context
-                            .read<HomeBloc>()
-                            .saveFile(context, weekends[index]);
-                      },
-                      icon: const Icon(Icons.file_open_outlined))
+                  
                 ],
               ),
               const SizedBox(

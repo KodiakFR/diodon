@@ -41,10 +41,8 @@ class DiveDetailBloc extends Cubit<DiveDetailModel> {
       ..divingStop = ""
       ..dpDeep = ""
       ..dpTime = ""
-      ..hourImmersion = DateTime(1970)
       ..realDeep = ""
       ..realTime = ""
-      ..riseHour = DateTime(1970)
       ..standAlone = false
       ..supervised = false;
 
@@ -91,6 +89,9 @@ class DiveDetailBloc extends Cubit<DiveDetailModel> {
   }
 
   Future<void> updateDiveGroup(DiveGroup diveGroup) async {
+      if(diveGroup.participants.isNotEmpty){
+      diveGroup.title = '${diveGroup.participants.first.name!} ${diveGroup.participants.first.firstName!}';
+    }
     bool result = await isarService.updateDiveGroupe(diveGroup);
     if (result) {
       DiveDetailModel newState =
@@ -101,7 +102,12 @@ class DiveDetailBloc extends Cubit<DiveDetailModel> {
   }
 
   Future<void> removeParticipantsInGroupDive(
-      Participant participant, DiveGroup diveGroup) async {
+      Participant participant, DiveGroup diveGroup, int index) async {
+        if(diveGroup.participants.length == 1){
+          diveGroup.title = 'Palanquée ${index+1}';
+        }else{
+          diveGroup.title = '${diveGroup.participants.first.name!} ${diveGroup.participants.first.firstName!}';
+        }
     bool result =
         await isarService.removeParticipantsInGroupDive(participant, diveGroup);
     if (result) {
