@@ -17,43 +17,48 @@ const DiveGroupSchema = CollectionSchema(
   name: r'DiveGroup',
   id: -622129528304049927,
   properties: {
-    r'divingStop': PropertySchema(
+    r'diveIsValided': PropertySchema(
       id: 0,
+      name: r'diveIsValided',
+      type: IsarType.bool,
+    ),
+    r'divingStop': PropertySchema(
+      id: 1,
       name: r'divingStop',
       type: IsarType.string,
     ),
     r'dpDeep': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'dpDeep',
       type: IsarType.string,
     ),
     r'dpTime': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'dpTime',
       type: IsarType.string,
     ),
     r'realDeep': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'realDeep',
       type: IsarType.string,
     ),
     r'realTime': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'realTime',
       type: IsarType.string,
     ),
     r'standAlone': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'standAlone',
       type: IsarType.bool,
     ),
     r'supervised': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'supervised',
       type: IsarType.bool,
     ),
     r'title': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'title',
       type: IsarType.string,
     )
@@ -137,14 +142,15 @@ void _diveGroupSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.divingStop);
-  writer.writeString(offsets[1], object.dpDeep);
-  writer.writeString(offsets[2], object.dpTime);
-  writer.writeString(offsets[3], object.realDeep);
-  writer.writeString(offsets[4], object.realTime);
-  writer.writeBool(offsets[5], object.standAlone);
-  writer.writeBool(offsets[6], object.supervised);
-  writer.writeString(offsets[7], object.title);
+  writer.writeBool(offsets[0], object.diveIsValided);
+  writer.writeString(offsets[1], object.divingStop);
+  writer.writeString(offsets[2], object.dpDeep);
+  writer.writeString(offsets[3], object.dpTime);
+  writer.writeString(offsets[4], object.realDeep);
+  writer.writeString(offsets[5], object.realTime);
+  writer.writeBool(offsets[6], object.standAlone);
+  writer.writeBool(offsets[7], object.supervised);
+  writer.writeString(offsets[8], object.title);
 }
 
 DiveGroup _diveGroupDeserialize(
@@ -154,15 +160,16 @@ DiveGroup _diveGroupDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = DiveGroup();
-  object.divingStop = reader.readStringOrNull(offsets[0]);
-  object.dpDeep = reader.readStringOrNull(offsets[1]);
-  object.dpTime = reader.readStringOrNull(offsets[2]);
+  object.diveIsValided = reader.readBoolOrNull(offsets[0]);
+  object.divingStop = reader.readStringOrNull(offsets[1]);
+  object.dpDeep = reader.readStringOrNull(offsets[2]);
+  object.dpTime = reader.readStringOrNull(offsets[3]);
   object.id = id;
-  object.realDeep = reader.readStringOrNull(offsets[3]);
-  object.realTime = reader.readStringOrNull(offsets[4]);
-  object.standAlone = reader.readBoolOrNull(offsets[5]);
-  object.supervised = reader.readBoolOrNull(offsets[6]);
-  object.title = reader.readStringOrNull(offsets[7]);
+  object.realDeep = reader.readStringOrNull(offsets[4]);
+  object.realTime = reader.readStringOrNull(offsets[5]);
+  object.standAlone = reader.readBoolOrNull(offsets[6]);
+  object.supervised = reader.readBoolOrNull(offsets[7]);
+  object.title = reader.readStringOrNull(offsets[8]);
   return object;
 }
 
@@ -174,7 +181,7 @@ P _diveGroupDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
     case 1:
       return (reader.readStringOrNull(offset)) as P;
     case 2:
@@ -184,10 +191,12 @@ P _diveGroupDeserializeProp<P>(
     case 4:
       return (reader.readStringOrNull(offset)) as P;
     case 5:
-      return (reader.readBoolOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 6:
       return (reader.readBoolOrNull(offset)) as P;
     case 7:
+      return (reader.readBoolOrNull(offset)) as P;
+    case 8:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -288,6 +297,34 @@ extension DiveGroupQueryWhere
 
 extension DiveGroupQueryFilter
     on QueryBuilder<DiveGroup, DiveGroup, QFilterCondition> {
+  QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition>
+      diveIsValidedIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'diveIsValided',
+      ));
+    });
+  }
+
+  QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition>
+      diveIsValidedIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'diveIsValided',
+      ));
+    });
+  }
+
+  QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition>
+      diveIsValidedEqualTo(bool? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'diveIsValided',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<DiveGroup, DiveGroup, QAfterFilterCondition> divingStopIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1362,6 +1399,18 @@ extension DiveGroupQueryLinks
 }
 
 extension DiveGroupQuerySortBy on QueryBuilder<DiveGroup, DiveGroup, QSortBy> {
+  QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> sortByDiveIsValided() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'diveIsValided', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> sortByDiveIsValidedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'diveIsValided', Sort.desc);
+    });
+  }
+
   QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> sortByDivingStop() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'divingStop', Sort.asc);
@@ -1461,6 +1510,18 @@ extension DiveGroupQuerySortBy on QueryBuilder<DiveGroup, DiveGroup, QSortBy> {
 
 extension DiveGroupQuerySortThenBy
     on QueryBuilder<DiveGroup, DiveGroup, QSortThenBy> {
+  QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> thenByDiveIsValided() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'diveIsValided', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> thenByDiveIsValidedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'diveIsValided', Sort.desc);
+    });
+  }
+
   QueryBuilder<DiveGroup, DiveGroup, QAfterSortBy> thenByDivingStop() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'divingStop', Sort.asc);
@@ -1572,6 +1633,12 @@ extension DiveGroupQuerySortThenBy
 
 extension DiveGroupQueryWhereDistinct
     on QueryBuilder<DiveGroup, DiveGroup, QDistinct> {
+  QueryBuilder<DiveGroup, DiveGroup, QDistinct> distinctByDiveIsValided() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'diveIsValided');
+    });
+  }
+
   QueryBuilder<DiveGroup, DiveGroup, QDistinct> distinctByDivingStop(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1632,6 +1699,12 @@ extension DiveGroupQueryProperty
   QueryBuilder<DiveGroup, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<DiveGroup, bool?, QQueryOperations> diveIsValidedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'diveIsValided');
     });
   }
 

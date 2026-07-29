@@ -6,7 +6,7 @@ import 'dive.dart';
 part 'dive_group.g.dart';
 
 @collection
-class DiveGroup{
+class DiveGroup {
   Id id = Isar.autoIncrement;
   late String? title;
   late bool? standAlone;
@@ -16,6 +16,7 @@ class DiveGroup{
   late String? realDeep;
   late String? realTime;
   late String? divingStop;
+  late bool? diveIsValided;
   @Backlink(to: "diveGroups")
   final participants = IsarLinks<Participant>();
   final dive = IsarLink<Dive>();

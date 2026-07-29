@@ -21,10 +21,12 @@ class DiveDetailBloc extends Cubit<DiveDetailModel> {
   Future<bool> isInDiveGroup(Dive dive, Participant participant) async {
     bool result = await isarService.isInDiveGroup(dive, participant);
     if (!result) {
-      state.divers.where((element) => element.id == participant.id)
+      state.divers
+              .where((element) => element.id == participant.id)
               .first
               .selected =
-          !state.divers.where((element) => element.id == participant.id)
+          !state.divers
+              .where((element) => element.id == participant.id)
               .first
               .selected!;
       emit(state);
@@ -89,12 +91,16 @@ class DiveDetailBloc extends Cubit<DiveDetailModel> {
   }
 
   Future<void> updateDiveGroup(DiveGroup diveGroup) async {
-      if(diveGroup.participants.isNotEmpty){
-        if(diveGroup.participants.map((participant)=> participant.type).contains('Encadrant')){
-          diveGroup.title = '${diveGroup.participants.firstWhere((element) => element.type == 'Encadrant').name!} ${diveGroup.participants.firstWhere((element) => element.type == 'Encadrant').firstName!}';
-        }else{
-          diveGroup.title = '${diveGroup.participants.first.name!} ${diveGroup.participants.first.firstName!}';
-        }
+    if (diveGroup.participants.isNotEmpty) {
+      if (diveGroup.participants
+          .map((participant) => participant.type)
+          .contains('Encadrant')) {
+        diveGroup.title =
+            '${diveGroup.participants.firstWhere((element) => element.type == 'Encadrant').name!} ${diveGroup.participants.firstWhere((element) => element.type == 'Encadrant').firstName!}';
+      } else {
+        diveGroup.title =
+            '${diveGroup.participants.first.name!} ${diveGroup.participants.first.firstName!}';
+      }
     }
     bool result = await isarService.updateDiveGroupe(diveGroup);
     if (result) {
@@ -107,11 +113,12 @@ class DiveDetailBloc extends Cubit<DiveDetailModel> {
 
   Future<void> removeParticipantsInGroupDive(
       Participant participant, DiveGroup diveGroup, int index) async {
-        if(diveGroup.participants.length == 1){
-          diveGroup.title = 'Palanquée ${index+1}';
-        }else{
-          diveGroup.title = '${diveGroup.participants.first.name!} ${diveGroup.participants.first.firstName!}';
-        }
+    if (diveGroup.participants.length == 1) {
+      diveGroup.title = 'Palanquée ${index + 1}';
+    } else {
+      diveGroup.title =
+          '${diveGroup.participants.first.name!} ${diveGroup.participants.first.firstName!}';
+    }
     bool result =
         await isarService.removeParticipantsInGroupDive(participant, diveGroup);
     if (result) {
@@ -128,6 +135,4 @@ class DiveDetailModel {
   List<DiveGroup> divegroups;
 
   DiveDetailModel(this.divers, this.divegroups);
-
-  
 }

@@ -358,6 +358,7 @@ class IsarService {
 
   Future<bool> saveDiveGroup(Dive dive, DiveGroup diveGroup) async {
     final isar = await db;
+    diveGroup.diveIsValided = false;
     List<DiveGroup> diveGroups = await isar.diveGroups
         .filter()
         .dive((d) => d.idEqualTo(dive.id))
@@ -372,6 +373,15 @@ class IsarService {
   }
 
   Future<bool> upDateDiveGroup(Dive dive, DiveGroup diveGroup) async {
+    //vérification des informations:
+    if (diveGroup.divingStop!.isNotEmpty &&
+        diveGroup.dpDeep!.isNotEmpty &&
+        diveGroup.dpTime!.isNotEmpty &&
+        diveGroup.realDeep!.isNotEmpty &&
+        diveGroup.realTime!.isNotEmpty &&
+        (diveGroup.standAlone! || diveGroup.supervised!)) {
+      diveGroup.diveIsValided = true;
+    }
     final isar = await db;
     List<DiveGroup> diveGroups = await isar.diveGroups
         .filter()

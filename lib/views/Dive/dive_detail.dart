@@ -136,7 +136,27 @@ class _DiveDetailState extends State<DiveDetail> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(state.divegroups[index].title!),
+                                    Row(
+                                      children: [
+                                        Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 10),
+                                            child: Text(state
+                                                .divegroups[index].title!)),
+                                        if (state
+                                            .divegroups[index].diveIsValided!)
+                                          const Icon(
+                                            Icons.check_box,
+                                            color: Colors.green,
+                                          ),
+                                        if (!state
+                                            .divegroups[index].diveIsValided!)
+                                          const Icon(
+                                            Icons.error_outline_rounded,
+                                            color: Colors.red,
+                                          ),
+                                      ],
+                                    ),
                                     Row(
                                       children: [
                                         IconButton(
