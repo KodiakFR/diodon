@@ -363,16 +363,29 @@ class _DiveDetailState extends State<DiveDetail> {
                                                             participant)),
                                                 cells: [
                                                   DataCell(Text(
-                                                      participant.firstName ??
-                                                          '')),
+                                                    participant.firstName ?? '',
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  )),
                                                   DataCell(Text(
-                                                      participant.name ?? '')),
+                                                    participant.name ?? '',
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  )),
                                                   DataCell(Text(
-                                                      participant.diveLevel ??
-                                                          '')),
+                                                    participant.diveLevel ?? '',
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  )),
                                                   DataCell(Text(
-                                                      participant.aptitude ??
-                                                          '')),
+                                                    participant.aptitude ?? '',
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  )),
                                                   DataCell(Row(
                                                     children: [
                                                       IconButton(
@@ -499,6 +512,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                 cells: [
                                   DataCell(Text(participant.firstName ?? '',
                                       style: TextStyle(
+                                          fontWeight: FontWeight.bold,
                                           decoration: state.divegroups.any(
                                                   (element) => element
                                                       .participants
@@ -509,6 +523,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                     alignment: Alignment.center,
                                     child: Text(participant.name ?? '',
                                         style: TextStyle(
+                                            fontWeight: FontWeight.bold,
                                             decoration: state.divegroups.any(
                                                     (element) => element
                                                         .participants
@@ -518,6 +533,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                   )),
                                   DataCell(Text(participant.diveLevel ?? '',
                                       style: TextStyle(
+                                          fontWeight: FontWeight.bold,
                                           decoration: state.divegroups.any(
                                                   (element) => element
                                                       .participants
@@ -528,6 +544,7 @@ class _DiveDetailState extends State<DiveDetail> {
                                     Text(
                                       participant.aptitude ?? '',
                                       style: TextStyle(
+                                          fontWeight: FontWeight.bold,
                                           decoration: state.divegroups.any(
                                                   (element) => element
                                                       .participants
@@ -800,27 +817,27 @@ class _DiveDetailState extends State<DiveDetail> {
   Color _colorDataCell(Participant participant) {
     switch (participant.diveLevel) {
       case "MF2":
-        return Colors.red.shade900;
-      case "MF1":
         return Colors.red.shade700;
-      case "N4":
+      case "MF1":
         return Colors.red.shade500;
+      case "N4":
+        return Colors.red.shade300;
       case "PpN4":
-        return Colors.blue.shade900;
-      case "PpN3":
         return Colors.blue.shade700;
-      case "PpN2":
+      case "PpN3":
         return Colors.blue.shade500;
+      case "PpN2":
+        return Colors.blue.shade300;
       case "Ppn1":
         return Colors.blue.shade300;
       case "Bapt":
         return Colors.blue.shade100;
       case "N3":
-        return Colors.green.shade900;
-      case "N2":
         return Colors.green.shade700;
-      case "N1":
+      case "N2":
         return Colors.green.shade500;
+      case "N1":
+        return Colors.green.shade300;
       default:
         return Colors.grey;
     }
