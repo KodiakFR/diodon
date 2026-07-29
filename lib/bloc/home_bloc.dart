@@ -62,7 +62,6 @@ class HomeBloc extends Cubit<Home> {
 
     if (dive.divingSite.isEmpty ||
         dive.boat.isEmpty ||
-        dive.captain!.isEmpty ||
         dive.dateDepart == DateTime(1970, 1, 1) ||
         dive.dp.isEmpty ||
         dive.nbDiver == 0 ||

@@ -374,7 +374,9 @@ class IsarService {
 
   Future<bool> upDateDiveGroup(Dive dive, DiveGroup diveGroup) async {
     //vérification des informations:
+    diveGroup.diveIsValided = false;
     if (diveGroup.divingStop!.isNotEmpty &&
+        diveGroup.divingStop!.isNotEmpty &&
         diveGroup.dpDeep!.isNotEmpty &&
         diveGroup.dpTime!.isNotEmpty &&
         diveGroup.realDeep!.isNotEmpty &&
