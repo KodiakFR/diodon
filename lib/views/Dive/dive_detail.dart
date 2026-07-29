@@ -370,6 +370,10 @@ class _DiveDetailState extends State<DiveDetail> {
                                                                   DiveDetailBloc>()
                                                               .updateParticipant(
                                                                   participant);
+                                                            context
+                                                            .read<DiveDetailBloc>()
+                                                            .updateDiveGroup(
+                                                            state.divegroups[index]);
                                                         },
                                                         icon: const Icon(
                                                             Icons

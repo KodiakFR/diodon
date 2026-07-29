@@ -90,7 +90,11 @@ class DiveDetailBloc extends Cubit<DiveDetailModel> {
 
   Future<void> updateDiveGroup(DiveGroup diveGroup) async {
       if(diveGroup.participants.isNotEmpty){
-      diveGroup.title = '${diveGroup.participants.first.name!} ${diveGroup.participants.first.firstName!}';
+        if(diveGroup.participants.map((participant)=> participant.type).contains('Encadrant')){
+          diveGroup.title = '${diveGroup.participants.firstWhere((element) => element.type == 'Encadrant').name!} ${diveGroup.participants.firstWhere((element) => element.type == 'Encadrant').firstName!}';
+        }else{
+          diveGroup.title = '${diveGroup.participants.first.name!} ${diveGroup.participants.first.firstName!}';
+        }
     }
     bool result = await isarService.updateDiveGroupe(diveGroup);
     if (result) {
