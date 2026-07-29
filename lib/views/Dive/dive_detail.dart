@@ -363,17 +363,20 @@ class _DiveDetailState extends State<DiveDetail> {
                                                               .removeParticipantsInGroupDive(
                                                                   participant,
                                                                   state.divegroups[
-                                                                      index], index);
+                                                                      index],
+                                                                  index);
 
                                                           await context
                                                               .read<
                                                                   DiveDetailBloc>()
                                                               .updateParticipant(
                                                                   participant);
-                                                            context
-                                                            .read<DiveDetailBloc>()
-                                                            .updateDiveGroup(
-                                                            state.divegroups[index]);
+                                                          context
+                                                              .read<
+                                                                  DiveDetailBloc>()
+                                                              .updateDiveGroup(
+                                                                  state.divegroups[
+                                                                      index]);
                                                         },
                                                         icon: const Icon(
                                                             Icons
@@ -568,7 +571,7 @@ class _DiveDetailState extends State<DiveDetail> {
           'Nombre de personnes : ${dive.nbPeople.toString()}',
           style: Theme.of(context).textTheme.titleMedium,
         ),
-         Text(
+        Text(
           'Instruction DP : ${dive.instructionDp}',
           style: Theme.of(context).textTheme.titleMedium,
         )
@@ -643,78 +646,6 @@ class _DiveDetailState extends State<DiveDetail> {
                                               });
                                             }),
                                       ],
-                                    ),
-                                    TextFormField(
-                                      controller: controllerStartHour,
-                                      showCursor: true,
-                                      readOnly: true,
-                                      decoration: const InputDecoration(
-                                        icon:
-                                            Icon(Icons.calendar_today_rounded),
-                                        labelText: 'Heure d\'immersion',
-                                      ),
-                                      onTap: () async {
-                                        TimeOfDay? pickedHour =
-                                            await showTimePicker(
-                                          context: context,
-                                          initialTime: TimeOfDay.now(),
-                                          builder: (BuildContext context,
-                                              Widget? child) {
-                                            return MediaQuery(
-                                              data: MediaQuery.of(context)
-                                                  .copyWith(
-                                                      alwaysUse24HourFormat:
-                                                          true),
-                                              child: child!,
-                                            );
-                                          },
-                                        );
-                                        if (pickedHour != null) {
-                                          setState(() {
-                                            var df = DateFormat("HH:mm");
-                                            var dt = df.parse(
-                                                pickedHour.format(context));
-                                            controllerStartHour.text =
-                                                DateFormat("HH:mm").format(dt);
-                                          });
-                                        }
-                                      },
-                                    ),
-                                    TextFormField(
-                                      controller: controllerStartEnd,
-                                      showCursor: true,
-                                      readOnly: true,
-                                      decoration: const InputDecoration(
-                                        icon:
-                                            Icon(Icons.calendar_today_rounded),
-                                        labelText: 'Heure sortie',
-                                      ),
-                                      onTap: () async {
-                                        TimeOfDay? pickedHour =
-                                            await showTimePicker(
-                                          context: context,
-                                          initialTime: TimeOfDay.now(),
-                                          builder: (BuildContext context,
-                                              Widget? child) {
-                                            return MediaQuery(
-                                              data: MediaQuery.of(context)
-                                                  .copyWith(
-                                                      alwaysUse24HourFormat:
-                                                          true),
-                                              child: child!,
-                                            );
-                                          },
-                                        );
-                                        if (pickedHour != null) {
-                                          setState(() {
-                                            var df = DateFormat("HH:mm");
-                                            var dt = df.parse(
-                                                pickedHour.format(context));
-                                            controllerStartEnd.text =
-                                                DateFormat("HH:mm").format(dt);
-                                          });
-                                        }
-                                      },
                                     ),
                                   ],
                                 ),
