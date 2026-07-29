@@ -98,7 +98,12 @@ int _diveEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.boat.length * 3;
-  bytesCount += 3 + object.captain.length * 3;
+  {
+    final value = object.captain;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   bytesCount += 3 + object.divingSite.length * 3;
   bytesCount += 3 + object.dp.length * 3;
   bytesCount += 3 + object.instructionDp.length * 3;
@@ -131,7 +136,7 @@ Dive _diveDeserialize(
 ) {
   final object = Dive();
   object.boat = reader.readString(offsets[0]);
-  object.captain = reader.readString(offsets[1]);
+  object.captain = reader.readStringOrNull(offsets[1]);
   object.dateDepart = reader.readDateTime(offsets[2]);
   object.divingSite = reader.readString(offsets[3]);
   object.dp = reader.readString(offsets[4]);
@@ -153,7 +158,7 @@ P _diveDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 2:
       return (reader.readDateTime(offset)) as P;
     case 3:
@@ -392,8 +397,24 @@ extension DiveQueryFilter on QueryBuilder<Dive, Dive, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> captainIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'captain',
+      ));
+    });
+  }
+
+  QueryBuilder<Dive, Dive, QAfterFilterCondition> captainIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'captain',
+      ));
+    });
+  }
+
   QueryBuilder<Dive, Dive, QAfterFilterCondition> captainEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -406,7 +427,7 @@ extension DiveQueryFilter on QueryBuilder<Dive, Dive, QFilterCondition> {
   }
 
   QueryBuilder<Dive, Dive, QAfterFilterCondition> captainGreaterThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -421,7 +442,7 @@ extension DiveQueryFilter on QueryBuilder<Dive, Dive, QFilterCondition> {
   }
 
   QueryBuilder<Dive, Dive, QAfterFilterCondition> captainLessThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -436,8 +457,8 @@ extension DiveQueryFilter on QueryBuilder<Dive, Dive, QFilterCondition> {
   }
 
   QueryBuilder<Dive, Dive, QAfterFilterCondition> captainBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -1627,7 +1648,7 @@ extension DiveQueryProperty on QueryBuilder<Dive, Dive, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Dive, String, QQueryOperations> captainProperty() {
+  QueryBuilder<Dive, String?, QQueryOperations> captainProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'captain');
     });

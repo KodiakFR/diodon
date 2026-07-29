@@ -579,10 +579,11 @@ class _DiveDetailState extends State<DiveDetail> {
           'Nom du navire : ${dive.boat}',
           style: Theme.of(context).textTheme.titleMedium,
         ),
-        Text(
-          'Capitaine : ${dive.captain}',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
+        if (dive.captain != null && dive.captain!.isNotEmpty)
+          Text(
+            'Capitaine : ${dive.captain}',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
         Text(
           'Site de plongée : ${dive.divingSite}',
           style: Theme.of(context).textTheme.titleMedium,

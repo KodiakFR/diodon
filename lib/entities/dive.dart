@@ -13,7 +13,7 @@ class Dive {
   late DateTime dateDepart;
   late String dp;
   late String boat;
-  late String captain;
+  late String? captain;
   late int nbPeople;
   late int nbDiver;
   late String instructionDp;

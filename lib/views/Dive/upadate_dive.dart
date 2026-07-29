@@ -41,7 +41,7 @@ class _UpdateDiveState extends State<UpdateDive> {
       controllerStartHour.text = DateFormat("HH:mm").format(dive.dateDepart);
       controllerDP.text = dive.dp;
       controllerBoat.text = dive.boat;
-      controllerCaptainName.text = dive.captain;
+      controllerCaptainName.text = dive.captain!;
       controllerNbPerson.text = dive.nbPeople.toString();
       controllerNbDivers.text = dive.nbDiver.toString();
       isIntialized = true;
@@ -76,7 +76,8 @@ class _UpdateDiveState extends State<UpdateDive> {
                                 controller: controllerStartDate,
                                 decoration: const InputDecoration(
                                   icon: Icon(Icons.calendar_today_rounded),
-                                  labelText: 'Selectionnez la date de la plongée',
+                                  labelText:
+                                      'Selectionnez la date de la plongée',
                                 ),
                                 onTap: () async {
                                   DateTime? pickedDate = await showDatePicker(
@@ -113,10 +114,11 @@ class _UpdateDiveState extends State<UpdateDive> {
                                   TimeOfDay? pickedHour = await showTimePicker(
                                     context: context,
                                     initialTime: TimeOfDay.now(),
-                                    builder: (BuildContext context, Widget? child) {
+                                    builder:
+                                        (BuildContext context, Widget? child) {
                                       return MediaQuery(
-                                        data: MediaQuery.of(context)
-                                            .copyWith(alwaysUse24HourFormat: true),
+                                        data: MediaQuery.of(context).copyWith(
+                                            alwaysUse24HourFormat: true),
                                         child: child!,
                                       );
                                     },
@@ -124,7 +126,8 @@ class _UpdateDiveState extends State<UpdateDive> {
                                   if (pickedHour != null) {
                                     setState(() {
                                       var df = DateFormat("HH:mm");
-                                      var dt = df.parse(pickedHour.format(context));
+                                      var dt =
+                                          df.parse(pickedHour.format(context));
                                       controllerStartHour.text =
                                           DateFormat("HH:mm").format(dt);
                                     });
@@ -180,7 +183,8 @@ class _UpdateDiveState extends State<UpdateDive> {
                                   validator: (value) {
                                     if (value != null &&
                                         int.parse(value) >
-                                            int.parse(controllerNbPerson.text)) {
+                                            int.parse(
+                                                controllerNbPerson.text)) {
                                       return 'Le nombre de plongeurs est plus élevé que le nombre de personne sur le bateau';
                                     }
                                     return null;
@@ -191,7 +195,7 @@ class _UpdateDiveState extends State<UpdateDive> {
                           ))
                     ],
                   ),
-                   Padding(
+                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 50),
                     child: TextFormField(
                       controller: controllerInstruction,
