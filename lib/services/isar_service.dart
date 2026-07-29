@@ -340,6 +340,7 @@ class IsarService {
         .weekends((w) => w.dives((d) => d.idEqualTo(dive.id)))
         .typeEqualTo('Plongeur')
         .or()
+        .weekends((w) => w.dives((d) => d.idEqualTo(dive.id)))
         .typeEqualTo('Encadrant')
         .sortBySort()
         .findAll();
