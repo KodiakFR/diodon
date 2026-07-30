@@ -16,4 +16,16 @@ class Participant {
   int? sort;
   final weekends = IsarLinks<Weekend>();
   final diveGroups = IsarLinks<DiveGroup>();
+
+// Dans participant.dart
+  Participant copy() {
+    return Participant()
+      ..name = name
+      ..firstName = firstName
+      ..diveLevel = diveLevel
+      ..type = type
+      ..aptitude = aptitude
+      ..selected = selected
+      ..sort = sort;
+  }
 }

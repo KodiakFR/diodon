@@ -22,11 +22,15 @@ class DiveDetailBloc extends Cubit<DiveDetailModel> {
     bool result = await isarService.isInDiveGroup(dive, participant);
     if (!result) {
       state.divers
-              .where((element) => element.id == participant.id)
+              .where((element) =>
+                  element.name == participant.name &&
+                  element.firstName == participant.firstName)
               .first
               .selected =
           !state.divers
-              .where((element) => element.id == participant.id)
+              .where((element) =>
+                  element.name == participant.name &&
+                  element.firstName == participant.firstName)
               .first
               .selected!;
       emit(state);

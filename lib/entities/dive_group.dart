@@ -17,7 +17,6 @@ class DiveGroup {
   late String? realTime;
   late String? divingStop;
   late bool? diveIsValided;
-  @Backlink(to: "diveGroups")
   final participants = IsarLinks<Participant>();
   final dive = IsarLink<Dive>();
 }

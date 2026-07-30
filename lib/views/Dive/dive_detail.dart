@@ -167,19 +167,22 @@ class _DiveDetailState extends State<DiveDetail> {
                                                           dive);
                                               for (var participant
                                                   in particiapants) {
+                                                final participantCopy =
+                                                    participant.copy();
                                                 state.divegroups[index]
                                                     .participants
-                                                    .add(participant);
-                                                state.divegroups
-                                                    .elementAt(index)
-                                                    .participants
-                                                    .add(participant);
+                                                    .add(participantCopy);
                                                 participant.selected = false;
+                                                context
+                                                    .read<DiveDetailBloc>()
+                                                    .updateParticipant(
+                                                        participantCopy);
                                                 context
                                                     .read<DiveDetailBloc>()
                                                     .updateParticipant(
                                                         participant);
                                               }
+
                                               context
                                                   .read<DiveDetailBloc>()
                                                   .updateDiveGroup(
@@ -516,7 +519,13 @@ class _DiveDetailState extends State<DiveDetail> {
                                           decoration: state.divegroups.any(
                                                   (element) => element
                                                       .participants
-                                                      .contains(participant))
+                                                      .any((p) =>
+                                                          p.name ==
+                                                              participant
+                                                                  .name &&
+                                                          p.firstName ==
+                                                              participant
+                                                                  .firstName))
                                               ? TextDecoration.lineThrough
                                               : null))),
                                   DataCell(Container(
@@ -527,7 +536,13 @@ class _DiveDetailState extends State<DiveDetail> {
                                             decoration: state.divegroups.any(
                                                     (element) => element
                                                         .participants
-                                                        .contains(participant))
+                                                        .any((p) =>
+                                                            p.name ==
+                                                                participant
+                                                                    .name &&
+                                                            p.firstName ==
+                                                                participant
+                                                                    .firstName))
                                                 ? TextDecoration.lineThrough
                                                 : null)),
                                   )),
@@ -537,7 +552,13 @@ class _DiveDetailState extends State<DiveDetail> {
                                           decoration: state.divegroups.any(
                                                   (element) => element
                                                       .participants
-                                                      .contains(participant))
+                                                      .any((p) =>
+                                                          p.name ==
+                                                              participant
+                                                                  .name &&
+                                                          p.firstName ==
+                                                              participant
+                                                                  .firstName))
                                               ? TextDecoration.lineThrough
                                               : null))),
                                   DataCell(
@@ -548,7 +569,13 @@ class _DiveDetailState extends State<DiveDetail> {
                                           decoration: state.divegroups.any(
                                                   (element) => element
                                                       .participants
-                                                      .contains(participant))
+                                                      .any((p) =>
+                                                          p.name ==
+                                                              participant
+                                                                  .name &&
+                                                          p.firstName ==
+                                                              participant
+                                                                  .firstName))
                                               ? TextDecoration.lineThrough
                                               : null),
                                     ),

@@ -412,30 +412,24 @@ class IsarService {
       Participant participant, DiveGroup diveGroup) async {
     bool result = false;
     final isar = await db;
-    List<Participant> participants = await isar.participants
-        .filter()
-        .diveGroups((q) => q.idEqualTo(diveGroup.id))
-        .idEqualTo(participant.id)
-        .findAll();
-    if (participants.length == 1) {
-      diveGroup.participants.remove(participants[0]);
-      int id = isar.writeTxnSync(() => isar.diveGroups.putSync(diveGroup));
-      if (id == diveGroup.id) {
-        result = true;
-      }
+    diveGroup.participants.remove(participant);
+    int id = isar.writeTxnSync(() => isar.diveGroups.putSync(diveGroup));
+    if (id == diveGroup.id) {
+      result = true;
     }
     return result;
   }
 
   Future<bool> isInDiveGroup(Dive dive, Participant participant) async {
     final isar = await db;
-    List<Participant> participants = await isar.participants
+    DiveGroup? diveGroup = await isar.diveGroups
         .filter()
-        .nameEqualTo(participant.name)
-        .firstNameEqualTo(participant.firstName)
-        .diveGroups((dg) => dg.dive((d) => d.idEqualTo(dive.id)))
-        .findAll();
-    if (participants.isEmpty) {
+        .dive((q) => q.idEqualTo(dive.id))
+        .participants((q) => q
+            .nameEqualTo(participant.name)
+            .firstNameEqualTo(participant.firstName))
+        .findFirst();
+    if (diveGroup == null) {
       return false;
     } else {
       return true;

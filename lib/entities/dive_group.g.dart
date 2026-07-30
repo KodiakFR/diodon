@@ -71,11 +71,10 @@ const DiveGroupSchema = CollectionSchema(
   indexes: {},
   links: {
     r'participants': LinkSchema(
-      id: -8791196369415823650,
+      id: 9030734397771391169,
       name: r'participants',
       target: r'Participant',
       single: false,
-      linkName: r'diveGroups',
     ),
     r'dive': LinkSchema(
       id: -1015094722195213101,
