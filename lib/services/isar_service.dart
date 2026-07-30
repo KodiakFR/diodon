@@ -466,10 +466,12 @@ class IsarService {
 
   Future<List<Participant>> getAllDiverForDiveGroup(DiveGroup diveGroup) async {
     final isar = await db;
-    List<Participant> participants = await isar.participants
-        .filter()
-        .diveGroups((q) => q.idEqualTo(diveGroup.id))
-        .findAll();
+    DiveGroup? diveGroupExist =
+        await isar.diveGroups.filter().idEqualTo(diveGroup.id).findFirst();
+    List<Participant> participants = [];
+    diveGroupExist?.participants.forEach((element) {
+      participants.add(element);
+    });
     return participants;
   }
 }
